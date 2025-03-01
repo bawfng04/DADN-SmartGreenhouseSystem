@@ -60,3 +60,42 @@ http://localhost:8000
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu về đèn và quạt.
   - `500 Internal Server Error`: Lỗi server.
+
+
+## Ví dụ fetch data
+
+Giả sử muốn lấy data nhiệt độ:
+
+```javascript
+const [adafruitData, setAdafruitData] = useState([]);
+
+const API = "http://localhost:8000/adafruit-thermal-data";
+
+async function fetchAdafruitData() {
+  try {
+    const response = await fetch(API);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    setAdafruitData(data);
+  } catch (error) {
+    console.error('Error fetching Adafruit data:', error);
+  }
+}
+
+useEffect(() => {
+  fetchAdafruitData();
+}, []);
+```
+
+Hiển thị data:
+```jsx
+<div className="adafruit-component-content">
+  {adafruitData ? (
+    <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
+  ) : (
+    <p>Loading Adafruit data...</p>
+  )}
+</div>
+```

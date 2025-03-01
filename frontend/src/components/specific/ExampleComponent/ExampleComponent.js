@@ -3,8 +3,15 @@ import { exampleAPI } from "../../../apis";
 import LoadingSpinner from "../../common/LoadingSpinner/LoadingSpinner";
 import Notification from "../../common/Notification/Notification";
 
+
+// lấy data từ adafruit của BE
+
+const adafruitAPI = process.env.REACT_APP_API_URL + "/adafruit-thermal-data";
+
+
 const ExampleComponent = () => {
   const [data, setData] = useState([]);
+  const [adafruitData, setAdafruitData] = useState([]);
   async function FetchExample() {
     try {
       const response = await fetch(exampleAPI);
@@ -15,8 +22,24 @@ const ExampleComponent = () => {
     }
   }
 
+
+  async function FetchAdafruit() {
+    try {
+      const response = await fetch(adafruitAPI);
+      const data = await response.json();
+      setAdafruitData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+
+
+
   useEffect(() => {
     FetchExample();
+    FetchAdafruit();
   }, []);
 
   return (
@@ -41,6 +64,13 @@ const ExampleComponent = () => {
           ))}
         </ul>
         <LoadingSpinner />
+      </div>
+      <div className="adafruit-component-content">
+        {adafruitData ? (
+          <pre>{JSON.stringify(adafruitData)}</pre>
+        ) : (
+          <p>Loading Adafruit data...</p>
+        )}
       </div>
     </div>
   );
