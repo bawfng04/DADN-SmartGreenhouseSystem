@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { exampleAPI } from "../../../apis";
 import LoadingSpinner from "../../common/LoadingSpinner/LoadingSpinner";
 import Notification from "../../common/Notification/Notification";
-
+import "./ExampleComponent.css";
 // lấy data từ adafruit của BE
 
 const adafruitAPI = process.env.REACT_APP_API_URL + "/adafruit-thermal-data";
@@ -71,20 +71,27 @@ const ExampleComponent = () => {
         </ul>
         <LoadingSpinner />
       </div>
-      <div className="adafruit-component-content">
-        {adafruitData ? (
-          <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
-        ) : (
-          <p>Loading Adafruit data...</p>
-        )}
-      </div>
-      <div>===============================</div>
-      <div className="adafruit-component-content">
-        {adafruitData2 ? (
-          <pre>{JSON.stringify(adafruitData2, null, 2)}</pre>
-        ) : (
-          <p>Loading Adafruit data...</p>
-        )}
+      <div className="adafruit-component">
+        <h2>Adafruit Data</h2>
+        <div className="adafruit-component-content">
+          <h3>Temperature & Humidity Data</h3>
+          {adafruitData ? (
+            <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
+          ) : (
+            <p>Loading Adafruit data...</p>
+          )}
+        </div>
+        <div className="adafruit-separator">
+          ===============================
+        </div>
+        <div className="adafruit-component-content">
+          <h3>Light & Fan Control Data</h3>
+          {adafruitData2 ? (
+            <pre>{JSON.stringify(adafruitData2, null, 2)}</pre>
+          ) : (
+            <p>Loading Adafruit data...</p>
+          )}
+        </div>
       </div>
     </div>
   );
