@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const getAdafruitData = async (req, res) => {
+const getAdafruitThermalData = async (req, res) => {
   try {
     const response = await axios.get(
       "https://io.adafruit.com/api/v2/justkh29/dashboards/thermal-humidity",
@@ -17,4 +17,21 @@ const getAdafruitData = async (req, res) => {
   }
 };
 
-module.exports = { getAdafruitData };
+const getAdafruitLightfanData = async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://io.adafruit.com/justkh29/dashboards/light-fan",
+      {
+        headers: {
+          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,
+        },
+      }
+    );
+    res.json(response.data);
+    // console.log(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getAdafruitThermalData, getAdafruitLightfanData };
