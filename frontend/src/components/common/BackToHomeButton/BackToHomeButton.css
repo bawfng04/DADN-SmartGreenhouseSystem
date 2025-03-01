@@ -1,0 +1,16 @@
+.back-to-home-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 20px 0;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.back-to-home-button:hover {
+  background-color: var(--primary-color-dark);
+  transform: scale(1.1);
+}

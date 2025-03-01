@@ -1,0 +1,58 @@
+.header{
+    color: white;
+    background-color: var(--secondary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+.header-left-container, .header-middle-container, .header-right-container{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+/* header-left-container: logo and app-name */
+.header-logo{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    transition: 0.3s all;
+}
+
+.header-logo:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* header-middle-container: links */
+
+.header-link{
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s all;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.header-link:hover{
+    background-color: var(--light-color);
+    color: black;
+}
+
+/* header-right-container */
+.header-settings-image{
+    width: 60px;
+    height: 60px;
+    transition: 0.3s all;
+}
+
+.header-settings-image:hover{
+    transform: rotate(90deg);
+    cursor: pointer;
+}
