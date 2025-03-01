@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 8000;
 const exampleRoute = require("./src/routes/examplesRoute");
 const registerRoute = require("./src/routes/registerRoute");
 const loginRoute = require("./src/routes/loginRoute");
+const adafruitRoute = require("./src/routes/adafruitRoute");
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/", exampleRoute);
 app.use("/", registerRoute);
 app.use("/", loginRoute);
+app.use("/", adafruitRoute);
 
 
 app.get("/", (req, res) => {
