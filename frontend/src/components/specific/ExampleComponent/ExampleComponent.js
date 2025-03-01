@@ -3,15 +3,15 @@ import { exampleAPI } from "../../../apis";
 import LoadingSpinner from "../../common/LoadingSpinner/LoadingSpinner";
 import Notification from "../../common/Notification/Notification";
 
-
 // lấy data từ adafruit của BE
 
 const adafruitAPI = process.env.REACT_APP_API_URL + "/adafruit-thermal-data";
-
+const adafruitAPI2 = process.env.REACT_APP_API_URL + "/adafruit-lightfan-data";
 
 const ExampleComponent = () => {
   const [data, setData] = useState([]);
   const [adafruitData, setAdafruitData] = useState([]);
+  const [adafruitData2, setAdafruitData2] = useState([]);
   async function FetchExample() {
     try {
       const response = await fetch(exampleAPI);
@@ -21,7 +21,6 @@ const ExampleComponent = () => {
       console.error(error);
     }
   }
-
 
   async function FetchAdafruit() {
     try {
@@ -33,13 +32,20 @@ const ExampleComponent = () => {
     }
   }
 
-
-
-
+  async function FetchAdafruit2() {
+    try {
+      const response = await fetch(adafruitAPI2);
+      const data = await response.json();
+      setAdafruitData2(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     FetchExample();
     FetchAdafruit();
+    FetchAdafruit2();
   }, []);
 
   return (
@@ -67,7 +73,15 @@ const ExampleComponent = () => {
       </div>
       <div className="adafruit-component-content">
         {adafruitData ? (
-          <pre>{JSON.stringify(adafruitData)}</pre>
+          <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
+        ) : (
+          <p>Loading Adafruit data...</p>
+        )}
+      </div>
+      <div>===============================</div>
+      <div className="adafruit-component-content">
+        {adafruitData2 ? (
+          <pre>{JSON.stringify(adafruitData2, null, 2)}</pre>
         ) : (
           <p>Loading Adafruit data...</p>
         )}

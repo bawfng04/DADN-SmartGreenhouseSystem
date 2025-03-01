@@ -20,7 +20,7 @@ const getAdafruitThermalData = async (req, res) => {
 const getAdafruitLightfanData = async (req, res) => {
   try {
     const response = await axios.get(
-      "https://io.adafruit.com/justkh29/dashboards/light-fan",
+      "https://io.adafruit.com/api/v2/justkh29/dashboards/light-fan",
       {
         headers: {
           "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,

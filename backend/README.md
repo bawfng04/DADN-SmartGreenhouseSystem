@@ -64,7 +64,7 @@ http://localhost:8000
 
 ## Ví dụ fetch data
 
-Giả sử muốn lấy data nhiệt độ:
+Ví dụ lấy data nhiệt độ:
 
 ```javascript
 const [adafruitData, setAdafruitData] = useState([]);
@@ -94,8 +94,9 @@ Hiển thị data:
 <div className="adafruit-component-content">
   {adafruitData ? (
     <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
-  ) : (
+    ) : (
     <p>Loading Adafruit data...</p>
   )}
 </div>
 ```
+
