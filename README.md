@@ -1,3 +1,16 @@
+Khỏi đọc cái này, vào folder `backend` đọc docs.
+
+
+
+
+
+
+
+
+
+
+
+
 # Project Setup
 
 ## Backend Setup
