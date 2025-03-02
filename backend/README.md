@@ -2,7 +2,9 @@
 
 ## BaseURLs
 
-http://localhost:8000
+`dadn-k8tht3jma-bawfng04s-projects.vercel.app`
+
+`localhost:8000` (nếu chạy local, phải pull backend về trước)
 
 ## Endpoints
 
