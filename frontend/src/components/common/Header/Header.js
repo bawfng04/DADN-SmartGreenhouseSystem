@@ -35,6 +35,9 @@ const Header = () => {
         <a href="/register" className="header-link">
           Register
         </a>
+        <a href="/change-password" className="header-link">
+          Change Password
+        </a>
         {/* End links */}
       </div>
       {/* Header Right Container */}
