@@ -43,7 +43,19 @@ http://localhost:8000
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
   - `500 Internal Server Error`: Lỗi server.
 
-### 3. Lấy Dữ Liệu Nhiệt Độ Từ Adafruit
+### 3. Đổi mật khẩu
+
+- **URL:** `/changePassword`
+- **Phương thức:** `POST`
+- **Mô tả:** Đổi mật khẩu ứng với username được gửi về
+- **Phản hồi:**
+  - `200 OK`: Đổi mật khẩu thành công.
+  - `401 Unauthorized`: Mật khẩu không chính xác.
+  - `409 Conflict`: Không tìm thấy tên người dùng.
+  - `400 Bad Request`: Thiếu tên người dùng, mật khẩu hoặc mật khẩu mới.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 4. Lấy Dữ Liệu Nhiệt Độ Từ Adafruit
 
 - **URL:** `/adafruit-thermal-data`
 - **Phương thức:** `GET`
@@ -52,7 +64,7 @@ http://localhost:8000
   - `200 OK`: Trả về dữ liệu nhiệt độ.
   - `500 Internal Server Error`: Lỗi server.
 
-### 4. Lấy Dữ Liệu Đèn và Quạt Từ Adafruit
+### 5. Lấy Dữ Liệu Đèn và Quạt Từ Adafruit
 
 - **URL:** `/adafruit-lightfan-data`
 - **Phương thức:** `GET`
@@ -60,6 +72,7 @@ http://localhost:8000
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu về đèn và quạt.
   - `500 Internal Server Error`: Lỗi server.
+
 
 
 ## Ví dụ fetch data
