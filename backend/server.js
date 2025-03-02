@@ -10,18 +10,13 @@ const loginRoute = require("./src/routes/loginRoute");
 const changePassword = require("./src/routes/changePasswordRoute");
 const adafruitRoute = require("./src/routes/adafruitRoute");
 
-
+// vercel --prod
 
 const app = express();
-// vercel --prod
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+
+app.use(express.json());
+
+app.use(cors());
 
 // use routes
 app.use("/", exampleRoute);

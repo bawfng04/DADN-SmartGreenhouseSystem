@@ -1,34 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Login.css";
 import Logo from "../../../../assets/Logo.png";
-
-const loginAPI = process.env.REACT_APP_API_URL + "/login";
+import { loginAPI } from "../../../../apis";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLoginClick = async (e) => {
+    console.log("loginAPI: ", loginAPI);
+    console.log("Button clicked, waiting...");
     e.preventDefault();
+    setIsLoading(true);
+
     try {
       const response = await fetch(loginAPI, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
+
       const data = await response.json();
-      alert(data.message);
-      console.log(data);
+
+      if (response.ok) {
+        alert(data.message);
+        window.location.href = "/home";
+      } else {
+        alert(data.message || "Login failed");
+      }
     } catch (error) {
       console.error("Error:", error);
+      alert("Login failed. Please check if the backend server is running.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    console.log("API:" + loginAPI);
+  }, []);
 
   const handleLogoClick = () => {
     window.location.href = "/";
   };
-
 
   return (
     <div className="login-container">

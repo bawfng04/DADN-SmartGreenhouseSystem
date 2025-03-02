@@ -15,6 +15,7 @@ const loginUser = async (req, res) => {
       .status(result.status)
       .json({ message: result.message, username: result.username || null });
   } catch (error) {
+    console.log("Error loginUser2:", error.message);
     res.status(500).json({ error: error.message });
   }
 };

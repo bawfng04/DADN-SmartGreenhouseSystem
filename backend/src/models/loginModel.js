@@ -20,6 +20,7 @@ class LoginModel {
         }
       }
     } catch (error) {
+      console.log("Error loginUser:", error.message);
       throw error;
     }
   }

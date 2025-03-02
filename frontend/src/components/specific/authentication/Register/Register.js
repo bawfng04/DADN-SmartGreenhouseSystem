@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Register.css";
 import Logo from "../../../../assets/Logo.png";
 
-const registerAPI = process.env.REACT_APP_API_URL + "/register";
+import { registerAPI } from "../../../../apis";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -10,7 +10,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegisterClick = async (e) => {
-    // console.log("API:", registerAPI); //localhost:8000/register
+    console.log("API:", registerAPI);
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
@@ -24,12 +24,10 @@ const Register = () => {
       });
       const data = await response.json();
       alert(data.message);
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error:", error);
     }
   };
-
 
   const handleLogoClick = () => {
     window.location.href = "/";
@@ -92,7 +90,11 @@ const Register = () => {
             </a>
           </div>
 
-          <button type="submit" className="register-button" onClick={handleRegisterClick}>
+          <button
+            type="submit"
+            className="register-button"
+            onClick={handleRegisterClick}
+          >
             Register
           </button>
         </form>
