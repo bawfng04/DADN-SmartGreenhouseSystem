@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const PORT = process.env.PORT || 8000;
 
+const { pool } = require("./src/database/PostgreDatabase");
+
 // import routes
 const exampleRoute = require("./src/routes/examplesRoute");
 const registerRoute = require("./src/routes/registerRoute");
@@ -24,13 +26,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
 // use routes
 app.use("/api", exampleRoute);
 app.use("/api", registerRoute);
 app.use("/api", loginRoute);
 app.use("/api", changePassword);
 app.use("/api", adafruitRoute);
+
+// test PostgreSQL connection
+app.get("/pg-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({
+      message: "PostgreSQL connection successful!",
+      timestamp: result.rows[0].now,
+    });
+  } catch (error) {
+    console.error("PostgreSQL test query failed:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.get("/", (req, res) => {
   res.json({ message: "Server is running!" });
