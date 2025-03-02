@@ -1,87 +1,122 @@
-Khỏi đọc cái này, vào folder `backend` đọc docs.
+# BE docs
+
+## BaseURLs
+
+`https://dadn-2.onrender.com/api`
+
+## Endpoints
+
+### 1. Đăng Ký Người Dùng
+
+- **URL:** `/register`
+- **Phương thức:** `POST`
+- **Mô tả:** Đăng ký người dùng mới.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "username": "string",
+    "password": "string"
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Đăng ký người dùng thành công.
+  - `409 Conflict`: Tên người dùng đã tồn tại.
+  - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 2. Đăng Nhập Người Dùng
+
+- **URL:** `/login`
+- **Phương thức:** `POST`
+- **Mô tả:** Đăng nhập.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "username": "string",
+    "password": "string"
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Đăng nhập thành công.
+  - `401 Unauthorized`: Mật khẩu không chính xác.
+  - `409 Conflict`: Không tìm thấy tên người dùng.
+  - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 3. Đổi mật khẩu
+
+- **URL:** `/changePassword`
+- **Phương thức:** `POST`
+- **Mô tả:** Đổi mật khẩu ứng với username gửi về.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "username": "string",
+    "password": "string",
+    "newpassword": "string",
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Đăng nhập thành công.
+  - `401 Unauthorized`: Mật khẩu không chính xác.
+  - `409 Conflict`: Không tìm thấy tên người dùng.
+  - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 4. Lấy Dữ Liệu Nhiệt Độ Từ Adafruit
+
+- **URL:** `/adafruit-thermal-data`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy dữ liệu nhiệt độ từ Adafruit.
+- **Phản hồi:**
+  - `200 OK`: Trả về dữ liệu nhiệt độ.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 5. Lấy Dữ Liệu Đèn và Quạt Từ Adafruit
+
+- **URL:** `/adafruit-lightfan-data`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy dữ liệu về đèn và quạt từ Adafruit.
+- **Phản hồi:**
+  - `200 OK`: Trả về dữ liệu về đèn và quạt.
+  - `500 Internal Server Error`: Lỗi server.
 
 
+## Ví dụ fetch data
 
+Ví dụ lấy data nhiệt độ:
 
+```javascript
+const [adafruitData, setAdafruitData] = useState([]);
 
+const API = "{BaseURL}/adafruit-thermal-data";
 
-
-
-
-
-
-
-# Project Setup
-
-## Backend Setup
-
-1. Navigate to the backend directory:
-    ```sh
-    cd backend
-    ```
-
-2. Install the dependencies:
-    ```sh
-    npm install
-    ```
-
-3. Configure the environment variables:
-    - Create a [.env](http://_vscodecontentref_/0) file in the [backend](http://_vscodecontentref_/1) directory with the following content:
-        ```
-        # Port to run the server on
-        PORT = <yours>
-
-        # Database configuration
-        DATABASE_SERVER = <yours>
-        DATABASE_NAME = <yours>
-        DATABASE_USER = <yours>
-        DATABASE_PASSWORD = <yours>
-
-        # Secret key for encrypting password
-        SECRET_KEY = <yours>
-        ```
-
-4. Start the backend server:
-    ```sh
-    npm start
-    ```
-
-
-
-## Frontend Setup
-
-1. Navigate to the frontend directory:
-    ```sh
-    cd frontend
-    ```
-
-2. Install the dependencies:
-    ```sh
-    npm install
-    ```
-
-3. Configure the environment variables:
-    - Create a [.env](http://_vscodecontentref_/2) file in the [frontend](http://_vscodecontentref_/3) directory with the following content:
-        ```
-        REACT_APP_API_URL=<yours>
-        ```
-
-4. Add fallbacks in `node_modules/react-scripts/config/webpack.config.js` to use the [.env](http://_vscodecontentref_/4) file:
-    ```js
-    {
-      resolve: {
-        // ...existing resolve config...
-        fallback: {
-          "path": require.resolve("path-browserify"),
-          "os": require.resolve("os-browserify/browser"),
-          "crypto": require.resolve("crypto-browserify")
-        },
-        // ...rest of resolve config...
-      }
+async function fetchAdafruitData() {
+  try {
+    const response = await fetch(API);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    ```
+    const data = await response.json();
+    setAdafruitData(data);
+  } catch (error) {
+    console.error('Error fetching Adafruit data:', error);
+  }
+}
 
-5. Start the frontend application:
-    ```sh
-    npm start
-    ```
+useEffect(() => {
+  fetchAdafruitData();
+}, []);
+```
+
+Hiển thị data:
+```jsx
+<div className="adafruit-component-content">
+  {adafruitData ? (
+    <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
+    ) : (
+    <p>Loading Adafruit data...</p>
+  )}
+</div>
+```
+
