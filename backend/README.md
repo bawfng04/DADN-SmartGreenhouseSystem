@@ -2,7 +2,7 @@
 
 ## BaseURLs
 
-http://localhost:8000
+http://localhost:8000/api
 
 ## Endpoints
 
@@ -69,7 +69,7 @@ Ví dụ lấy data nhiệt độ:
 ```javascript
 const [adafruitData, setAdafruitData] = useState([]);
 
-const API = "http://localhost:8000/adafruit-thermal-data";
+const API = "http://localhost:8000/api/adafruit-thermal-data";
 
 async function fetchAdafruitData() {
   try {

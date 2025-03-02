@@ -19,11 +19,11 @@ app.use(express.json());
 app.use(cors());
 
 // use routes
-app.use("/", exampleRoute);
-app.use("/", registerRoute);
-app.use("/", loginRoute);
-app.use("/", changePassword);
-app.use("/", adafruitRoute);
+app.use("/api", exampleRoute);
+app.use("/api", registerRoute);
+app.use("/api", loginRoute);
+app.use("/api", changePassword);
+app.use("/api", adafruitRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Server is running!" });
