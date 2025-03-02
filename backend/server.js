@@ -16,10 +16,7 @@ const app = express();
 
 app.use(express.json());
 
-const corsOptions = {
-  origin: "*",
-};
-app.use(cors(corsOptions));
+app.use(cors());
 
 // use routes
 app.use("/api", exampleRoute);
