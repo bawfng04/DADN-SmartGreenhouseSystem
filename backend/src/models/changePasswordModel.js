@@ -1,4 +1,4 @@
-const { poolPromise, sql } = require("../database/database");
+const { pool } = require("../database/PostgreDatabase");
 const { checkIfUserExists, isCorrectPassword } = require("../utils/accounts");
 
 class ChangePasswordModel {
@@ -9,11 +9,11 @@ class ChangePasswordModel {
       if (!isExistUsername) {
         return { status: 409, message: "Username not found" };
       }
+
       const isCorrect = await isCorrectPassword(username, password);
       if (isCorrect) {
-        const pool = await poolPromise;
-        const query = `UPDATE USERS SET password = '${newpassword}' WHERE username = '${username}'`;
-        const result = await pool.request().query(query);
+        const query = "UPDATE users SET password = $1 WHERE username = $2";
+        await pool.query(query, [newpassword, username]);
         return { status: 200, message: "Password changed successfully" };
       } else {
         return { status: 401, message: "Incorrect password" };

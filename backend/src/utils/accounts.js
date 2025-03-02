@@ -1,14 +1,10 @@
-const { poolPromise } = require("../database/database");
+const { pool } = require("../database/PostgreDatabase");
 
 async function checkIfUserExists(username) {
   try {
-    const pool = await poolPromise;
-    const query = `SELECT * FROM USERS WHERE username = '${username}'`;
-    const result = await pool.request().query(query);
-    if (result.recordset.length > 0) {
-      return true;
-    }
-    return false;
+    const query = "SELECT * FROM users WHERE username = $1";
+    const result = await pool.query(query, [username]);
+    return result.rows.length > 0;
   } catch (error) {
     throw error;
   }
@@ -16,13 +12,9 @@ async function checkIfUserExists(username) {
 
 async function isCorrectPassword(username, password) {
   try {
-    const pool = await poolPromise;
-    const query = `SELECT * FROM USERS WHERE username = '${username}' AND password = '${password}'`;
-    const result = await pool.request().query(query);
-    if (result.recordset.length > 0) {
-      return true;
-    }
-    return false;
+    const query = "SELECT * FROM users WHERE username = $1 AND password = $2";
+    const result = await pool.query(query, [username, password]);
+    return result.rows.length > 0;
   } catch (error) {
     throw error;
   }

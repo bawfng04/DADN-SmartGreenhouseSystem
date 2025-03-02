@@ -1,12 +1,10 @@
-const { pool } = require("mssql");
-const { poolPromise, sql } = require("../database/database");
+const { pool } = require("../database/PostgreDatabase");
 
 class ExampleModel {
   async getExampleTable() {
-    const pool = await poolPromise;
-    const query = `SELECT * FROM TEST`;
-    const result = await pool.request().query(query);
-    return result.recordset;
+    const query = "SELECT * FROM users LIMIT 3";
+    const result = await pool.query(query);
+    return result.rows;
   }
 }
 

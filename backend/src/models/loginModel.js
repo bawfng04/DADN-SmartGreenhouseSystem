@@ -1,4 +1,4 @@
-const { poolPromise, sql } = require("../database/database");
+const { pool } = require("../database/PostgreDatabase");
 const { checkIfUserExists, isCorrectPassword } = require("../utils/accounts");
 
 class LoginModel {
