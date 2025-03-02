@@ -8,4 +8,5 @@ const {
 router.get("/adafruit-thermal-data", getAdafruitThermalData);
 router.get("/adafruit-lightfan-data", getAdafruitLightfanData);
 
+
 module.exports = router;
