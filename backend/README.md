@@ -48,6 +48,13 @@ http://localhost:8000
 - **URL:** `/changePassword`
 - **Phương thức:** `POST`
 - **Mô tả:** Đổi mật khẩu ứng với username được gửi về
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "username": "string",
+    "password": "string",
+    "newpassword": "string",
+  }
 - **Phản hồi:**
   - `200 OK`: Đổi mật khẩu thành công.
   - `401 Unauthorized`: Mật khẩu không chính xác.
