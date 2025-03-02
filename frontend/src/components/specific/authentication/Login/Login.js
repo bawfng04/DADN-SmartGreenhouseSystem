@@ -8,36 +8,36 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLoginClick = async (e) => {
-    console.log("loginAPI: ", loginAPI);
-    console.log("Button clicked, waiting...");
-    e.preventDefault();
-    setIsLoading(true);
+const handleLoginClick = async (e) => {
+  console.log("loginAPI: ", loginAPI);
+  console.log("Button clicked, waiting...");
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const response = await fetch(loginAPI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+  try {
+    const response = await fetch(loginAPI, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        alert(data.message);
-        window.location.href = "/home";
-      } else {
-        alert(data.message || "Login failed");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Login failed. Please check if the backend server is running.");
-    } finally {
-      setIsLoading(false);
+    if (response.ok) {
+      alert(data.message);
+      window.location.href = "/home";
+    } else {
+      alert(data.message || "Login failed");
     }
-  };
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Login failed. Please check if the backend server is running.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => {
     console.log("API:" + loginAPI);
