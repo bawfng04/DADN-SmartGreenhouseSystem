@@ -2,6 +2,8 @@
 
 ## BaseURLs
 
+`http://localhost:8000/api`
+
 `https://dadn-2.onrender.com/api`
 
 ## Endpoints
