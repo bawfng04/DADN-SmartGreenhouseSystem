@@ -2,11 +2,15 @@ const express = require("express");
 const router = express.Router();
 const {
   getAdafruitThermalData,
-  getAdafruitLightfanData,
+  getAdafruitLightData,
+  getAdafruitEarthHumidData,
+  getAdafruitHumidData,
 } = require("../controllers/adafruitController");
 
 router.get("/adafruit-thermal-data", getAdafruitThermalData);
-router.get("/adafruit-lightfan-data", getAdafruitLightfanData);
+router.get("/adafruit-light-data", getAdafruitLightData);
+router.get("/adafruit-earth-humid-data", getAdafruitEarthHumidData);
+router.get("/adafruit-humid-data", getAdafruitHumidData);
 
 
 module.exports = router;
