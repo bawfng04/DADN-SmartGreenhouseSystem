@@ -1,5 +1,7 @@
 const LoginModel = require("../models/loginModel");
 const { encrypt } = require("../utils/encrypt");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const loginUser = async (req, res) => {
   try {
@@ -11,9 +13,14 @@ const loginUser = async (req, res) => {
     }
     const encryptedPassword = encrypt(password);
     const result = await LoginModel.loginUser(username, encryptedPassword);
-    res
-      .status(result.status)
-      .json({ message: result.message, username: result.username || null });
+    if (result.status === 200) {
+      const token = jwt.sign({ username }, JWT_SECRET_KEY, {
+        expiresIn: "24h",
+      });
+      return res
+        .status(result.status)
+        .json({ message: result.message, token: token });
+    }
   } catch (error) {
     console.log("Error loginUser2:", error.message);
     res.status(500).json({ error: error.message });

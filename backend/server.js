@@ -5,12 +5,7 @@ const PORT = process.env.PORT || 8000;
 
 const { pool } = require("./src/database/PostgreDatabase");
 
-// import routes
-const exampleRoute = require("./src/routes/examplesRoute");
-const registerRoute = require("./src/routes/registerRoute");
-const loginRoute = require("./src/routes/loginRoute");
-const changePassword = require("./src/routes/changePasswordRoute");
-const adafruitRoute = require("./src/routes/adafruitRoute");
+const router = require("./src/routes/routes");
 
 // vercel --prod
 
@@ -27,15 +22,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // use routes
-app.use("/api", exampleRoute);
-app.use("/api", registerRoute);
-app.use("/api", loginRoute);
-app.use("/api", changePassword);
-app.use("/api", adafruitRoute);
+app.use("/api", router.router);
 
-app.get("/api", (req, res) => {
-  res.json({ message: "API routes is working!" });
-});
 
 // test PostgreSQL connection
 app.get("/pg-test", async (req, res) => {
