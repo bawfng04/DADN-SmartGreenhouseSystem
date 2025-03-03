@@ -1,6 +1,11 @@
+## Description
+Backend server using Node.js and Express.js, with PostgreSQL as the database.
 
-# Project Setup
-## Backend Setup
+Hosted on Render and Vercel for deployment.
+
+## Project Setup
+
+### Backend Setup
 1. Navigate to the backend directory:
     ```sh
     cd backend
@@ -10,17 +15,34 @@
     npm install
     ```
 3. Configure the environment variables:
-    - Create a [.env](http://_vscodecontentref_/0) file in the [backend](http://_vscodecontentref_/1) directory with the following content:
+    - Create a `.env` file in the `backend` directory with the following content:
         ```
         # Port to run the server on
         PORT = <yours>
-        # Database configuration
+
+        # SSMS Database configuration
         DATABASE_SERVER = <yours>
         DATABASE_NAME = <yours>
         DATABASE_USER = <yours>
         DATABASE_PASSWORD = <yours>
+
+        # POSTGRESQL Database configuration
+        POSTGRES_HOST= <yours>
+        POSTGRES_PORT= <yours>
+        POSTGRES_DB= <yours>
+        POSTGRES_USER= <yours>
+        POSTGRES_PASSWORD= <yours>
+        POSTGRES_EXTERNAL_URL= <yours>
+
         # Secret key for encrypting password
         SECRET_KEY = <yours>
+
+        # Adafruit IO configuration
+        ADAFRUIT_IO_USERNAME = <yours>
+        ADAFRUIT_IO_KEY = <yours>
+
+        # Frontend URL
+        FRONTEND_URL = <yours>
         ```
 4. Start the backend server:
     ```sh
@@ -28,7 +50,7 @@
     ```
 
 
-## Frontend Setup
+### Frontend Setup
 1. Navigate to the frontend directory:
     ```sh
     cd frontend
@@ -38,11 +60,11 @@
     npm install
     ```
 3. Configure the environment variables:
-    - Create a [.env](http://_vscodecontentref_/2) file in the [frontend](http://_vscodecontentref_/3) directory with the following content:
+    - Create a `.env` file in the `frontend` directory with the following content:
         ```
         REACT_APP_API_URL=<yours>
         ```
-4. Add fallbacks in `node_modules/react-scripts/config/webpack.config.js` to use the [.env](http://_vscodecontentref_/4) file:
+4. Add fallbacks in `node_modules/react-scripts/config/webpack.config.js` to use the `.env` file:
     ```js
     {
       resolve: {
