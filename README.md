@@ -101,14 +101,14 @@
   - `200 OK`: Trả về dữ liệu độ ẩm không khí.
   - `500 Internal Server Error`: Lỗi server.
 
-## Ví dụ fetch data
+## Ví dụ fetch data (ReactJS)
 
-Ví dụ lấy data nhiệt độ:
+Fetch data nhiệt độ:
 
 ```javascript
 const [adafruitData, setAdafruitData] = useState([]);
 
-const API = "{BaseURL}/adafruit-thermal-data";
+const API = `${BaseURL}/adafruit-thermal-data`;
 
 async function fetchAdafruitData() {
   try {
