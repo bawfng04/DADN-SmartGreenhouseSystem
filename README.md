@@ -72,15 +72,32 @@
   - `200 OK`: Trả về dữ liệu nhiệt độ.
   - `500 Internal Server Error`: Lỗi server.
 
-### 5. Lấy Dữ Liệu Đèn và Quạt Từ Adafruit
+### 5. Lấy Dữ Liệu Đèn Từ Adafruit
 
-- **URL:** `/adafruit-lightfan-data`
+- **URL:** `/adafruit-light-data`
 - **Phương thức:** `GET`
-- **Mô tả:** Lấy dữ liệu về đèn và quạt từ Adafruit.
+- **Mô tả:** Lấy dữ liệu đèn từ Adafruit.
 - **Phản hồi:**
-  - `200 OK`: Trả về dữ liệu về đèn và quạt.
+  - `200 OK`: Trả về dữ liệu đèn.
   - `500 Internal Server Error`: Lỗi server.
 
+### 6. Lấy Dữ Liệu Độ Ẩm Đất Từ Adafruit
+
+- **URL:** `/adafruit-earth-humid-data`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy dữ liệu độ ẩm đất từ Adafruit.
+- **Phản hồi:**
+  - `200 OK`: Trả về dữ liệu độ ẩm đất.
+  - `500 Internal Server Error`: Lỗi server.
+
+### 7. Lấy Dữ Liệu Độ Ẩm Không Khí Từ Adafruit
+
+- **URL:** `/adafruit-humid-data`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy dữ liệu độ ẩm không khí từ Adafruit.
+- **Phản hồi:**
+  - `200 OK`: Trả về dữ liệu độ ẩm không khí.
+  - `500 Internal Server Error`: Lỗi server.
 
 ## Ví dụ fetch data
 
