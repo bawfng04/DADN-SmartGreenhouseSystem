@@ -37,6 +37,9 @@ Hosted on Render and Vercel for deployment.
         # Secret key for encrypting password
         SECRET_KEY = <yours>
 
+        # JWT Authentication
+        JWT_SECRET_KEY = <your_secure_secret_key>
+
         # Adafruit IO configuration
         ADAFRUIT_IO_USERNAME = <yours>
         ADAFRUIT_IO_KEY = <yours>

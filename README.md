@@ -25,6 +25,7 @@
   - `409 Conflict`: Tên người dùng đã tồn tại.
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
   - `500 Internal Server Error`: Lỗi server.
+- Khi đăng nhập thành công, sẽ có một token trả về. Mọi người lưu token này vào để fetch API.
 
 ### 2. Đăng Nhập Người Dùng
 
@@ -58,6 +59,8 @@
     "newpassword": "string",
   }
   ```
+***Yêu cầu token ở header của request.***
+
 - **Phản hồi:**
   - `200 OK`: Đăng nhập thành công.
   - `401 Unauthorized`: Mật khẩu không chính xác.
@@ -73,6 +76,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu nhiệt độ.
   - `500 Internal Server Error`: Lỗi server.
+***Yêu cầu token ở header của request.***
 
 ### 5. Lấy Dữ Liệu Đèn Từ Adafruit
 
@@ -82,6 +86,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu đèn.
   - `500 Internal Server Error`: Lỗi server.
+***Yêu cầu token ở header của request.***
 
 ### 6. Lấy Dữ Liệu Độ Ẩm Đất Từ Adafruit
 
@@ -91,6 +96,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu độ ẩm đất.
   - `500 Internal Server Error`: Lỗi server.
+***Yêu cầu token ở header của request.***
 
 ### 7. Lấy Dữ Liệu Độ Ẩm Không Khí Từ Adafruit
 
@@ -100,6 +106,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu độ ẩm không khí.
   - `500 Internal Server Error`: Lỗi server.
+***Yêu cầu token ở header của request.***
 
 ## Ví dụ fetch data (ReactJS)
 
@@ -112,7 +119,11 @@ const API = `${BaseURL}/adafruit-thermal-data`;
 
 async function fetchAdafruitData() {
   try {
-    const response = await fetch(API);
+    const response = await fetch(API,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

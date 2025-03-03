@@ -26,13 +26,13 @@ router.post("/changePassword", authenticateToken, changePassword);
 router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit
-router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
-router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
+router.get("/adafruit-thermal-data", authenticateToken, getAdafruitThermalData);
+router.get("/adafruit-light-data", authenticateToken, getAdafruitLightData);
 router.get(
-  "/adafruit/earth-humid",
+  "/adafruit-earth-humid-data",
   authenticateToken,
   getAdafruitEarthHumidData
 );
-router.get("/adafruit/humid", authenticateToken, getAdafruitHumidData);
+router.get("/adafruit-humid-data", authenticateToken, getAdafruitHumidData);
 
 module.exports = { router };
