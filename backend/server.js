@@ -33,6 +33,10 @@ app.use("/api", loginRoute);
 app.use("/api", changePassword);
 app.use("/api", adafruitRoute);
 
+app.get("/api", (req, res) => {
+  res.json({ message: "API routes is working!" });
+});
+
 // test PostgreSQL connection
 app.get("/pg-test", async (req, res) => {
   try {
