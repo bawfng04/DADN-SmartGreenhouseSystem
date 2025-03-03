@@ -59,6 +59,7 @@
     "newpassword": "string",
   }
   ```
+
 ***Yêu cầu token ở header của request.***
 
 - **Phản hồi:**
@@ -76,6 +77,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu nhiệt độ.
   - `500 Internal Server Error`: Lỗi server.
+
 ***Yêu cầu token ở header của request.***
 
 ### 5. Lấy Dữ Liệu Đèn Từ Adafruit
@@ -86,6 +88,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu đèn.
   - `500 Internal Server Error`: Lỗi server.
+
 ***Yêu cầu token ở header của request.***
 
 ### 6. Lấy Dữ Liệu Độ Ẩm Đất Từ Adafruit
@@ -96,6 +99,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu độ ẩm đất.
   - `500 Internal Server Error`: Lỗi server.
+
 ***Yêu cầu token ở header của request.***
 
 ### 7. Lấy Dữ Liệu Độ Ẩm Không Khí Từ Adafruit
@@ -106,6 +110,7 @@
 - **Phản hồi:**
   - `200 OK`: Trả về dữ liệu độ ẩm không khí.
   - `500 Internal Server Error`: Lỗi server.
+
 ***Yêu cầu token ở header của request.***
 
 ## Ví dụ fetch data (ReactJS)
