@@ -34,7 +34,7 @@ class SensorModel {
     }
   }
 
-  async getFeedHistory(feedName, startTime, endTime, page, pageSize = 10) {
+  async getFeedHistory(feedName, startTime, endTime, page = 1, pageSize = 10) {
     const offset = (page - 1) * pageSize;
     const query = `
      SELECT * FROM sensors

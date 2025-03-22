@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 8000;
 const { pool } = require("./src/database/PostgreDatabase");
 
 const router = require("./src/routes/routes");
+const { startAutoSync } = require("./src/services/sensorService");
 
 // vercel --prod
 
@@ -23,7 +24,6 @@ app.use(cors(corsOptions));
 
 // use routes
 app.use("/api", router.router);
-
 
 // test PostgreSQL connection
 app.get("/pg-test", async (req, res) => {
@@ -44,5 +44,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
+  startAutoSync();
   console.log(`Server running on port ${PORT}`);
 });
