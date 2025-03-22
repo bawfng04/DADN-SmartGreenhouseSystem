@@ -15,6 +15,10 @@ const {
   getThreshold,
   updateThreshold,
 } = require("../controllers/thresholdController");
+const {
+  getDeviceHistory,
+  createDeviceData,
+} = require("../controllers/deviceController");
 
 //login/register/changepassword
 router.get("/", (req, res) => {
@@ -31,6 +35,12 @@ router.get("/example", authenticateToken, getExampleTable);
 //adafruit
 router.get("/adafruit/sync-feed/:feedKey", authenticateToken, syncFeed);
 router.get("/adafruit/:feedKey", authenticateToken, getFeedHistory);
+
+//threshold
 router.get("/threshold/:feedKey", authenticateToken, getThreshold);
 router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
+//device
+router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
+router.post("/device/:feedKey", authenticateToken, createDeviceData);
+
 module.exports = { router };

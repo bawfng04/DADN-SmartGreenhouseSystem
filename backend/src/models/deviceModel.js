@@ -1,7 +1,7 @@
 const { pool } = require("../database/PostgreDatabase");
 
-class devicerModel {
-  async savedevicerData(feedName, value, timestamp = new Date()) {
+class DeviceModel {
+  async saveDeviceData(feedName, value, timestamp = new Date()) {
     const query = `
       INSERT INTO devices (feed_name, value, timestamp)
       VALUES ($1, $2, $3)
@@ -17,24 +17,13 @@ class devicerModel {
     }
   }
 
-  async getLatestFeed(feedName) {
-    const query = `
-      SELECT * FROM devices
-      WHERE feed_name = $1
-      ORDER BY timestamp DESC
-      LIMIT 1;
-    `;
-
-    try {
-      const result = await pool.query(query, [feedName]);
-      return result.rows[0];
-    } catch (error) {
-      console.error("Error getting latest feed:", error);
-      throw error;
-    }
-  }
-
-  async getFeedHistory(feedName, startTime, endTime, page, pageSize = 10) {
+  async getDeviceDataHistory(
+    feedName,
+    startTime,
+    endTime,
+    page,
+    pageSize = 10
+  ) {
     const offset = (page - 1) * pageSize;
     const query = `
      SELECT * FROM devices
@@ -60,4 +49,4 @@ class devicerModel {
   }
 }
 
-module.exports = new SensorModel();
+module.exports = new DeviceModel();

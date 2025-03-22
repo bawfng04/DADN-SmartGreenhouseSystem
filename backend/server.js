@@ -7,6 +7,7 @@ const { pool } = require("./src/database/PostgreDatabase");
 
 const router = require("./src/routes/routes");
 const { startAutoSync } = require("./src/services/sensorService");
+const { startDeviceAutoSync } = require("./src/services/deviceService");
 
 // vercel --prod
 
@@ -45,5 +46,6 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   startAutoSync();
+  startDeviceAutoSync();
   console.log(`Server running on port ${PORT}`);
 });
