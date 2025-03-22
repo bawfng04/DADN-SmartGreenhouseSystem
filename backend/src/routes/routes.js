@@ -7,11 +7,10 @@ const { loginUser } = require("../controllers/loginController");
 const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
 const {
-  getAdafruitThermalData,
-  getAdafruitLightData,
-  getAdafruitEarthHumidData,
-  getAdafruitHumidData,
-} = require("../controllers/adafruitController");
+  syncFeed,
+  getFeedHistory,
+  getLatestFeed,
+} = require("../controllers/sensorController");
 
 //login/register/changepassword
 router.get("/", (req, res) => {
@@ -26,13 +25,7 @@ router.post("/changePassword", authenticateToken, changePassword);
 router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit
-router.get("/adafruit-thermal-data", authenticateToken, getAdafruitThermalData);
-router.get("/adafruit-light-data", authenticateToken, getAdafruitLightData);
-router.get(
-  "/adafruit-earth-humid-data",
-  authenticateToken,
-  getAdafruitEarthHumidData
-);
-router.get("/adafruit-humid-data", authenticateToken, getAdafruitHumidData);
+router.get("/adafruit/sync-feed/:feedKey", authenticateToken, syncFeed);
+router.get("/adafruit/:feedKey", authenticateToken, getFeedHistory);
 
 module.exports = { router };

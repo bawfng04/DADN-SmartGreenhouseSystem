@@ -10,9 +10,9 @@ const getAdafruitThermalData = async (req, res) => {
         },
       }
     );
-    res.json(response.data);
+    return response.data;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    throw new Error(error.message);
   }
 };
 
@@ -26,25 +26,9 @@ const getAdafruitLightData = async (req, res) => {
         },
       }
     );
-    res.json(response.data);
+    return response.data;
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-const getAdafruitEarthHumidData = async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://io.adafruit.com/api/v2/justkh29/feeds/earth-humid/data",
-      {
-        headers: {
-          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,
-        },
-      }
-    );
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    throw new Error(error.message);
   }
 };
 
@@ -58,9 +42,24 @@ const getAdafruitHumidData = async (req, res) => {
         },
       }
     );
-    res.json(response.data);
+    return response.data;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    throw new Error(error.message);
+  }
+};
+const getAdafruitEarthHumidData = async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://io.adafruit.com/api/v2/justkh29/feeds/earth-humid/data",
+      {
+        headers: {
+          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
   }
 };
 
