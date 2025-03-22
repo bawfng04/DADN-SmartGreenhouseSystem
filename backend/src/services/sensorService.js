@@ -69,7 +69,7 @@ class SensorService {
 
 const sensorService = new SensorService();
 
-export const FEEDS = ["humid", "light", "earth-humid", "thermal"];
+const FEEDS = ["humid", "light", "earth-humid", "thermal"];
 function startAutoSync() {
   setInterval(async () => {
     console.log("Auto-sync started...");

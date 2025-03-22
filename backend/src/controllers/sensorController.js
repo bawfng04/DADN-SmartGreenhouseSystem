@@ -1,9 +1,8 @@
-const sensorService = require("../services/sensorService");
+const { sensorService } = require("../services/sensorService");
 
 class FeedController {
   async syncFeed(req, res) {
     const feedKey = req.params.feedKey;
-    console.log(feedKey);
 
     try {
       const data = await sensorService.syncFeed(feedKey);
@@ -33,8 +32,6 @@ class FeedController {
     const endDate = req.query.endTime;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.pageSize) || 10;
-    console.log(startDate, "", endDate);
-    //
     try {
       const data = await sensorService.getFeedHistory(
         feedKey,
