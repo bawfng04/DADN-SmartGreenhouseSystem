@@ -7,7 +7,7 @@ const getThreshold = async (req, res) => {
       return res.status(400).json({ message: "Where is feedKey honey" });
     } else {
       const result = await ThresholdService.getThreshold(feedKey);
-      res.status(result.status).json({ message: result.message });
+      res.status(200).json(result);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -21,12 +21,8 @@ const updateThreshold = async (req, res) => {
     if (!feedKey) {
       return res.status(400).json({ message: "Where is feedKey honey" });
     } else {
-      const result = await ThresholdService.updateThreshold(
-        feedKey,
-        upper,
-        lower
-      );
-      res.status(result.status).json({ message: result.message });
+      const result = await ThresholdService.setThreshold(feedKey, upper, lower);
+      res.status(200).json(result);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

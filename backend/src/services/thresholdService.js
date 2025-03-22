@@ -4,29 +4,30 @@ class ThresholdService {
   async getThreshold(feedKey) {
     try {
       if (
-        feedKey !== "thermal" ||
-        feedKey !== "humid" ||
-        feedKey !== "earth-humi" ||
-        feedKey !== "light"
+        feedKey != "thermal" &&
+        feedKey != "humid" &&
+        feedKey != "earth-humid" &&
+        feedKey != "light"
       ) {
         throw new Error(
-          "Invalid feedKey. Must be 'thermal', 'humid', 'earth-humi', or 'light'"
+          "Invalid feedKey. Must be 'thermal', 'humid', 'earth-humid', or 'light'"
         );
       }
-
-      return await thresholdRepository.getThreshold(feedKey);
+      const res = await thresholdRepository.getThreshold(feedKey);
+      // console.log(res);
+      return res;
     } catch (error) {
-      console.error(`Error syncing feed ${feedKey}:`, error);
+      console.error(`Error get threshold ${feedKey}:`, error);
       throw error;
     }
   }
   async setThreshold(feedKey, upper, lower) {
     try {
       if (
-        feedKey !== "thermal" ||
-        feedKey !== "humid" ||
-        feedKey !== "earth-humi" ||
-        feedKey !== "light"
+        feedKey != "thermal" &&
+        feedKey != "humid" &&
+        feedKey != "earth-humid" &&
+        feedKey != "light"
       ) {
         throw new Error(
           "Invalid feedKey. Must be 'thermal', 'humid', 'earth-humi', or 'light'"
@@ -35,7 +36,7 @@ class ThresholdService {
 
       return await thresholdRepository.updateThreshold(feedKey, upper, lower);
     } catch (error) {
-      console.error(`Error syncing feed ${feedKey}:`, error);
+      console.error(`Error updating threshold ${feedKey}:`, error);
       throw error;
     }
   }

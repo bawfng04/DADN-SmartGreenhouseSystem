@@ -2,6 +2,7 @@ const { pool } = require("../database/PostgreDatabase");
 
 class ThresholdModel {
   async getThresholdByFeedName(feedName) {
+    console.log(feedName, "hehe");
     const query = `
      SELECT * FROM threshold
      WHERE feed_name = $1
@@ -9,7 +10,8 @@ class ThresholdModel {
 
     try {
       const result = await pool.query(query, [feedName]);
-      return result.rows[0]; // Return the latest threshold for the feed
+      // console.log(result.rows[0]);
+      return result.rows[0];
     } catch (error) {
       console.error("Error fetching threshold by feed name:", error);
       throw error;
@@ -25,7 +27,7 @@ class ThresholdModel {
    `;
 
     try {
-      const result = await pool.query(query, [upper, lower, feedName]);
+      const result = await pool.query(query, [feedName, upper, lower]);
       if (result.rowCount === 0) {
         throw new Error(`No threshold found for feed name: ${feedName}`);
       }
