@@ -10,9 +10,10 @@ const getAdafruitThermalData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching thermal data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -26,9 +27,10 @@ const getAdafruitLightData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching light data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -42,11 +44,13 @@ const getAdafruitHumidData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching humid data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
+
 const getAdafruitEarthHumidData = async (req, res) => {
   try {
     const response = await axios.get(
@@ -57,9 +61,10 @@ const getAdafruitEarthHumidData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching earth humid data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
