@@ -15,15 +15,20 @@ const {
   getThreshold,
   updateThreshold,
 } = require("../controllers/thresholdController");
+
 const {
   getDeviceHistory,
   createDeviceData,
 } = require("../controllers/deviceController");
+
 const {
   getAdafruitThermalData,
   getAdafruitLightData,
   getAdafruitEarthHumidData,
   getAdafruitHumidData,
+  getAdafruitFanData,
+  getAdafruitWaterPumpData,
+  getAdafruitLightControlData,
 } = require("../controllers/adafruitController");
 
 //login/register/changepassword
@@ -58,5 +63,12 @@ router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
 //device
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
+router.get("/device/fan", authenticateToken, getAdafruitFanData);
 
+router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
+router.get(
+  "/device/light-control",
+  authenticateToken,
+  getAdafruitLightControlData
+);
 module.exports = { router };

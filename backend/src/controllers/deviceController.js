@@ -20,32 +20,28 @@ class DeviceController {
   }
   async createDeviceData(req, res) {
     const feedKey = req.params.feedKey;
-    let createDeviceDataFn;
+    const { value } = req.body; // Phải lấy value từ req.body
 
     try {
+      let deviceData;
       switch (feedKey) {
         case "fan":
-          createDeviceDataFn = createAdafruitFanData;
+          deviceData = await createAdafruitFanData(value);
           break;
         case "light-control":
-          createDeviceDataFn = createAdafruitLightControlData;
+          deviceData = await createAdafruitLightControlData(value);
           break;
         case "water-pump":
-          createDeviceDataFn = createAdafruitWaterPumpData;
+          deviceData = await createAdafruitWaterPumpData(value);
           break;
         default:
-          throw new Error("Invalid feed key");
-      }
-      const deviceData = await createDeviceDataFn(req.value);
-
-      if (!Array.isArray(deviceData)) {
-        throw new Error("Expected device data to be an array");
+          return res.status(400).json({ error: "Invalid feed key" });
       }
 
-      return deviceData;
+      res.status(200).json(deviceData);
     } catch (error) {
       console.error(`Error create device ${feedKey}:`, error);
-      throw error;
+      res.status(500).json({ error: error.message });
     }
   }
 
