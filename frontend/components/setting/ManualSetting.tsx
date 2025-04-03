@@ -8,8 +8,11 @@ import {
   Keyboard,
   StyleSheet,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
+import { apiCall } from "@/utils/apiCall";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 
 interface Props {
   time: string;
@@ -18,7 +21,7 @@ interface Props {
   setTime: (value: string) => void;
 }
 
-const RadioButtonSectionWithCombobox: React.FC<Props> = ({
+const RadioButtonSection: React.FC<Props> = ({
   time,
   option,
   setOption,
@@ -56,6 +59,7 @@ const RadioButtonSectionWithCombobox: React.FC<Props> = ({
                   backgroundColor: "#FFE9CC",
                   borderRadius: 6,
                   marginHorizontal: 8,
+                  height: 40,
                 }}
               />
               <Text style={{ fontSize: 14 }}>Phút</Text>
@@ -67,10 +71,61 @@ const RadioButtonSectionWithCombobox: React.FC<Props> = ({
   );
 };
 
-const ManualSetting: React.FC = () => {
+const ManualSetting: React.FC<{
+  device_name: string;
+  notifySave: boolean;
+  setNotifySave: (notifySave: boolean) => void;
+  currentSettings: string;
+}> = ({ device_name, notifySave, setNotifySave, currentSettings }) => {
+  const router = useRouter();
+
+  const { data: settings } = useQuery<any>({
+    queryKey: ["settings", device_name],
+    queryFn: () => apiCall({ endpoint: `/settings/${device_name}` }),
+    enabled: currentSettings === "manual",
+  });
+
+  console.log(settings);
+
   const [states, setState] = useState({ status: true, intensity: "0" });
   const [option, setOption] = useState("never");
   const [time, setTime] = useState("0");
+
+  useEffect(() => {
+    if (settings && currentSettings === "manual") {
+      setState({ status: settings.status, intensity: settings.intensity });
+      setOption(settings.option);
+      setTime(settings.time);
+    }
+  }, [settings, currentSettings]);
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      return apiCall({
+        endpoint: "/settings/manual",
+        method: "POST",
+        body: {
+          status: states.status,
+          intensity: states.intensity,
+          option,
+          time,
+        },
+      });
+    },
+    onSuccess: () => {
+      setNotifySave(false);
+      router.push("/setting");
+    },
+    onError: (error) => {
+      console.error("Error saving settings:", error);
+    },
+  });
+
+  useEffect(() => {
+    if (notifySave) {
+      saveSettingsMutation.mutate();
+    }
+  }, [notifySave]);
 
   const toggleSwitch = () => {
     setState((prev) => ({
@@ -115,13 +170,14 @@ const ManualSetting: React.FC = () => {
               backgroundColor: "#FFE9CC",
               borderRadius: 6,
               marginHorizontal: 8,
+              height: 40,
             }}
           />
           <Text style={{ fontSize: 14 }}>% </Text>
         </View>
         <View style={[{ top: -20, gap: 12 }]}>
           <Text style={{ fontSize: 14, fontWeight: "bold" }}>Tắt sau:</Text>
-          <RadioButtonSectionWithCombobox
+          <RadioButtonSection
             time={time}
             option={option}
             setOption={setOption}

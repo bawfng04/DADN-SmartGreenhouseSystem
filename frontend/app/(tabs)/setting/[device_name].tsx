@@ -61,17 +61,26 @@ const RadioButtonSection: React.FC<{
 
 export default function ConfigScreen() {
   const { device_name } = useLocalSearchParams();
+  const deviceName = device_name as string;
   const initialValue = "manual";
   const router = useRouter();
   const [option, setOption] = useState(initialValue);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const [notifySave, setNotifySave] = useState(false);
 
   let initialSettings;
 
   switch (option) {
     case "manual":
-      initialSettings = <ManualSetting />;
+      initialSettings = (
+        <ManualSetting
+          currentSettings={initialValue}
+          device_name={deviceName}
+          notifySave={notifySave}
+          setNotifySave={setNotifySave}
+        />
+      );
       break;
     case "schedule":
       initialSettings = <ScheduledSetting />;
@@ -80,7 +89,14 @@ export default function ConfigScreen() {
       initialSettings = <AutomaticSetting />;
       break;
     default:
-      initialSettings = <ManualSetting />;
+      initialSettings = (
+        <ManualSetting
+          currentSettings={initialValue}
+          device_name={deviceName}
+          notifySave={notifySave}
+          setNotifySave={setNotifySave}
+        />
+      );
   }
 
   useEffect(() => {
@@ -92,7 +108,7 @@ export default function ConfigScreen() {
       style={{
         ...styles.container,
         paddingTop: insets.top + 20,
-        paddingBottom: insets.bottom,
+        paddingBottom: insets.bottom + 20,
       }}
     >
       <View style={styles.header}>
@@ -113,10 +129,9 @@ export default function ConfigScreen() {
 
       {initialSettings}
 
-      {/* Nút */}
       <View style={styles.buttons}>
-        <TouchableOpacity>
-          <Text style={{ color: "#FF7F00" }}>Huỷ</Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={{ color: "#FF7F00", fontWeight: "bold" }}>Huỷ</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.saveButton}>
           <Text style={{ color: "#fff", fontWeight: "bold" }}>Lưu</Text>
@@ -160,8 +175,9 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
+    justifyContent: "flex-end",
+    gap: 20,
+    alignItems: "center",
     marginTop: "auto",
   },
   saveButton: {

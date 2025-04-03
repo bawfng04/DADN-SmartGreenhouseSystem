@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SettingsIcon from "@/assets/icons/setting-fill-22.svg";
 import {
   View,
@@ -11,62 +11,82 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
 
 interface DeviceType {
   id: number;
   name: string;
   mode: string;
-  icon: any;
+  status: boolean;
+  intensity: number;
 }
 
-const devices = [
-  {
-    id: 1,
-    name: "Đèn LED",
-    mode: "Thủ công",
-    icon: require("@/assets/images/led.png"),
-  },
-  {
-    id: 2,
-    name: "Quạt",
-    mode: "Tự động",
-    icon: require("@/assets/images/fan.png"),
-  },
-  {
-    id: 3,
-    name: "Bơm nước",
-    mode: "Hẹn giờ",
-    icon: require("@/assets/images/pump.png"),
-  },
-];
+const devicesImage = {
+  led: require("@/assets/images/led.png"),
+  fan: require("@/assets/images/fan.png"),
+  pump: require("@/assets/images/pump.png"),
+};
 
-const CardDevice: React.FC<DeviceType> = ({ id, icon, name, mode }) => {
+const deviceName = {
+  led: "Đèn Led",
+  fan: "Quạt",
+  pump: "Bơm Nước",
+};
+
+const CardDevice: React.FC<DeviceType> = ({
+  id,
+  name,
+  mode,
+  status,
+  intensity,
+}) => {
   const router = useRouter();
-  const [states, setState] = useState({ status: true, intensity: 0 });
+  const [updateStatus, setUpdateStatus] = useState(status);
 
   const toggleSwitch = () => {
-    setState((prev) => ({
-      ...prev,
-      status: !prev.status,
-    }));
+    saveSettingsMutation.mutate();
   };
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      return apiCall({
+        endpoint: `/settings/${name}/status`,
+        method: "PUT",
+        body: {
+          status,
+        },
+      });
+    },
+    onSuccess: () => {
+      setUpdateStatus((prev) => !prev);
+    },
+    onError: (error) => {
+      console.error("Error saving settings:", error);
+    },
+  });
 
   return (
     <View style={styles.card}>
       <View style={styles.LeftSection}>
-        <Image source={icon} style={styles.icon} />
+        <Image
+          source={devicesImage[name as keyof typeof devicesImage]}
+          style={styles.icon}
+        />
         <View style={styles.info}>
-          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.name}>
+            {deviceName[name as keyof typeof deviceName]}
+          </Text>
           <View style={styles.ButtonRow}>
             <Text style={styles.label}>Trạng thái:</Text>
             <Switch
-              value={states.status}
-              onValueChange={() => toggleSwitch()}
+              value={updateStatus}
+              onValueChange={toggleSwitch}
               trackColor={{ false: "#ccc", true: "#ffa500" }}
               thumbColor="#fff"
             />
           </View>
-          <Text style={styles.label}>Cường độ: {states.intensity}%</Text>
+          <Text style={styles.label}>Cường độ: {intensity}%</Text>
         </View>
       </View>
       <View style={styles.ControlSection}>
@@ -89,6 +109,18 @@ const CardDevice: React.FC<DeviceType> = ({ id, icon, name, mode }) => {
 
 export default function SettingTab() {
   const insets = useSafeAreaInsets();
+  const [deviceList, setDeviceList] = useState([]);
+
+  const { data: settings, isSuccess } = useQuery<any>({
+    queryKey: ["settings"],
+    queryFn: () => apiCall({ endpoint: `/settings` }),
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setDeviceList(settings);
+    }
+  }, [isSuccess]);
 
   return (
     <SafeAreaView
@@ -98,7 +130,7 @@ export default function SettingTab() {
         paddingBottom: insets.bottom,
       }}
     >
-      {devices.map((device, index) => (
+      {deviceList.map((device: DeviceType, index: number) => (
         <CardDevice key={index} {...device} />
       ))}
     </SafeAreaView>

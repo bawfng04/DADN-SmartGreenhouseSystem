@@ -2,13 +2,11 @@ import React from "react";
 import {
   View,
   Text,
-  Switch,
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
   StyleSheet,
   Platform,
-  Button,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
@@ -132,6 +130,7 @@ const ScheduledSetting: React.FC = () => {
                 backgroundColor: "#FFE9CC",
                 borderRadius: 6,
                 marginHorizontal: 8,
+                height: 40,
               }}
             />
             <Text style={{ fontSize: 14 }}>% </Text>
@@ -186,6 +185,7 @@ const ScheduledSetting: React.FC = () => {
                 backgroundColor: "#FFE9CC",
                 borderRadius: 6,
                 marginHorizontal: 8,
+                height: 40,
               }}
             />
             <Text style={{ fontSize: 14 }}>Phút</Text>
