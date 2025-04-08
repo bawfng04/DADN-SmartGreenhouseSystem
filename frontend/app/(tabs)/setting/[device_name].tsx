@@ -16,6 +16,12 @@ import ManualSetting from "@/components/setting/ManualSetting";
 import ScheduledSetting from "@/components/setting/ScheduledSetting";
 import AutomaticSetting from "@/components/setting/AutomaticSetting";
 
+const deviceNameConst = {
+  led: "Đèn Led",
+  fan: "Quạt",
+  pump: "Bơm Nước",
+};
+
 const RadioButtonSection: React.FC<{
   initialValue: string;
   option: string;
@@ -83,10 +89,24 @@ export default function ConfigScreen() {
       );
       break;
     case "schedule":
-      initialSettings = <ScheduledSetting />;
+      initialSettings = (
+        <ScheduledSetting
+          currentSettings={initialValue}
+          device_name={deviceName}
+          notifySave={notifySave}
+          setNotifySave={setNotifySave}
+        />
+      );
       break;
     case "automatic":
-      initialSettings = <AutomaticSetting />;
+      initialSettings = (
+        <AutomaticSetting
+          currentSettings={initialValue}
+          device_name={deviceName}
+          notifySave={notifySave}
+          setNotifySave={setNotifySave}
+        />
+      );
       break;
     default:
       initialSettings = (
@@ -115,7 +135,11 @@ export default function ConfigScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
-        <Text style={styles.title}>Cài đặt {device_name}</Text>
+        <Text style={styles.title}>
+          {`Cài đặt ${
+            deviceNameConst[device_name as keyof typeof deviceNameConst]
+          }`}
+        </Text>
       </View>
 
       <View style={styles.section}>
@@ -133,7 +157,10 @@ export default function ConfigScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={{ color: "#FF7F00", fontWeight: "bold" }}>Huỷ</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => setNotifySave(true)}
+        >
           <Text style={{ color: "#fff", fontWeight: "bold" }}>Lưu</Text>
         </TouchableOpacity>
       </View>

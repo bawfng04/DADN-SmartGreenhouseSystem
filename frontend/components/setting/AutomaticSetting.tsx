@@ -9,8 +9,11 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
+import { useMutation } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
+import { router } from "expo-router";
 
 interface Props {
   option: string;
@@ -151,9 +154,42 @@ const ParameterSetting: React.FC<ParameterSettingProps> = ({
   );
 };
 
-const AutomaticSetting: React.FC = () => {
+const AutomaticSetting: React.FC<{
+  device_name: string;
+  notifySave: boolean;
+  setNotifySave: (notifySave: boolean) => void;
+  currentSettings: string;
+}> = ({ device_name, notifySave, setNotifySave, currentSettings }) => {
   const [states, setState] = useState({ status: true, intensity: "0" });
   const [option, setOption] = useState("all");
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      return apiCall({
+        endpoint: `/settings/${device_name}`,
+        method: "PUT",
+        body: {},
+      });
+    },
+    onSuccess: () => {
+      setNotifySave(false);
+      console.log("🔍 saveSettingsMutation.mutate");
+      router.push("/setting");
+    },
+    onError: (error) => {
+      //------------------------TEMP---------------------------------
+      // setNotifySave(false);
+      // router.push("/setting");
+      //-------------------------------------------------------------
+      console.error("Error saving settings:", error);
+    },
+  });
+
+  useEffect(() => {
+    if (notifySave) {
+      saveSettingsMutation.mutate();
+    }
+  }, [notifySave]);
 
   const initialSensorState: SensorState = {
     status: false,

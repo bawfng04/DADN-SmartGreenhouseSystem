@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
+import settingsMockData from "@/data/settings.mock.json";
 
 interface DeviceType {
   id: number;
@@ -45,6 +46,7 @@ const CardDevice: React.FC<DeviceType> = ({
   const [updateStatus, setUpdateStatus] = useState(status);
 
   const toggleSwitch = () => {
+    setUpdateStatus((prev) => !prev);
     saveSettingsMutation.mutate();
   };
 
@@ -54,14 +56,12 @@ const CardDevice: React.FC<DeviceType> = ({
         endpoint: `/settings/${name}/status`,
         method: "PUT",
         body: {
-          status,
+          status: !updateStatus,
         },
       });
     },
-    onSuccess: () => {
-      setUpdateStatus((prev) => !prev);
-    },
     onError: (error) => {
+      setUpdateStatus((prev) => !prev);
       console.error("Error saving settings:", error);
     },
   });
@@ -109,9 +109,13 @@ const CardDevice: React.FC<DeviceType> = ({
 
 export default function SettingTab() {
   const insets = useSafeAreaInsets();
-  const [deviceList, setDeviceList] = useState([]);
+  const [deviceList, setDeviceList] = useState<DeviceType[]>(settingsMockData);
 
-  const { data: settings, isSuccess } = useQuery<any>({
+  const {
+    data: settings,
+    isSuccess,
+    isError,
+  } = useQuery<any>({
     queryKey: ["settings"],
     queryFn: () => apiCall({ endpoint: `/settings` }),
   });

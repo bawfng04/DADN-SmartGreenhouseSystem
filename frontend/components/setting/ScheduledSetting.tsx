@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,9 @@ import { useState } from "react";
 import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Calendar } from "react-native-calendars";
+import { router } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
 
 interface Props {
   selectedDates: { [key: string]: any };
@@ -70,7 +73,12 @@ const RadioButtonSectionWithCombobox: React.FC<Props> = ({
   );
 };
 
-const ScheduledSetting: React.FC = () => {
+const ScheduledSetting: React.FC<{
+  device_name: string;
+  notifySave: boolean;
+  setNotifySave: (notifySave: boolean) => void;
+  currentSettings: string;
+}> = ({ device_name, notifySave, setNotifySave, currentSettings }) => {
   const [intensity, setIntensity] = useState("100");
   const [option, setOption] = useState("today");
   const [OffTime, setOffTime] = useState("0");
@@ -79,6 +87,35 @@ const ScheduledSetting: React.FC = () => {
   const [selectedDates, setSelectedDates] = useState<{ [key: string]: any }>(
     {}
   );
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      return apiCall({
+        endpoint: `/settings/${device_name}`,
+        method: "PUT",
+        body: {},
+      });
+    },
+    onSuccess: () => {
+      setNotifySave(false);
+      console.log("🔍 saveSettingsMutation.mutate");
+      router.push("/setting");
+    },
+    onError: (error) => {
+      //------------------------TEMP---------------------------------
+      // setNotifySave(false);
+      // router.push("/setting");
+      //-------------------------------------------------------------
+      console.error("Error saving settings:", error);
+    },
+  });
+
+  useEffect(() => {
+    if (notifySave) {
+      saveSettingsMutation.mutate();
+    }
+  }, [notifySave]);
+
   const onChange = (event: any, selectedDate?: Date) => {
     setShow(Platform.OS === "ios");
     if (selectedDate) {

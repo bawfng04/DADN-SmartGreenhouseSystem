@@ -13,6 +13,7 @@ import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
 import { apiCall } from "@/utils/apiCall";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import settingsDeviceNameMockData from "@/data/settings.device_name.json";
 
 interface Props {
   time: string;
@@ -87,9 +88,12 @@ const ManualSetting: React.FC<{
 
   console.log(settings);
 
-  const [states, setState] = useState({ status: true, intensity: "0" });
-  const [option, setOption] = useState("never");
-  const [time, setTime] = useState("0");
+  const [states, setState] = useState({
+    status: settingsDeviceNameMockData.status,
+    intensity: settingsDeviceNameMockData.intensity,
+  });
+  const [option, setOption] = useState(settingsDeviceNameMockData.option);
+  const [time, setTime] = useState(settingsDeviceNameMockData.time);
 
   useEffect(() => {
     if (settings && currentSettings === "manual") {
@@ -102,8 +106,8 @@ const ManualSetting: React.FC<{
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
       return apiCall({
-        endpoint: "/settings/manual",
-        method: "POST",
+        endpoint: `/settings/${device_name}`,
+        method: "PUT",
         body: {
           status: states.status,
           intensity: states.intensity,
@@ -117,6 +121,10 @@ const ManualSetting: React.FC<{
       router.push("/setting");
     },
     onError: (error) => {
+      //------------------------TEMP---------------------------------
+      // setNotifySave(false);
+      // router.push("/setting");
+      //-------------------------------------------------------------
       console.error("Error saving settings:", error);
     },
   });
