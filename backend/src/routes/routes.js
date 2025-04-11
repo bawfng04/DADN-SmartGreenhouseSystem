@@ -15,10 +15,21 @@ const {
   getThreshold,
   updateThreshold,
 } = require("../controllers/thresholdController");
+
 const {
   getDeviceHistory,
   createDeviceData,
 } = require("../controllers/deviceController");
+
+const {
+  getAdafruitThermalData,
+  getAdafruitLightData,
+  getAdafruitEarthHumidData,
+  getAdafruitHumidData,
+  getAdafruitFanData,
+  getAdafruitWaterPumpData,
+  getAdafruitLightControlData,
+} = require("../controllers/adafruitController");
 
 //login/register/changepassword
 router.get("/", (req, res) => {
@@ -32,7 +43,17 @@ router.post("/changePassword", authenticateToken, changePassword);
 //example
 router.get("/example", authenticateToken, getExampleTable);
 
-//adafruit
+//adafruit - original routes with the new handler functions
+router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
+router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
+router.get(
+  "/adafruit/earth-humid",
+  authenticateToken,
+  getAdafruitEarthHumidData
+);
+router.get("/adafruit/humid", authenticateToken, getAdafruitHumidData);
+
+//adafruit - sync routes
 router.get("/adafruit/sync-feed/:feedKey", authenticateToken, syncFeed);
 router.get("/adafruit/:feedKey", authenticateToken, getFeedHistory);
 
@@ -42,5 +63,12 @@ router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
 //device
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
+router.get("/device/fan", authenticateToken, getAdafruitFanData);
 
+router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
+router.get(
+  "/device/light-control",
+  authenticateToken,
+  getAdafruitLightControlData
+);
 module.exports = { router };

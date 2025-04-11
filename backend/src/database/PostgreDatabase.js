@@ -1,27 +1,25 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
-const pool = process.env.POSTGRES_EXTERNAL_URL
-  ? new Pool({
-      connectionString: process.env.POSTGRES_EXTERNAL_URL,
+// Determine if using external URL or local config
+const connectionString = process.env.POSTGRES_EXTERNAL_URL;
+
+const poolConfig = connectionString
+  ? {
+      connectionString,
       ssl: {
-        rejectUnauthorized: false,
+        rejectUnauthorized: false, //chỉ dùng khi connect bên ngoài
       },
-    })
-  : new Pool({
+    }
+  : {
       host: process.env.POSTGRES_HOST,
       port: process.env.POSTGRES_PORT,
       database: process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });
+      ssl: false,
+    };
 
-pool.on("error", (err) => {
-  console.error("PostgreSQL connection error:", err);
-});
+const pool = new Pool(poolConfig);
 
-// Export the pool
 module.exports = { pool };
