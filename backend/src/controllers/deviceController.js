@@ -20,7 +20,7 @@ class DeviceController {
   }
   async createDeviceData(req, res) {
     const feedKey = req.params.feedKey;
-    const { value } = req.body; // Phải lấy value từ req.body
+    const { value } = req.body;
 
     try {
       let deviceData;

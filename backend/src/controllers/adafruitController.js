@@ -98,7 +98,7 @@ const createAdafruitWaterPumpData = async (value) => {
         },
       }
     );
-
+    console.log("Water pump data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error posting data to Adafruit:", error.message);
@@ -136,6 +136,7 @@ const createAdafruitFanData = async (value) => {
         },
       }
     );
+    console.log("Fan data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     throw new Error(error.message);
