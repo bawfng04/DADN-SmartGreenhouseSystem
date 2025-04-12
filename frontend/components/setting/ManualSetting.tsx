@@ -118,7 +118,7 @@ const ManualSetting: React.FC<{
     },
     onSuccess: () => {
       setNotifySave(false);
-      router.push("/setting");
+      router.back();
     },
     onError: (error) => {
       //------------------------TEMP---------------------------------

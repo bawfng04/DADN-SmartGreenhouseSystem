@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
 import ManualSetting from "@/components/setting/ManualSetting";
@@ -123,6 +123,35 @@ export default function ConfigScreen() {
     navigation.setOptions({ headerShown: false });
   }, []);
 
+  useLayoutEffect(() => {
+    const parent = navigation.getParent();
+
+    parent?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+
+    return () => {
+      parent?.setOptions({
+        tabBarStyle: {
+          position: "absolute",
+          bottom: 12,
+          left: 20,
+          right: 20,
+          backgroundColor: "#00712D",
+          borderRadius: 30,
+          height: 68,
+          marginHorizontal: 20,
+          alignItems: "center",
+          justifyContent: "center",
+          display: "flex",
+          flexDirection: "row",
+          paddingBottom: 28,
+          ...styles.shadow,
+        },
+      });
+    };
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -222,5 +251,15 @@ const styles = StyleSheet.create({
   radioButtonSection: {
     paddingHorizontal: 20,
     gap: 8,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
   },
 });

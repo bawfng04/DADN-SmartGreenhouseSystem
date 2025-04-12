@@ -99,7 +99,7 @@ const ScheduledSetting: React.FC<{
     onSuccess: () => {
       setNotifySave(false);
       console.log("🔍 saveSettingsMutation.mutate");
-      router.push("/setting");
+      router.back();
     },
     onError: (error) => {
       //------------------------TEMP---------------------------------
