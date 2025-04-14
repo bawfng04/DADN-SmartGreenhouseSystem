@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dadn-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DATABASE_SERVER
+        value: HYPERVAULT
+      - key: DATABASE_NAME
+        value: test11
+      - key: DATABASE_USER
+        value: bang
+      - key: ADAFRUIT_IO_USERNAME
+        value: justkh29

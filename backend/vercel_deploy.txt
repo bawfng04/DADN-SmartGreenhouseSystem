@@ -1,0 +1,31 @@
+vercel env add PORT production
+# Enter value: 8000
+
+vercel env add DATABASE_SERVER production
+# Enter value: HYPERVAULT
+
+vercel env add DATABASE_NAME production
+# Enter value: test11
+
+vercel env add DATABASE_USER production
+# Enter value: bang
+
+vercel env add DATABASE_PASSWORD production
+# Enter value: 123456
+
+vercel env add SECRET_KEY production
+# Enter value: bangdeptraivcl
+
+vercel env add ADAFRUIT_IO_USERNAME production
+# Enter value: justkh29
+
+vercel env add ADAFRUIT_IO_KEY production
+# Enter value: aio_CwaS71Yp5GcJdu9ytfT5ZsX4tn6N
+
+## Domains
+
+`dadn-gamma.vercel.app`
+
+## Deploy
+
+vercel --prod
