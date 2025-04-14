@@ -53,7 +53,7 @@ router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit - original routes with the new handler functions
 router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
-router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
+
 router.get(
   "/adafruit/earth-humid",
   authenticateToken,
@@ -71,10 +71,14 @@ router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
 //device
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
-router.get("/device/fan", authenticateToken, getAdafruitFanData);
 
 // gửi lên adafruit
+
+router.get("/device/fan", authenticateToken, getAdafruitFanData);
+
 router.post("/device/fan", authenticateToken, createAdafruitFanData);
+
+router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
 
 router.post(
   "/device/light-control",
@@ -89,6 +93,7 @@ router.post(
 );
 
 router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
+
 router.get(
   "/device/light-control",
   authenticateToken,

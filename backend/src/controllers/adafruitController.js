@@ -92,6 +92,9 @@ const getAdafruitWaterPumpData = async (req, res) => {
 
 const createAdafruitWaterPumpData = async (value) => {
   try {
+    if (value < 0 || value > 100) {
+      throw new Error("Invalid value for water pump control. Must be between 0 and 100.");
+    }
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/water-pump/data",
       {
@@ -134,7 +137,7 @@ const getAdafruitFanData = async (req, res) => {
 
 const createAdafruitFanData = async (value) => {
   try {
-    if (!value || value < 0 || value > 100) {
+    if (value < 0 || value > 100) {
       throw new Error("Invalid value for fan control. Must be between 0 and 100.");
     }
     const response = await axios.post(
@@ -157,9 +160,6 @@ const createAdafruitFanData = async (value) => {
 
 const getAdafruitLightControlData = async (req, res) => {
   try {
-    if (!value || value !== 0 && value !== 1) {
-      throw new Error("Invalid value for light control. Must be 0 or 1.");
-    }
     const response = await axios.get(
       "https://io.adafruit.com/api/v2/justkh29/feeds/light-control/data",
       {
@@ -178,8 +178,8 @@ const getAdafruitLightControlData = async (req, res) => {
 
 const createAdafruitLightControlData = async (value) => {
   try {
-    if (!value || value < 0 || value > 100) {
-      throw new Error("Invalid value for light control. Must be between 0 and 100.");
+    if (value !== 0 && value !== 1) {
+      throw new Error("Invalid value for light control. Must be 0 or 1.");
     }
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/light-control/data",
