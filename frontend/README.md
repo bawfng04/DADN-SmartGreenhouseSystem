@@ -1,50 +1,82 @@
-# Welcome to your Expo app 👋
+# Multidisciplinary Project Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is the frontend application for the Multidisciplinary Project, built with Expo and React Native.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Cross-platform support (iOS, Android, Web)
+- Modern UI with React Native Paper components
+- Real-time data visualization with charts
+- Calendar integration
+- Gesture-based interactions
+- TypeScript support for type safety
+
+## Tech Stack
+
+- **Framework**: Expo 52.0.40
+- **Language**: TypeScript
+- **UI Library**: React Native Paper
+- **Navigation**: Expo Router
+- **State Management**: React Query
+- **Charts**: React Native Chart Kit & Gifted Charts
+- **Testing**: Jest
+
+## Project Structure
+
+```
+frontend/
+├── app/              # Main application routes and screens
+├── components/       # Reusable UI components
+├── constants/        # Application constants
+├── data/            # Data models and types
+├── hooks/           # Custom React hooks
+├── utils/           # Utility functions
+├── assets/          # Static assets (images, fonts)
+└── @types/          # TypeScript type definitions
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+
+### Installation
+
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Start the development server:
 
    ```bash
-    npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+3. Choose your development platform:
+   - Press `a` for Android emulator
+   - Press `i` for iOS simulator
+   - Press `w` for web browser
+   - Scan QR code with Expo Go app for physical device
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Development
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- The app uses file-based routing with Expo Router
+- Main application code is in the `app` directory
+- Reusable components are in the `components` directory
+- TypeScript is used throughout the project for type safety
 
-## Get a fresh project
+## Building
 
-When you're ready, run:
+The project is configured with EAS (Expo Application Services) for building. Configuration can be found in `eas.json`.
 
-```bash
-npm run reset-project
-```
+## Contributing
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Create a new branch for your feature
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
