@@ -170,7 +170,7 @@ Hiển thị data:
 - **Phản hồi:**
   - `200 OK` hoặc `201 Created`: Gửi lệnh thành công. Có thể trả về dữ liệu vừa tạo.
     ```json
-    { "id": "...", "value": "75", "feed_id": ..., "feed_key": "fan", ... }
+    { "id": "...", "value": "75", "feed_id": "...", "feed_key": "fan", "..." }
     ```
   - `400 Bad Request`: Giá trị không hợp lệ hoặc thiếu.
   - `500 Internal Server Error`: Lỗi server hoặc lỗi khi gửi lên Adafruit.
