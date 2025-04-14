@@ -11,6 +11,7 @@ const getAdafruitThermalData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Thermal data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching thermal data:", error.message);
     res.status(500).json({ error: error.message });
@@ -28,6 +29,7 @@ const getAdafruitLightData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Light data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching light data:", error.message);
     res.status(500).json({ error: error.message });
@@ -45,6 +47,7 @@ const getAdafruitHumidData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Humid data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching humid data:", error.message);
     res.status(500).json({ error: error.message });
@@ -62,6 +65,7 @@ const getAdafruitEarthHumidData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Earth humid data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching earth humid data:", error.message);
     res.status(500).json({ error: error.message });
@@ -79,6 +83,7 @@ const getAdafruitWaterPumpData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Water pump data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching water pump data:", error.message);
     res.status(500).json({ error: error.message });
@@ -117,11 +122,15 @@ const getAdafruitFanData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Fan data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching fan data:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
+
+
+// ================================= Gửi dữ liệu đến Adafruit
 
 const createAdafruitFanData = async (value) => {
   try {
@@ -154,6 +163,7 @@ const getAdafruitLightControlData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Light control data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching light control data:", error.message);
     res.status(500).json({ error: error.message });
@@ -173,6 +183,7 @@ const createAdafruitLightControlData = async (value) => {
         },
       }
     );
+    console.log("Light control data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error posting light control data:", error.message);

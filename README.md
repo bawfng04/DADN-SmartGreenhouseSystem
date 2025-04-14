@@ -6,6 +6,7 @@
 
 `https://dadn-2.onrender.com/api`
 
+
 ## Endpoints
 
 ### 1. Đăng Ký Người Dùng
@@ -155,3 +156,89 @@ Hiển thị data:
 </div>
 ```
 
+### 8. Điều khiển quạt
+
+- **URL:** `/device/fan`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho quạt.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị từ "0" đến "100"
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK` hoặc `201 Created`: Gửi lệnh thành công. Có thể trả về dữ liệu vừa tạo.
+    ```json
+    { "id": "...", "value": "75", "feed_id": ..., "feed_key": "fan", ... }
+    ```
+  - `400 Bad Request`: Giá trị không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server hoặc lỗi khi gửi lên Adafruit.
+
+***Yêu cầu token ở header của request.***
+
+
+### 9. Điều khiển bơm
+
+- **URL:** `/device/water-pump`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho máy bơm.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị từ "0" đến "100"
+  }
+  ```
+- **Phản hồi:** Tương tự mục 8.
+
+***Yêu cầu token ở header của request.***
+
+
+### 10. Điều khiển đèn
+
+- **URL:** `/device/light-control`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho đèn (Bật/Tắt).
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị là "1" (ON) hoặc "0" (OFF)
+  }
+  ```
+- **Phản hồi:** Tương tự mục 8.
+
+***Yêu cầu token ở header của request.***
+
+
+
+## Ví dụ gửi lệnh điều khiển đèn (ReactJS)
+
+Gửi lệnh bật đèn:
+
+```javascript
+const API = `${BaseURL}/device/light-control`;
+const token = localStorage.getItem("token");
+
+async function turnLightOn() {
+  try {
+    const response = await fetch(API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ value: '1' }), // Gửi giá trị '1' để bật
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
+    }
+
+    const result = await response.json();
+    console.log('Light control success:', result);
+  } catch (error) {
+    console.error('Error controlling light:', error);
+  }
+}
+```

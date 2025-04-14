@@ -6,6 +6,10 @@ const { changePassword } = require("../controllers/changePasswordController");
 const { loginUser } = require("../controllers/loginController");
 const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
+// const { scheduleController } = require("../controllers/scheduleControler");
+
+
+
 const {
   syncFeed,
   getFeedHistory,
@@ -29,6 +33,9 @@ const {
   getAdafruitFanData,
   getAdafruitWaterPumpData,
   getAdafruitLightControlData,
+  createAdafruitFanData,
+  createAdafruitWaterPumpData,
+  createAdafruitLightControlData,
 } = require("../controllers/adafruitController");
 
 //login/register/changepassword
@@ -39,6 +46,7 @@ router.get("/", (req, res) => {
 router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/changePassword", authenticateToken, changePassword);
+
 
 //example
 router.get("/example", authenticateToken, getExampleTable);
@@ -64,6 +72,21 @@ router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
 router.get("/device/fan", authenticateToken, getAdafruitFanData);
+
+// gửi lên adafruit
+router.post("/device/fan", authenticateToken, createAdafruitFanData);
+
+router.post(
+  "/device/light-control",
+  authenticateToken,
+  createAdafruitLightControlData
+);
+
+router.post(
+  "/device/water-pump",
+  authenticateToken,
+  createAdafruitWaterPumpData
+);
 
 router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
 router.get(
