@@ -10,9 +10,10 @@ const getAdafruitThermalData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching thermal data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -26,9 +27,10 @@ const getAdafruitLightData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching light data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -42,11 +44,13 @@ const getAdafruitHumidData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching humid data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
+
 const getAdafruitEarthHumidData = async (req, res) => {
   try {
     const response = await axios.get(
@@ -57,9 +61,10 @@ const getAdafruitEarthHumidData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching earth humid data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -73,9 +78,10 @@ const getAdafruitWaterPumpData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching water pump data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -88,11 +94,11 @@ const createAdafruitWaterPumpData = async (value) => {
       },
       {
         headers: {
-          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY, // This goes in the config
+          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,
         },
       }
     );
-
+    console.log("Water pump data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error posting data to Adafruit:", error.message);
@@ -110,9 +116,10 @@ const getAdafruitFanData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching fan data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -121,7 +128,7 @@ const createAdafruitFanData = async (value) => {
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/fan/data",
       {
-        value, // This is the data payload (the body)
+        value,
       },
       {
         headers: {
@@ -129,11 +136,13 @@ const createAdafruitFanData = async (value) => {
         },
       }
     );
+    console.log("Fan data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 const getAdafruitLightControlData = async (req, res) => {
   try {
     const response = await axios.get(
@@ -144,27 +153,29 @@ const getAdafruitLightControlData = async (req, res) => {
         },
       }
     );
-    return response.data;
+    res.json(response.data);
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error fetching light control data:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
-const createAdafruitLightControlData = async (req, res) => {
+const createAdafruitLightControlData = async (value) => {
   try {
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/light-control/data",
       {
-        value: req.body.value, // This is the data payload (the body)
+        value,
       },
       {
         headers: {
-          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY, // This goes in the config
+          "X-AIO-Key": process.env.ADAFRUIT_IO_KEY,
         },
       }
     );
     return response.data;
   } catch (error) {
+    console.error("Error posting light control data:", error.message);
     throw new Error(error.message);
   }
 };

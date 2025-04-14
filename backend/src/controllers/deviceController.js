@@ -1,8 +1,8 @@
 const { deviceService } = require("../services/deviceService");
-const { createAdafruitWaterPumpData } = require("../services/mqttpublisher");
 const {
   createAdafruitFanData,
   createAdafruitLightControlData,
+  createAdafruitWaterPumpData,
 } = require("./adafruitController");
 
 class DeviceController {
@@ -20,44 +20,27 @@ class DeviceController {
   }
   async createDeviceData(req, res) {
     const feedKey = req.params.feedKey;
-    let createDeviceDataFn;
-    console.log(feedKey);
+    const { value } = req.body;
+
     try {
-      // Map feedKey to the right function
+      let deviceData;
       switch (feedKey) {
         case "fan":
-          createDeviceDataFn = createAdafruitFanData;
+          deviceData = await createAdafruitFanData(value);
           break;
         case "light-control":
-          createDeviceDataFn = createAdafruitLightControlData;
+          deviceData = await createAdafruitLightControlData(value);
           break;
         case "water-pump":
-          createDeviceDataFn = createAdafruitWaterPumpData;
+          deviceData = await createAdafruitWaterPumpData(value);
           break;
         default:
-          throw new Error("Invalid feed key");
+          return res.status(400).json({ error: "Invalid feed key" });
       }
 
-      // Pass req.body or req.body.value, depending on the function
-      const { value } = req.body;
-
-      if (!value) {
-        throw new Error("Missing 'value' in request body");
-      }
-
-      // Call the selected function with the value
-      const deviceData = await createDeviceDataFn(value);
-
-      // Return or send the response
-      res.status(200).json({
-        message: `Successfully sent command to ${feedKey}`,
-        data: deviceData,
-      });
+      res.status(200).json(deviceData);
     } catch (error) {
-      console.error(
-        `Error creating device data for ${feedKey}:`,
-        error.message
-      );
+      console.error(`Error create device ${feedKey}:`, error);
       res.status(500).json({ error: error.message });
     }
   }
