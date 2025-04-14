@@ -6,6 +6,10 @@ const { changePassword } = require("../controllers/changePasswordController");
 const { loginUser } = require("../controllers/loginController");
 const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
+// const { scheduleController } = require("../controllers/scheduleControler");
+
+
+
 const {
   syncFeed,
   getFeedHistory,
@@ -29,6 +33,9 @@ const {
   getAdafruitFanData,
   getAdafruitWaterPumpData,
   getAdafruitLightControlData,
+  createAdafruitFanData,
+  createAdafruitWaterPumpData,
+  createAdafruitLightControlData,
 } = require("../controllers/adafruitController");
 
 //login/register/changepassword
@@ -40,12 +47,13 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/changePassword", authenticateToken, changePassword);
 
+
 //example
 router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit - original routes with the new handler functions
 router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
-router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
+
 router.get(
   "/adafruit/earth-humid",
   authenticateToken,
@@ -63,9 +71,29 @@ router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
 //device
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
+
+// gửi lên adafruit
+
 router.get("/device/fan", authenticateToken, getAdafruitFanData);
 
+router.post("/device/fan", authenticateToken, createAdafruitFanData);
+
+router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
+
+router.post(
+  "/device/light-control",
+  authenticateToken,
+  createAdafruitLightControlData
+);
+
+router.post(
+  "/device/water-pump",
+  authenticateToken,
+  createAdafruitWaterPumpData
+);
+
 router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
+
 router.get(
   "/device/light-control",
   authenticateToken,

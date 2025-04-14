@@ -11,6 +11,7 @@ const getAdafruitThermalData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Thermal data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching thermal data:", error.message);
     res.status(500).json({ error: error.message });
@@ -28,6 +29,7 @@ const getAdafruitLightData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Light data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching light data:", error.message);
     res.status(500).json({ error: error.message });
@@ -45,6 +47,7 @@ const getAdafruitHumidData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Humid data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching humid data:", error.message);
     res.status(500).json({ error: error.message });
@@ -62,6 +65,7 @@ const getAdafruitEarthHumidData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Earth humid data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching earth humid data:", error.message);
     res.status(500).json({ error: error.message });
@@ -79,6 +83,7 @@ const getAdafruitWaterPumpData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Water pump data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching water pump data:", error.message);
     res.status(500).json({ error: error.message });
@@ -87,6 +92,9 @@ const getAdafruitWaterPumpData = async (req, res) => {
 
 const createAdafruitWaterPumpData = async (value) => {
   try {
+    if (value < 0 || value > 100) {
+      throw new Error("Invalid value for water pump control. Must be between 0 and 100.");
+    }
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/water-pump/data",
       {
@@ -117,14 +125,21 @@ const getAdafruitFanData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Fan data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching fan data:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
+
+// ================================= Gửi dữ liệu đến Adafruit
+
 const createAdafruitFanData = async (value) => {
   try {
+    if (value < 0 || value > 100) {
+      throw new Error("Invalid value for fan control. Must be between 0 and 100.");
+    }
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/fan/data",
       {
@@ -154,6 +169,7 @@ const getAdafruitLightControlData = async (req, res) => {
       }
     );
     res.json(response.data);
+    console.log("Light control data fetched successfully:", response.data);
   } catch (error) {
     console.error("Error fetching light control data:", error.message);
     res.status(500).json({ error: error.message });
@@ -162,6 +178,9 @@ const getAdafruitLightControlData = async (req, res) => {
 
 const createAdafruitLightControlData = async (value) => {
   try {
+    if (value !== 0 && value !== 1) {
+      throw new Error("Invalid value for light control. Must be 0 or 1.");
+    }
     const response = await axios.post(
       "https://io.adafruit.com/api/v2/justkh29/feeds/light-control/data",
       {
@@ -173,6 +192,7 @@ const createAdafruitLightControlData = async (value) => {
         },
       }
     );
+    console.log("Light control data posted successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error posting light control data:", error.message);
