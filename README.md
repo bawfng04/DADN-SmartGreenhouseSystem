@@ -26,7 +26,7 @@
   - `409 Conflict`: Tên người dùng đã tồn tại.
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
   - `500 Internal Server Error`: Lỗi server.
-- Khi đăng nhập thành công, sẽ có một token trả về. Mọi người lưu token này vào để fetch API.
+- Khi đăng nhập thành công, sẽ có một token trả về. Mọi người lưu token này để đính kèm vào header của request khi fetch API.
 
 ### 2. Đăng Nhập Người Dùng
 
@@ -64,7 +64,7 @@
 ***Yêu cầu token ở header của request.***
 
 - **Phản hồi:**
-  - `200 OK`: Đăng nhập thành công.
+  - `200 OK`: Đổi mật khẩu thành công.
   - `401 Unauthorized`: Mật khẩu không chính xác.
   - `409 Conflict`: Không tìm thấy tên người dùng.
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.

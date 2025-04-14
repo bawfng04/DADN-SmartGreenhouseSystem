@@ -8,12 +8,13 @@ class LoginModel {
       if (!isExistUsername) {
         return { status: 409, message: "Username not found" };
       } else {
-        const isCorrect = await isCorrectPassword(username, password);
-        if (isCorrect) {
+        const user = await isCorrectPassword(username, password);
+        if (user) {
           return {
             status: 200,
             message: "Login successful",
-            username: username,
+            userId: user.id,
+            username: user.username,
           };
         } else {
           return { status: 401, message: "Incorrect password" };
