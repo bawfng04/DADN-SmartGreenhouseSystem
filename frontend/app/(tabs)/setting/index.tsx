@@ -131,7 +131,7 @@ export default function SettingTab() {
       style={{
         ...styles.container,
         paddingTop: insets.top + 20,
-        paddingBottom: insets.bottom,
+        paddingBottom: insets.bottom + 20,
       }}
     >
       {deviceList.map((device: DeviceType, index: number) => (

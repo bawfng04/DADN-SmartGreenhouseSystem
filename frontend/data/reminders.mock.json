@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "Nhiệt độ",
+    "higherThan": 40,
+    "lowerThan": 19,
+    "repeatAfter": 24,
+    "active": true
+  },
+  {
+    "id": "2",
+    "title": "Độ ẩm không khí",
+    "higherThan": 80,
+    "lowerThan": 70,
+    "repeatAfter": 12,
+    "active": false
+  }
+]
