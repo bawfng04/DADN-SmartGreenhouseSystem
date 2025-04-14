@@ -6,7 +6,7 @@ const { changePassword } = require("../controllers/changePasswordController");
 const { loginUser } = require("../controllers/loginController");
 const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
-// const { scheduleController } = require("../controllers/scheduleControler");
+const scheduleController = require("../controllers/scheduleControler");
 
 
 
@@ -99,4 +99,11 @@ router.get(
   authenticateToken,
   getAdafruitLightControlData
 );
+
+//schedule
+router.post("/create-schedule", authenticateToken, scheduleController.createSchedule);
+router.get("/get-schedule", authenticateToken, scheduleController.getPendingTasks);
+router.post("/update-schedule", authenticateToken, scheduleController.updateTaskStatus);
+
+
 module.exports = { router };

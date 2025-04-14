@@ -14,7 +14,7 @@ async function isCorrectPassword(username, password) {
   try {
     const query = "SELECT * FROM users WHERE username = $1 AND password = $2";
     const result = await pool.query(query, [username, password]);
-    return result.rows.length > 0;
+    return result.rows.length > 0 ? result.rows[0] : null;
   } catch (error) {
     throw error;
   }
