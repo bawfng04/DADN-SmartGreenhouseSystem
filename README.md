@@ -25,7 +25,7 @@
   - `409 Conflict`: Tên người dùng đã tồn tại.
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
   - `500 Internal Server Error`: Lỗi server.
-- Khi đăng nhập thành công, sẽ có một token trả về. Mọi người lưu token này vào để fetch API.
+- Khi đăng nhập thành công, sẽ có một token trả về. Mọi người lưu token này để đính kèm vào header của request khi fetch API.
 
 ### 2. Đăng Nhập Người Dùng
 
@@ -63,7 +63,7 @@
 **_Yêu cầu token ở header của request._**
 
 - **Phản hồi:**
-  - `200 OK`: Đăng nhập thành công.
+  - `200 OK`: Đổi mật khẩu thành công.
   - `401 Unauthorized`: Mật khẩu không chính xác.
   - `409 Conflict`: Không tìm thấy tên người dùng.
   - `400 Bad Request`: Thiếu tên người dùng hoặc mật khẩu.
@@ -155,3 +155,166 @@ Hiển thị data:
   )}
 </div>
 ```
+
+### 8. Điều khiển quạt
+
+- **URL:** `/device/fan`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho quạt.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị từ "0" đến "100"
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK` hoặc `201 Created`: Gửi lệnh thành công. Có thể trả về dữ liệu vừa tạo.
+    ```json
+    { "id": "...", "value": "75", "feed_id": "...", "feed_key": "fan", "..." }
+    ```
+  - `400 Bad Request`: Giá trị không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server hoặc lỗi khi gửi lên Adafruit.
+
+**_Yêu cầu token ở header của request._**
+
+### 9. Điều khiển bơm
+
+- **URL:** `/device/water-pump`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho máy bơm.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị từ "0" đến "100"
+  }
+  ```
+- **Phản hồi:** Tương tự mục 8.
+
+**_Yêu cầu token ở header của request._**
+
+### 10. Điều khiển đèn
+
+- **URL:** `/device/light-control`
+- **Phương thức:** `POST`
+- **Mô tả:** Gửi giá trị điều khiển mới cho đèn (Bật/Tắt).
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "value": "string" // Giá trị là "1" (ON) hoặc "0" (OFF)
+  }
+  ```
+- **Phản hồi:** Tương tự mục 8.
+
+**_Yêu cầu token ở header của request._**
+
+## Ví dụ gửi lệnh điều khiển đèn (ReactJS)
+
+Gửi lệnh bật đèn:
+
+```javascript
+const API = `${BaseURL}/device/light-control`;
+const token = localStorage.getItem("token");
+
+async function turnLightOn() {
+  try {
+    const response = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ value: "1" }), // Gửi giá trị '1' để bật
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
+    }
+
+    const result = await response.json();
+    console.log("Light control success:", result);
+  } catch (error) {
+    console.error("Error controlling light:", error);
+  }
+}
+```
+
+### 11. Tạo Lịch Trình (Schedule)
+
+- **URL:** `/create-schedule`
+- **Phương thức:** `POST`
+- **Mô tả:** Tạo một lịch trình mới để thực thi một hành động sau một khoảng thời gian.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "feedKey": "string",
+    "payload": number,
+    "delayMinutes": number
+  }
+  ```
+  **_feedkey_**: `light-control`, `fan` hoặc `water-pump`
+- **Phản hồi:**
+  - `201 Created`: Lịch trình tạo thành công.
+    ```json
+    {
+      "message": "Schedule created successfully",
+      "scheduleId": number // ID của lịch trình vừa tạo
+    }
+    ```
+  - `400 Bad Request`: Thiếu trường bắt buộc hoặc `delayMinutes` không hợp lệ.
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server khi tạo lịch trình.
+
+![create-schedule-ex](backend/images/image.png)
+
+**_Yêu cầu token ở header của request._**
+
+### 12. Cập Nhật Trạng Thái Lịch Trình
+
+- **URL:** `/update-schedule`
+- **Phương thức:** `POST`
+- **Mô tả:** Cập nhật trạng thái của một lịch trình cụ thể (ví dụ: từ 'PENDING' sang 'CANCELLED').
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "taskId": number, // ID của lịch trình cần cập nhật
+    "status": "string" // Trạng thái mới (ví dụ: 'CANCELLED', 'COMPLETED', 'FAILED')
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Cập nhật trạng thái thành công.
+    ```json
+    {
+      "message": "Task status updated successfully"
+    }
+    ```
+  - `400 Bad Request`: Thiếu `taskId` hoặc `status`.
+  - `500 Internal Server Error`: Lỗi server khi cập nhật.
+
+**_Yêu cầu token ở header của request._**
+
+<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+
+- **URL:** `/get-schedule`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy danh sách các lịch trình đang ở trạng thái 'PENDING' và có thời gian thực thi đã qua.
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách các task đang chờ.
+    ```json
+    [
+      {
+        "id": number,
+        "user_id": number,
+        "feed_key": "string",
+        "payload": "string",
+        "execute_at": "timestamp",
+        "status": "PENDING",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      },
+      // ... more tasks
+    ]
+    ```
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.*** -->

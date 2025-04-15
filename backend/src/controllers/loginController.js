@@ -16,9 +16,13 @@ const loginUser = async (req, res) => {
     const encryptedPassword = encrypt(password);
     const result = await LoginModel.loginUser(username, encryptedPassword);
     if (result.status === 200) {
-      const token = jwt.sign({ username }, JWT_SECRET_KEY, {
-        expiresIn: "24h",
-      });
+            const token = jwt.sign(
+              { id: result.userId, username: result.username },
+              JWT_SECRET_KEY,
+              {
+                expiresIn: "24h",
+              }
+            );
       console.log("Login successful, token:", token);
       return res
         .status(result.status)
