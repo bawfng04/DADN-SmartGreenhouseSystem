@@ -298,7 +298,7 @@ async function turnLightOn() {
 ***Yêu cầu token ở header của request.***
 
 
-### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`
 - **Phương thức:** `GET`
@@ -322,4 +322,4 @@ async function turnLightOn() {
     ```
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.***
+***Yêu cầu token ở header của request.*** -->
