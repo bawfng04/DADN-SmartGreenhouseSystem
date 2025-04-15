@@ -63,6 +63,21 @@ class ScheduleController {
     }
   }
 
+  async cancelTask(req, res) {
+    try {
+      const taskId = req.params.taskId;
+      if (!taskId) {
+        return res.status(400).json({ message: "Task ID is required" });
+      }
+      await scheduleService.updateTaskStatus(taskId, "CANCELED");
+      return res.status(200).json({ message: "Task canceled successfully" });
+    }
+    catch (error) {
+      console.error("Error canceling task:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
 
     // cập nhật task có id tương ứng
   async updateTaskStatus(req, res) {

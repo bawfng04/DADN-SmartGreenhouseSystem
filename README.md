@@ -243,7 +243,6 @@ async function turnLightOn() {
 }
 ```
 
-
 ### 11. Tạo Lịch Trình (Schedule)
 
 - **URL:** `/create-schedule`
@@ -253,7 +252,7 @@ async function turnLightOn() {
   ```json
   {
     "feedKey": "string", // 'light-control', 'fan', hoặc 'water-pump'
-    "payload": "string", // Giá trị tương ứng với feedKey (ví dụ: '1' cho light-control, '50' cho fan)
+    "payload": number, // Giá trị tương ứng với feedKey
     "delayMinutes": number // Số phút trì hoãn trước khi thực thi
   }
   ```
@@ -269,35 +268,11 @@ async function turnLightOn() {
   - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
   - `500 Internal Server Error`: Lỗi server khi tạo lịch trình.
 
-***Yêu cầu token ở header của request.***
-
-### 12. Lấy Danh Sách Lịch Trình Đang Chờ (Optional - Currently Inactive)
-
-- **URL:** `/get-schedule`
-- **Phương thức:** `GET`
-- **Mô tả:** Lấy danh sách các lịch trình đang ở trạng thái 'PENDING' và có thời gian thực thi đã qua. (Lưu ý: Logic xử lý trong service hiện đang được comment).
-- **Phản hồi:**
-  - `200 OK`: Trả về danh sách các task đang chờ.
-    ```json
-    [
-      {
-        "id": number,
-        "user_id": number,
-        "feed_key": "string",
-        "payload": "string",
-        "execute_at": "timestamp",
-        "status": "PENDING",
-        "created_at": "timestamp",
-        "updated_at": "timestamp"
-      },
-      // ... more tasks
-    ]
-    ```
-  - `500 Internal Server Error`: Lỗi server.
+![create-schedule-ex](images/image.png)
 
 ***Yêu cầu token ở header của request.***
 
-### 13. Cập Nhật Trạng Thái Lịch Trình (Optional)
+### 12. Cập Nhật Trạng Thái Lịch Trình
 
 - **URL:** `/update-schedule`
 - **Phương thức:** `POST`
@@ -320,3 +295,30 @@ async function turnLightOn() {
   - `500 Internal Server Error`: Lỗi server khi cập nhật.
 
 ***Yêu cầu token ở header của request.***
+
+
+<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+
+- **URL:** `/get-schedule`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy danh sách các lịch trình đang ở trạng thái 'PENDING' và có thời gian thực thi đã qua.
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách các task đang chờ.
+    ```json
+    [
+      {
+        "id": number,
+        "user_id": number,
+        "feed_key": "string",
+        "payload": "string",
+        "execute_at": "timestamp",
+        "status": "PENDING",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      },
+      // ... more tasks
+    ]
+    ```
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.*** -->
