@@ -30,6 +30,8 @@ const {
   getAdafruitLightControlData,
 } = require("../controllers/adafruitController");
 
+const DeviceController = require("../controllers/deviceController");
+
 //login/register/changepassword
 router.get("/", (req, res) => {
   res.json({ message: "Hello from backend!" });
@@ -65,9 +67,28 @@ router.post("/device/:feedKey", authenticateToken, createDeviceData);
 router.get("/device/fan", authenticateToken, getAdafruitFanData);
 
 router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
+
+//publish
+router.get(
+  "/device/fan/:status",
+  authenticateToken,
+  DeviceController.controlFan
+);
+router.get(
+  "/device/light-control/:status",
+  authenticateToken,
+  DeviceController.controlLight
+);
+router.get(
+  "/device/water-pump/:status",
+  authenticateToken,
+  DeviceController.controlPump
+);
+
 router.get(
   "/device/light-control",
   authenticateToken,
   getAdafruitLightControlData
 );
+
 module.exports = { router };
