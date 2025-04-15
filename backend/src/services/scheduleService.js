@@ -95,7 +95,8 @@ class ScheduleService {
     let tasksProcessed = 0;
       try {
         // lấy các task cần thực thi
-      const tasks = await this.getPendingTasksToExecute();
+        const tasks = await this.getPendingTasksToExecute();
+        console.log("tasks in scheduleService.js: ", tasks);
       if (tasks.length === 0) {
         console.log("No pending tasks to execute.");
         return;

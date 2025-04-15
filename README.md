@@ -242,3 +242,84 @@ async function turnLightOn() {
   }
 }
 ```
+
+### 11. Tạo Lịch Trình (Schedule)
+
+- **URL:** `/create-schedule`
+- **Phương thức:** `POST`
+- **Mô tả:** Tạo một lịch trình mới để thực thi một hành động sau một khoảng thời gian.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "feedKey": "string",
+    "payload": number,
+    "delayMinutes": number
+  }
+  ```
+  ***feedkey***: `light-control`, `fan` hoặc `water-pump`
+- **Phản hồi:**
+  - `201 Created`: Lịch trình tạo thành công.
+    ```json
+    {
+      "message": "Schedule created successfully",
+      "scheduleId": number // ID của lịch trình vừa tạo
+    }
+    ```
+  - `400 Bad Request`: Thiếu trường bắt buộc hoặc `delayMinutes` không hợp lệ.
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server khi tạo lịch trình.
+
+![create-schedule-ex](backend/images/image.png)
+
+***Yêu cầu token ở header của request.***
+
+### 12. Cập Nhật Trạng Thái Lịch Trình
+
+- **URL:** `/update-schedule`
+- **Phương thức:** `POST`
+- **Mô tả:** Cập nhật trạng thái của một lịch trình cụ thể (ví dụ: từ 'PENDING' sang 'CANCELLED').
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "taskId": number, // ID của lịch trình cần cập nhật
+    "status": "string" // Trạng thái mới (ví dụ: 'CANCELLED', 'COMPLETED', 'FAILED')
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Cập nhật trạng thái thành công.
+    ```json
+    {
+      "message": "Task status updated successfully"
+    }
+    ```
+  - `400 Bad Request`: Thiếu `taskId` hoặc `status`.
+  - `500 Internal Server Error`: Lỗi server khi cập nhật.
+
+***Yêu cầu token ở header của request.***
+
+
+<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+
+- **URL:** `/get-schedule`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy danh sách các lịch trình đang ở trạng thái 'PENDING' và có thời gian thực thi đã qua.
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách các task đang chờ.
+    ```json
+    [
+      {
+        "id": number,
+        "user_id": number,
+        "feed_key": "string",
+        "payload": "string",
+        "execute_at": "timestamp",
+        "status": "PENDING",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      },
+      // ... more tasks
+    ]
+    ```
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.*** -->

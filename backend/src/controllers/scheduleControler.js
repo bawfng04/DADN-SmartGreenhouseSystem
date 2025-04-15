@@ -12,11 +12,27 @@ class ScheduleController {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { feedKey, payload, delayMinutes } = req.body;
-    if (!feedKey || !payload || !delayMinutes) {
+    if (!feedKey || !delayMinutes) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     if (typeof delayMinutes !== "number" || delayMinutes <= 0) {
       return res.status(400).json({ message: "Invalid delayMinutes" });
+    }
+    // fan và pump: 0-100
+    // light-control: 0-1
+    if (feedKey === "fan" || feedKey === "water-pump") {
+      if (payload < 0 || payload > 100) {
+        return res.status(400).json({
+          message: "Invalid payload for fan or water pump. Must be between 0 and 100.",
+        });
+      }
+    }
+    else if (feedKey === "light-control") {
+      if (payload !== 0 && payload !== 1) {
+        return res.status(400).json({
+          message: "Invalid payload for light control. Must be 0 or 1.",
+        });
+      }
     }
     try {
       //thời gian thực thi
@@ -43,6 +59,21 @@ class ScheduleController {
       return res.status(200).json(tasks);
     } catch (error) {
       console.error("Error getting pending tasks:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async cancelTask(req, res) {
+    try {
+      const taskId = req.params.taskId;
+      if (!taskId) {
+        return res.status(400).json({ message: "Task ID is required" });
+      }
+      await scheduleService.updateTaskStatus(taskId, "CANCELED");
+      return res.status(200).json({ message: "Task canceled successfully" });
+    }
+    catch (error) {
+      console.error("Error canceling task:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
