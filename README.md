@@ -251,11 +251,12 @@ async function turnLightOn() {
 - **Nội dung yêu cầu:**
   ```json
   {
-    "feedKey": "string", // 'light-control', 'fan', hoặc 'water-pump'
-    "payload": number, // Giá trị tương ứng với feedKey
-    "delayMinutes": number // Số phút trì hoãn trước khi thực thi
+    "feedKey": "string",
+    "payload": number,
+    "delayMinutes": number
   }
   ```
+  ***feedkey***: `light-control`, `fan` hoặc `water-pump`
 - **Phản hồi:**
   - `201 Created`: Lịch trình tạo thành công.
     ```json
@@ -297,7 +298,7 @@ async function turnLightOn() {
 ***Yêu cầu token ở header của request.***
 
 
-<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`
 - **Phương thức:** `GET`
@@ -321,4 +322,4 @@ async function turnLightOn() {
     ```
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.*** -->
+***Yêu cầu token ở header của request.***
