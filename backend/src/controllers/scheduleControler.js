@@ -12,11 +12,27 @@ class ScheduleController {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { feedKey, payload, delayMinutes } = req.body;
-    if (!feedKey || !payload || !delayMinutes) {
+    if (!feedKey || !delayMinutes) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     if (typeof delayMinutes !== "number" || delayMinutes <= 0) {
       return res.status(400).json({ message: "Invalid delayMinutes" });
+    }
+    // fan và pump: 0-100
+    // light-control: 0-1
+    if (feedKey === "fan" || feedKey === "water-pump") {
+      if (payload < 0 || payload > 100) {
+        return res.status(400).json({
+          message: "Invalid payload for fan or water pump. Must be between 0 and 100.",
+        });
+      }
+    }
+    else if (feedKey === "light-control") {
+      if (payload !== 0 && payload !== 1) {
+        return res.status(400).json({
+          message: "Invalid payload for light control. Must be 0 or 1.",
+        });
+      }
     }
     try {
       //thời gian thực thi
