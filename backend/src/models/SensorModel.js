@@ -58,6 +58,28 @@ class SensorModel {
       throw error;
     }
   }
+
+
+
+  // lấy dữ liệu trong range thời gian
+  async getSensorDataByRange(feedName, startTime, endTime) {
+    const query = `
+      SELECT * FROM sensors
+      WHERE feed_name = $1
+        AND timestamp BETWEEN $2 AND $3
+      ORDER BY timestamp DESC;
+    `;
+
+    try {
+      const result = await pool.query(query, [feedName, startTime, endTime]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error getting sensor data by range:", error);
+      throw error;
+    }
+  }
+
+
 }
 
 module.exports = new SensorModel();
