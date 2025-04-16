@@ -354,6 +354,46 @@ async function turnLightOn() {
 
 ***Yêu cầu token ở header của request.***
 
+## Ví dụ fetch data từ Dashboard (ReactJS)
+
+```javascript
+async function fetchDashboardData(date) {
+  const token = localStorage.getItem('token');
+
+  // Đảm bảo định dạng date là YYYY-MM-DD
+  const formattedDate = date;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/dashboard/${formattedDate}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Lỗi ${response.status}: ${errorData.message || response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error('Lỗi khi fetch dữ liệu dashboard:', error);
+    return null;
+  }
+}
+
+// Cách sử dụng:
+const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại YYYY-MM-DD
+fetchDashboardData(today);
+
+```
+
+
 <!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`
