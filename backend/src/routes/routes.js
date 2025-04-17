@@ -8,8 +8,6 @@ const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
 const scheduleController = require("../controllers/scheduleControler");
 
-
-
 const {
   syncFeed,
   getFeedHistory,
@@ -22,7 +20,6 @@ const {
   getThreshold,
   updateThreshold,
 } = require("../controllers/thresholdController");
-
 const {
   getDeviceHistory,
   createDeviceData,
@@ -44,6 +41,8 @@ const {
   createAdafruitLightControlData,
 } = require("../controllers/adafruitController");
 
+const DeviceController = require("../controllers/deviceController");
+
 //login/register/changepassword
 router.get("/", (req, res) => {
   res.json({ message: "Hello from backend!" });
@@ -52,7 +51,6 @@ router.get("/", (req, res) => {
 router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/changePassword", authenticateToken, changePassword);
-
 
 //example
 router.get("/example", authenticateToken, getExampleTable);
@@ -100,6 +98,23 @@ router.post(
 
 router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
 
+//publish
+router.get(
+  "/device/fan/:status",
+  authenticateToken,
+  DeviceController.controlFan
+);
+router.get(
+  "/device/light-control/:status",
+  authenticateToken,
+  DeviceController.controlLight
+);
+router.get(
+  "/device/water-pump/:status",
+  authenticateToken,
+  DeviceController.controlPump
+);
+
 router.get(
   "/device/light-control",
   authenticateToken,
@@ -107,10 +122,21 @@ router.get(
 );
 
 //schedule
-router.post("/create-schedule", authenticateToken, scheduleController.createSchedule);
-router.get("/get-schedule", authenticateToken, scheduleController.getPendingTasks);
-router.post("/update-schedule", authenticateToken, scheduleController.updateTaskStatus);
-
+router.post(
+  "/create-schedule",
+  authenticateToken,
+  scheduleController.createSchedule
+);
+router.get(
+  "/get-schedule",
+  authenticateToken,
+  scheduleController.getPendingTasks
+);
+router.post(
+  "/update-schedule",
+  authenticateToken,
+  scheduleController.updateTaskStatus
+);
 
 //dashboard
 router.get("/dashboard/:date", authenticateToken, getDashboardData);

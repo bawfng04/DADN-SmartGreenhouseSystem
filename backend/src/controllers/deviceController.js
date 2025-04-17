@@ -67,6 +67,59 @@ class DeviceController {
       });
     }
   }
+  async controlFan(req, res) {
+    const status = parseInt(req.params.status, 10);
+    const feedKey = "fan";
+
+    try {
+      if (isNaN(status) || status < 0 || status > 100) {
+        return res.status(400).json({ message: "❌ Status must be 0–100" });
+      }
+
+      mqttClient.publish(buildTopic(feedKey), status.toString());
+      res.json({ message: `🌬️ Fan set to ${status}%` });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Failed to control fan", error: error.message });
+    }
+  }
+
+  async controlLight(req, res) {
+    const status = parseInt(req.params.status, 10);
+    const feedKey = "light-control";
+
+    try {
+      if (isNaN(status) || status < 0 || status > 100) {
+        return res.status(400).json({ message: "❌ Status must be 0–100" });
+      }
+
+      mqttClient.publish(buildTopic(feedKey), status.toString());
+      res.json({ message: `💡 Light set to ${status}%` });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Failed to control light", error: error.message });
+    }
+  }
+
+  async controlPump(req, res) {
+    const status = parseInt(req.params.status, 10);
+    const feedKey = "water-pump";
+
+    try {
+      if (isNaN(status) || status < 0 || status > 100) {
+        return res.status(400).json({ message: "❌ Status must be 0–100" });
+      }
+
+      mqttClient.publish(buildTopic(feedKey), status.toString());
+      res.json({ message: `💧 Water pump set to ${status}%` });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Failed to control pump", error: error.message });
+    }
+  }
 }
 
 module.exports = new DeviceController();
