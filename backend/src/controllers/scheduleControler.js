@@ -28,7 +28,7 @@ class ScheduleController {
       }
     }
     else if (feedKey === "light-control") {
-      if (payload !== 0 && payload !== 1) {
+      if (payload != 0 && payload != 1) {
         return res.status(400).json({
           message: "Invalid payload for light control. Must be 0 or 1.",
         });
