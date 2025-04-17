@@ -77,6 +77,20 @@ class FeedController {
     }
   }
 
+
+  async getLatestSensorData(req, res) {
+    try {
+      const data = await sensorService.getLatestSensorData();
+      if (!data) {
+        return res.status(404).json({ message: "No data found" });
+      }
+      res.json(data);
+    } catch (error) {
+      console.log("error on getLatestSensorData", error);
+      res.status(500).json({ message: "Failed to get latest sensor data" });
+    }
+  }
+
 }
 
 

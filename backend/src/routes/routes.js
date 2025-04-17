@@ -14,6 +14,7 @@ const {
   getLatestFeed,
 
   getDashboardData, //update 16 04 2025
+  getLatestSensorData,
 } = require("../controllers/sensorController");
 const {
   getThreshold,
@@ -136,5 +137,7 @@ router.post(
 
 //dashboard
 router.get("/dashboard/:date", authenticateToken, getDashboardData);
+// latest sensor data (/indices)
+router.get("/indices", authenticateToken, getLatestSensorData);
 
 module.exports = { router };
