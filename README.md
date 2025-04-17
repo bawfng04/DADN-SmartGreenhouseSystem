@@ -394,6 +394,44 @@ fetchDashboardData(today);
 ```
 
 
+### 14. Lấy Chỉ Số Cảm Biến Mới Nhất
+
+- **URL:** `/indices`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy giá trị mới nhất của mỗi loại cảm biến (nhiệt độ, độ ẩm, độ ẩm đất, ánh sáng).
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách các chỉ số cảm biến mới nhất.
+    ```json
+    [
+      {
+        "id": "1",
+        "name": "thermal",
+        "value": "23"
+      },
+      {
+        "id": "2",
+        "name": "humidity",
+        "value": "50"
+      },
+      {
+        "id": "3",
+        "name": "earth-humid",
+        "value": "50"
+      },
+      {
+        "id": "4",
+        "name": "light",
+        "value": "50"
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server khi truy vấn dữ liệu.
+
+***Yêu cầu token ở header của request.***
+
+
+
 <!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`
