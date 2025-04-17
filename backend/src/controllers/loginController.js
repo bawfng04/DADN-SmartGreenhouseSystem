@@ -27,8 +27,7 @@ const loginUser = async (req, res) => {
       return res
         .status(result.status)
         .json({ message: result.message, token: token });
-    }
-    else {
+    } else {
       console.log("Login failed:", result.message);
       return res.status(result.status).json({ message: result.message });
     }

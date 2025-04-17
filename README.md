@@ -6,7 +6,6 @@
 
 `https://dadn-2.onrender.com/api`
 
-
 ## Endpoints
 
 ### 1. Đăng Ký Người Dùng
@@ -57,11 +56,11 @@
   {
     "username": "string",
     "password": "string",
-    "newpassword": "string",
+    "newpassword": "string"
   }
   ```
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 - **Phản hồi:**
   - `200 OK`: Đổi mật khẩu thành công.
@@ -79,7 +78,7 @@
   - `200 OK`: Trả về dữ liệu nhiệt độ.
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 ### 5. Lấy Dữ Liệu Đèn Từ Adafruit
 
@@ -90,7 +89,7 @@
   - `200 OK`: Trả về dữ liệu đèn.
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 ### 6. Lấy Dữ Liệu Độ Ẩm Đất Từ Adafruit
 
@@ -101,7 +100,7 @@
   - `200 OK`: Trả về dữ liệu độ ẩm đất.
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 ### 7. Lấy Dữ Liệu Độ Ẩm Không Khí Từ Adafruit
 
@@ -112,7 +111,7 @@
   - `200 OK`: Trả về dữ liệu độ ẩm không khí.
   - `500 Internal Server Error`: Lỗi server.
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 ## Ví dụ fetch data (ReactJS)
 
@@ -146,11 +145,12 @@ useEffect(() => {
 ```
 
 Hiển thị data:
+
 ```jsx
 <div className="adafruit-component-content">
   {adafruitData ? (
     <pre>{JSON.stringify(adafruitData, null, 2)}</pre>
-    ) : (
+  ) : (
     <p>Loading Adafruit data...</p>
   )}
 </div>
@@ -175,8 +175,7 @@ Hiển thị data:
   - `400 Bad Request`: Giá trị không hợp lệ hoặc thiếu.
   - `500 Internal Server Error`: Lỗi server hoặc lỗi khi gửi lên Adafruit.
 
-***Yêu cầu token ở header của request.***
-
+**_Yêu cầu token ở header của request._**
 
 ### 9. Điều khiển bơm
 
@@ -191,8 +190,7 @@ Hiển thị data:
   ```
 - **Phản hồi:** Tương tự mục 8.
 
-***Yêu cầu token ở header của request.***
-
+**_Yêu cầu token ở header của request._**
 
 ### 10. Điều khiển đèn
 
@@ -207,9 +205,7 @@ Hiển thị data:
   ```
 - **Phản hồi:** Tương tự mục 8.
 
-***Yêu cầu token ở header của request.***
-
-
+**_Yêu cầu token ở header của request._**
 
 ## Ví dụ gửi lệnh điều khiển đèn (ReactJS)
 
@@ -222,12 +218,12 @@ const token = localStorage.getItem("token");
 async function turnLightOn() {
   try {
     const response = await fetch(API, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ value: '1' }), // Gửi giá trị '1' để bật
+      body: JSON.stringify({ value: "1" }), // Gửi giá trị '1' để bật
     });
 
     if (!response.ok) {
@@ -236,9 +232,9 @@ async function turnLightOn() {
     }
 
     const result = await response.json();
-    console.log('Light control success:', result);
+    console.log("Light control success:", result);
   } catch (error) {
-    console.error('Error controlling light:', error);
+    console.error("Error controlling light:", error);
   }
 }
 ```
@@ -256,7 +252,7 @@ async function turnLightOn() {
     "delayMinutes": number
   }
   ```
-  ***feedkey***: `light-control`, `fan` hoặc `water-pump`
+  **_feedkey_**: `light-control`, `fan` hoặc `water-pump`
 - **Phản hồi:**
   - `201 Created`: Lịch trình tạo thành công.
     ```json
@@ -271,7 +267,7 @@ async function turnLightOn() {
 
 ![create-schedule-ex](backend/images/image.png)
 
-***Yêu cầu token ở header của request.***
+**_Yêu cầu token ở header của request._**
 
 ### 12. Cập Nhật Trạng Thái Lịch Trình
 
