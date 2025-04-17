@@ -405,7 +405,7 @@ fetchDashboardData(today);
     [
       {
         "id": "1",
-        "name": "thermal",
+        "name": "temperature",
         "value": "23"
       },
       {
@@ -415,7 +415,7 @@ fetchDashboardData(today);
       },
       {
         "id": "3",
-        "name": "earth-humid",
+        "name": "soil-moisture",
         "value": "50"
       },
       {

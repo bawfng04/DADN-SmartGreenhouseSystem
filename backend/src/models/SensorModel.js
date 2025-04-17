@@ -88,11 +88,25 @@ class SensorModel {
     `;
     try {
       const result = await pool.query(query);
-      return result.rows.map((row, index) => ({
-        id: String(index + 1),
-        name: row.name,
-        value: String(row.value),
-      }));
+      return result.rows.map((row, index) => {
+        let newName = row.name;
+        if (newName === "earth-humid") {
+          newName = "soil-moisture";
+        }
+        else if (newName === "thermal") {
+          newName = "temperature";
+        }
+        else if (newName === "humid") {
+          newName = "humidity";
+        }
+        return {
+          id: row.id,
+          name: newName,
+          value: row.value,
+        }
+      })
+
+
     }
     catch (error) {
       console.error("Error getting latest sensor data in SensorModel.js:", error);
