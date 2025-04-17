@@ -291,7 +291,104 @@ async function turnLightOn() {
   - `400 Bad Request`: Thiếu `taskId` hoặc `status`.
   - `500 Internal Server Error`: Lỗi server khi cập nhật.
 
-**_Yêu cầu token ở header của request._**
+***Yêu cầu token ở header của request.***
+
+### 13. Lấy Dữ Liệu Dashboard Theo Ngày
+
+- **URL:** `/dashboard/{date}`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy dữ liệu tổng hợp của các cảm biến trong một ngày cụ thể. Dữ liệu trả về bao gồm các giá trị cảm biến tại các mốc thời gian cố định trong ngày (8h, 9h, 12h, 15h, 18h, 20h, 23h).
+- **Tham số đường dẫn (Path Parameter):**
+  - `date`: Ngày muốn lấy dữ liệu, định dạng `YYYY-MM-DD`.
+- **Phản hồi:**
+  - `200 OK`: Trả về dữ liệu cảm biến theo ngày.
+    ```json
+    {
+      "temperature": [
+        { "label": "8", "value": 18 },
+        { "label": "9", "value": 20 },
+        { "label": "12", "value": 34 },
+        { "label": "15", "value": 24 },
+        { "label": "18", "value": 24 },
+        { "label": "20", "value": 24 },
+        { "label": "23", "value": 24 }
+      ],
+      "humidity": [
+        { "label": "8", "value": 55 },
+        { "label": "9", "value": 58 },
+        { "label": "12", "value": 65 },
+        { "label": "15", "value": 60 },
+        { "label": "18", "value": 59 },
+        { "label": "20", "value": 61 },
+        { "label": "23", "value": 62 }
+      ],
+      "soil_moisture": [
+        { "label": "8", "value": 45 },
+        { "label": "9", "value": 46 },
+        { "label": "12", "value": 48 },
+        { "label": "15", "value": 47 },
+        { "label": "18", "value": 45 },
+        { "label": "20", "value": 44 },
+        { "label": "23", "value": 43 }
+      ],
+      "light": [
+        { "label": "8", "value": 300 },
+        { "label": "9", "value": 500 },
+        { "label": "12", "value": 1200 },
+        { "label": "15", "value": 800 },
+        { "label": "18", "value": 150 },
+        { "label": "20", "value": 10 },
+        { "label": "23", "value": 5 }
+      ]
+    }
+    ```
+    *(Lưu ý: Giá trị `value` có thể là `null` nếu không có dữ liệu nào gần mốc thời gian đó)*
+  - `400 Bad Request`: Định dạng `date` không hợp lệ (không phải `YYYY-MM-DD`).
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy dữ liệu cho ngày được chỉ định (có thể xảy ra nếu không có bản ghi nào trong ngày đó).
+  - `500 Internal Server Error`: Lỗi server khi truy vấn dữ liệu.
+
+***Yêu cầu token ở header của request.***
+
+## Ví dụ fetch data từ Dashboard (ReactJS)
+
+```javascript
+async function fetchDashboardData(date) {
+  const token = localStorage.getItem('token');
+
+  // Đảm bảo định dạng date là YYYY-MM-DD
+  const formattedDate = date;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/dashboard/${formattedDate}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Lỗi ${response.status}: ${errorData.message || response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error('Lỗi khi fetch dữ liệu dashboard:', error);
+    return null;
+  }
+}
+
+// Cách sử dụng:
+const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại YYYY-MM-DD
+fetchDashboardData(today);
+
+```
+
 
 <!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 

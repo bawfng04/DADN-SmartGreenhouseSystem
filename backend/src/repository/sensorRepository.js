@@ -9,6 +9,17 @@ class SensorRepository {
     return SensorModel.getLatestFeed(feedName);
   }
 
+  // update 16 04 2025
+  async getDailySensorData(feedName, startTime, endTime) {
+    return SensorModel.getSensorDataByRange(
+      feedName,
+      startTime,
+      endTime
+    );
+  }
+
+
+
   async getHistory(feedName, startTime, endTime, page, pageSize) {
     return SensorModel.getFeedHistory(
       feedName,

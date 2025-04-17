@@ -12,6 +12,8 @@ const {
   syncFeed,
   getFeedHistory,
   getLatestFeed,
+
+  getDashboardData, //update 16 04 2025
 } = require("../controllers/sensorController");
 const {
   getThreshold,
@@ -131,5 +133,8 @@ router.post(
   authenticateToken,
   scheduleController.updateTaskStatus
 );
+
+//dashboard
+router.get("/dashboard/:date", authenticateToken, getDashboardData);
 
 module.exports = { router };
