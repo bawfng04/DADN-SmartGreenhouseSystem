@@ -153,6 +153,21 @@ class SensorService {
 
     return finalResults;
   }
+
+  async getLatestSensorData() {
+    try {
+      const data = await sensorRepository.getLatestSensorData();
+      if (!data) {
+        return { message: "No data found" };
+      }
+      return data;
+    }
+    catch (error) {
+      console.error("Error getting latest sensor data:", error);
+      throw error;
+    }
+  }
+
 }
 
 
@@ -163,7 +178,7 @@ const sensorService = new SensorService();
 const FEEDS = ["humid", "light", "earth-humid", "thermal"];
 function startAutoSync() {
   setInterval(async () => {
-    console.log("Auto-sync started...");
+    console.log("sensorService.js/Autosync: Auto-sync started...");
 
     for (const feedKey of FEEDS) {
       try {
@@ -175,9 +190,12 @@ function startAutoSync() {
       }
     }
 
-    console.log("Auto-sync completed!");
-  }, 10 * 1000 * 6 * 15); // Every 10 seconds
+    console.log("sensorService.js/Autosync: Auto-sync completed!");
+  }, 10 * 1000);
 }
+
+
+
 
 module.exports = {
   sensorService,

@@ -79,6 +79,27 @@ class SensorModel {
     }
   }
 
+  // lấy dữ liệu mới nhất (API cho /indices)
+  async getLatestSensorData() {
+    const query = `
+    SELECT DISTINCT ON (feed_name) feed_name as name, value, id
+    FROM sensors
+    ORDER BY feed_name, timestamp DESC;
+    `;
+    try {
+      const result = await pool.query(query);
+      return result.rows.map((row, index) => ({
+        id: String(index + 1),
+        name: row.name,
+        value: String(row.value),
+      }));
+    }
+    catch (error) {
+      console.error("Error getting latest sensor data in SensorModel.js:", error);
+      throw error;
+    }
+  }
+
 
 }
 
