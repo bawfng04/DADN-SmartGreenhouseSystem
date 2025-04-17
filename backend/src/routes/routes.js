@@ -25,6 +25,9 @@ const {
   createDeviceData,
 } = require("../controllers/deviceController");
 
+const reminderController = require("../controllers/reminderController")
+
+
 const {
   getAdafruitThermalData,
   getAdafruitLightData,
@@ -139,5 +142,17 @@ router.post(
 router.get("/dashboard/:date", authenticateToken, getDashboardData);
 // latest sensor data (/indices)
 router.get("/indices", authenticateToken, getLatestSensorData);
+
+// reminder
+
+
+router.get("/reminders", authenticateToken, reminderController.getAllReminders);
+router.post("/reminders", authenticateToken, reminderController.createReminder);
+router.delete("/reminders/:id", authenticateToken, reminderController.deleteReminder);
+router.patch(
+  "/reminders/:id/status",
+  authenticateToken,
+  reminderController.updateReminderStatus
+);
 
 module.exports = { router };
