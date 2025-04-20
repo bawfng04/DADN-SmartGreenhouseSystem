@@ -18,8 +18,6 @@ class SensorRepository {
     );
   }
 
-
-
   async getHistory(feedName, startTime, endTime, page, pageSize) {
     return SensorModel.getFeedHistory(
       feedName,
@@ -29,6 +27,11 @@ class SensorRepository {
       pageSize
     );
   }
+
+  async getLatestSensorData() {
+    return SensorModel.getLatestSensorData();
+  }
+
 }
 
 module.exports = new SensorRepository();

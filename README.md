@@ -390,6 +390,169 @@ fetchDashboardData(today);
 ```
 
 
+### 14. Lấy Chỉ Số Cảm Biến Mới Nhất
+
+- **URL:** `/indices`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy giá trị mới nhất của mỗi loại cảm biến (nhiệt độ, độ ẩm, độ ẩm đất, ánh sáng).
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách các chỉ số cảm biến mới nhất.
+    ```json
+    [
+      {
+        "id": "1",
+        "name": "temperature",
+        "value": "23"
+      },
+      {
+        "id": "2",
+        "name": "humidity",
+        "value": "50"
+      },
+      {
+        "id": "3",
+        "name": "soil-moisture",
+        "value": "50"
+      },
+      {
+        "id": "4",
+        "name": "light",
+        "value": "50"
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server khi truy vấn dữ liệu.
+
+***Yêu cầu token ở header của request.***
+
+### 15. Quản lý Reminders
+
+#### 15.1 Lấy Danh Sách Reminders
+
+- **URL:** `/reminders`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy danh sách tất cả các reminders đã được tạo.
+- **Phản hồi:**
+  - `200 OK`: Trả về danh sách reminders.
+    ```json
+    [
+      {
+        "id":"1",
+        "index":"temperature",
+        "higherThan":"40",
+        "lowerThan":"19",
+        "repeatAfter":24,
+        "active":false
+      },
+      {
+        "id":"2",
+        "index":"humidity",
+        "higherThan":null,
+        "lowerThan":"19",
+        "repeatAfter":null,
+        "active":false
+      },
+      {
+        "id":"5",
+        "index":"temperature",
+        "higherThan":"3",
+        "lowerThan":"2",
+        "repeatAfter":2,
+        "active":true
+      }
+      // ...
+    ]
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 15.2 Tạo Reminder Mới
+
+- **URL:** `/reminders`
+- **Phương thức:** `POST`
+- **Mô tả:** Tạo một reminder mới để theo dõi ngưỡng giá trị của một chỉ số.
+- **Nội dung yêu cầu:**
+  ```json
+  {
+    "index": "string", // ví dụ: "temperature", "humidity", "soil_moisture", "light"
+    "higherThan": {
+      "status": boolean, // true nếu muốn cảnh báo khi giá trị cao hơn
+      "value": number | null // Ngưỡng giá trị cao hơn (bắt buộc nếu status là true)
+    },
+    "lowerThan": {
+      "status": boolean, // true nếu muốn cảnh báo khi giá trị thấp hơn
+      "value": number | null // Ngưỡng giá trị thấp hơn (bắt buộc nếu status là true)
+    },
+    "repeatAfter": {
+      "status": boolean, // true nếu muốn lặp lại cảnh báo
+      "value": number | null // Khoảng thời gian lặp lại (bắt buộc nếu status là true)
+    }
+  }
+  ```
+- **Phản hồi:**
+  - `201 Created`: Reminder tạo thành công. Trả về đối tượng reminder vừa tạo.
+    ```json
+    {
+      "id": "3", // ID của reminder mới
+      "index": "temperature",
+      "higherThan": 80,
+      "repeatAfter": 10,
+      "active": true
+    }
+    ```
+  - `400 Bad Request`: Dữ liệu gửi lên không hợp lệ (thiếu `index`, `value` không hợp lệ khi `status` là `true`, ...).
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 15.3 Xóa Reminder
+
+- **URL:** `/reminders/{id}`
+- **Phương thức:** `DELETE`
+- **Mô tả:** Xóa một reminder dựa vào ID.
+- **Tham số đường dẫn (Path Parameter):**
+  - `id`: ID của reminder cần xóa.
+- **Phản hồi:**
+  - `204 No Content`: Xóa thành công (không có nội dung trả về).
+  - `400 Bad Request`: Định dạng `id` không hợp lệ.
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy reminder với `id` cung cấp.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 15.4 Cập Nhật Trạng Thái Reminder (Bật/Tắt)
+
+- **URL:** `/reminders/{id}/status`
+- **Phương thức:** `PATCH`
+- **Mô tả:** Bật hoặc tắt một reminder (thay đổi trạng thái `active`).
+- **Tham số đường dẫn (Path Parameter):**
+  - `id`: ID của reminder cần cập nhật trạng thái.
+- **Nội dung yêu cầu:** (Không cần gửi body)
+- **Phản hồi:**
+  - `200 OK`: Cập nhật trạng thái thành công. Trả về đối tượng reminder đã cập nhật.
+    ```json
+    {
+      "id": "1",
+      "index": "temperature",
+      "higherThan": 40,
+      "lowerThan": 19,
+      "repeatAfter": 24,
+      "active": false // Trạng thái mới sau khi toggle
+    }
+    ```
+  - `400 Bad Request`: Định dạng `id` không hợp lệ.
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy reminder với `id` cung cấp.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+
 <!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`

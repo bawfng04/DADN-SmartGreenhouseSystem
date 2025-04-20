@@ -14,6 +14,7 @@ const {
   getLatestFeed,
 
   getDashboardData, //update 16 04 2025
+  getLatestSensorData,
 } = require("../controllers/sensorController");
 const {
   getThreshold,
@@ -23,6 +24,9 @@ const {
   getDeviceHistory,
   createDeviceData,
 } = require("../controllers/deviceController");
+
+const reminderController = require("../controllers/reminderController")
+
 
 const {
   getAdafruitThermalData,
@@ -136,5 +140,19 @@ router.post(
 
 //dashboard
 router.get("/dashboard/:date", authenticateToken, getDashboardData);
+// latest sensor data (/indices)
+router.get("/indices", authenticateToken, getLatestSensorData);
+
+// reminder
+
+
+router.get("/reminders", authenticateToken, reminderController.getAllReminders);
+router.post("/reminders", authenticateToken, reminderController.createReminder);
+router.delete("/reminders/:id", authenticateToken, reminderController.deleteReminder);
+router.patch(
+  "/reminders/:id/status",
+  authenticateToken,
+  reminderController.updateReminderStatus
+);
 
 module.exports = { router };
