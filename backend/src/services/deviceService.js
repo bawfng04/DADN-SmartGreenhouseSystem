@@ -62,7 +62,7 @@ const deviceService = new DeviceService();
 const DEVICES = ["fan", "light-control", "water-pump"];
 function startDeviceAutoSync() {
   setInterval(async () => {
-    console.log("Auto-sync started...");
+    console.log("Auto-sync started device...");
 
     for (const feedKey of DEVICES) {
       try {
@@ -75,7 +75,7 @@ function startDeviceAutoSync() {
     }
 
     console.log("Auto-sync completed!");
-  }, 10 * 1000 * 6 * 15); // Every 10 seconds
+  }, 10 * 1000); // Every 10 seconds
 }
 
 module.exports = {
