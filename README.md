@@ -71,7 +71,7 @@
 
 ### 4. Lấy Dữ Liệu Nhiệt Độ Từ Adafruit
 
-- **URL:** `/adafruit-thermal-data`
+- **URL:** `/adafruit/thermal`
 - **Phương thức:** `GET`
 - **Mô tả:** Lấy dữ liệu nhiệt độ từ Adafruit.
 - **Phản hồi:**
@@ -82,7 +82,7 @@
 
 ### 5. Lấy Dữ Liệu Đèn Từ Adafruit
 
-- **URL:** `/adafruit-light-data`
+- **URL:** `/adafruit/light`
 - **Phương thức:** `GET`
 - **Mô tả:** Lấy dữ liệu đèn từ Adafruit.
 - **Phản hồi:**
@@ -93,7 +93,7 @@
 
 ### 6. Lấy Dữ Liệu Độ Ẩm Đất Từ Adafruit
 
-- **URL:** `/adafruit-earth-humid-data`
+- **URL:** `/adafruit/earth-humid`
 - **Phương thức:** `GET`
 - **Mô tả:** Lấy dữ liệu độ ẩm đất từ Adafruit.
 - **Phản hồi:**
@@ -104,7 +104,7 @@
 
 ### 7. Lấy Dữ Liệu Độ Ẩm Không Khí Từ Adafruit
 
-- **URL:** `/adafruit-humid-data`
+- **URL:** `/adafruit/humid`
 - **Phương thức:** `GET`
 - **Mô tả:** Lấy dữ liệu độ ẩm không khí từ Adafruit.
 - **Phản hồi:**
