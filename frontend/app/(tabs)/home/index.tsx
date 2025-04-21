@@ -1,5 +1,5 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
-import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Card, Title } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 interface DeviceState {
   id: string;
@@ -27,8 +28,58 @@ interface EquipmentState {
   icon: ImageSourcePropType;
 }
 
+const deviceStates: DeviceState[] = [
+  {
+    id: "1",
+    name: "Nhiệt độ",
+    value: "23 °C",
+    icon: require("@/assets/images/Temperature.png"),
+  },
+  {
+    id: "2",
+    name: "Độ ẩm không khí",
+    value: "50 %",
+    icon: require("@/assets/images/Humidity.png"),
+  },
+  {
+    id: "3",
+    name: "Độ ẩm đất",
+    value: "50 %",
+    icon: require("@/assets/images/SoilMoisture.png"),
+  },
+  {
+    id: "4",
+    name: "Cường độ ánh sáng",
+    value: "300 lux",
+    icon: require("@/assets/images/Sunlight.png"),
+  },
+];
+
+const equipmentStates: EquipmentState[] = [
+  {
+    id: "1",
+    name: "Đèn LED",
+    status: true,
+    icon: require("@/assets/images/led.png"),
+  },
+  {
+    id: "2",
+    name: "Quạt",
+    status: true,
+    icon: require("@/assets/images/fan.png"),
+  },
+  {
+    id: "3",
+    name: "Bơm nước",
+    status: false,
+    icon: require("@/assets/images/pump.png"),
+  },
+];
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const [isNotification, setIsNotification] = useState(false);
+  const router = useRouter();
 
   const date = new Date();
   const formattedDate = date.toLocaleDateString("vi-VN", {
@@ -39,53 +90,9 @@ export default function HomeScreen() {
     year: "numeric",
   });
 
-  const deviceStates: DeviceState[] = [
-    {
-      id: "1",
-      name: "Nhiệt độ",
-      value: "23 °C",
-      icon: require("@/assets/images/Temperature.png"),
-    },
-    {
-      id: "2",
-      name: "Độ ẩm không khí",
-      value: "50 %",
-      icon: require("@/assets/images/Humidity.png"),
-    },
-    {
-      id: "3",
-      name: "Độ ẩm đất",
-      value: "50 %",
-      icon: require("@/assets/images/SoilMoisture.png"),
-    },
-    {
-      id: "4",
-      name: "Cường độ ánh sáng",
-      value: "300 lux",
-      icon: require("@/assets/images/Sunlight.png"),
-    },
-  ];
-
-  const equipmentStates: EquipmentState[] = [
-    {
-      id: "1",
-      name: "Đèn LED",
-      status: true,
-      icon: require("@/assets/images/led.png"),
-    },
-    {
-      id: "2",
-      name: "Quạt",
-      status: true,
-      icon: require("@/assets/images/fan.png"),
-    },
-    {
-      id: "3",
-      name: "Bơm nước",
-      status: false,
-      icon: require("@/assets/images/pump.png"),
-    },
-  ];
+  const handleNotification = () => {
+    router.push("/home/notification");
+  };
 
   return (
     <SafeAreaView
@@ -101,8 +108,22 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.headingText}>Hello, user!</Text>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Text style={styles.notificationText}>Noti</Text>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={handleNotification}
+          >
+            {isNotification && (
+              <Image
+                source={require("@/assets/images/active.png")}
+                style={{ width: 24, height: 24 }}
+              />
+            )}
+            {!isNotification && (
+              <Image
+                source={require("@/assets/images/notification.png")}
+                style={{ width: 24, height: 24 }}
+              />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -180,7 +201,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF9500",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 15,
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   notificationText: {
     color: "#fff",

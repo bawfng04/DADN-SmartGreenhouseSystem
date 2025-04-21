@@ -158,6 +158,7 @@ export default function ReminderTab() {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log("reminders", reminders);
       setReminderList(reminders);
     }
   }, [isSuccess]);
