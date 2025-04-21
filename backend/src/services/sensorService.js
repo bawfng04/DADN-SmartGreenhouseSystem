@@ -16,9 +16,6 @@ const {
 const TARGET_HOURS = [8, 9, 12, 15, 18, 20, 23];
 const SENSOR_TYPES = ["thermal", "humid", "earth-humid", "light"];
 
-
-
-
 class SensorService {
   async syncFeed(feedKey) {
     let fetchFeedDataFn;
@@ -161,17 +158,12 @@ class SensorService {
         return { message: "No data found" };
       }
       return data;
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error getting latest sensor data:", error);
       throw error;
     }
   }
-
 }
-
-
-
 
 const sensorService = new SensorService();
 
@@ -186,16 +178,12 @@ function startAutoSync() {
         console.log(`Synced feed: ${feedKey}`, result);
       } catch (error) {
         console.error(`Error syncing feed ${feedKey}:`, error);
-
       }
     }
 
     console.log("sensorService.js/Autosync: Auto-sync completed!");
   }, 10 * 1000);
 }
-
-
-
 
 module.exports = {
   sensorService,

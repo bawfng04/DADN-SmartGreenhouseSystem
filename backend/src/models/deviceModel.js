@@ -25,6 +25,7 @@ class DeviceModel {
     pageSize = 10
   ) {
     const offset = (page - 1) * pageSize;
+    console.log(pageSize);
     const query = `
      SELECT * FROM devices
      WHERE feed_name = $1

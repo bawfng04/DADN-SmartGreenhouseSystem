@@ -1,10 +1,14 @@
 const { deviceService } = require("../services/deviceService");
+require("dotenv").config();
+const mqttClient = require("../utils/mqtt");
 const {
   createAdafruitFanData,
   createAdafruitLightControlData,
   createAdafruitWaterPumpData,
 } = require("./adafruitController");
 
+const buildTopic = (feedKey) =>
+  `${process.env.ADAFRUIT_IO_USERNAME}/feeds/${feedKey}`;
 class DeviceController {
   async syncDeviceData(req, res) {
     const feedKey = req.params.feedKey;

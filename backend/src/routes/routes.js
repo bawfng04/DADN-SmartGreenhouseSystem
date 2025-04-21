@@ -25,8 +25,7 @@ const {
   createDeviceData,
 } = require("../controllers/deviceController");
 
-const reminderController = require("../controllers/reminderController")
-
+const reminderController = require("../controllers/reminderController");
 
 const {
   getAdafruitThermalData,
@@ -56,13 +55,13 @@ router.post("/changePassword", authenticateToken, changePassword);
 router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit - original routes with the new handler functions
-router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
+// router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
 
-router.get(
-  "/adafruit/earth-humid",
-  authenticateToken,
-  getAdafruitEarthHumidData
-);
+// router.get(
+//   "/adafruit/earth-humid",
+//   authenticateToken,
+//   getAdafruitEarthHumidData
+// );
 router.get("/adafruit/humid", authenticateToken, getAdafruitHumidData);
 
 //adafruit - sync routes
@@ -145,10 +144,13 @@ router.get("/indices", authenticateToken, getLatestSensorData);
 
 // reminder
 
-
 router.get("/reminders", authenticateToken, reminderController.getAllReminders);
 router.post("/reminders", authenticateToken, reminderController.createReminder);
-router.delete("/reminders/:id", authenticateToken, reminderController.deleteReminder);
+router.delete(
+  "/reminders/:id",
+  authenticateToken,
+  reminderController.deleteReminder
+);
 router.patch(
   "/reminders/:id/status",
   authenticateToken,
