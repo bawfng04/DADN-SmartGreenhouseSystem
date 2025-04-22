@@ -25,23 +25,7 @@ const {
   createDeviceData,
 } = require("../controllers/deviceController");
 
-const reminderController = require("../controllers/reminderController")
-
-
-const {
-  getAdafruitThermalData,
-  getAdafruitLightData,
-  getAdafruitEarthHumidData,
-  getAdafruitHumidData,
-  getAdafruitFanData,
-  getAdafruitWaterPumpData,
-  getAdafruitLightControlData,
-  createAdafruitFanData,
-  createAdafruitWaterPumpData,
-  createAdafruitLightControlData,
-} = require("../controllers/adafruitController");
-
-const DeviceController = require("../controllers/deviceController");
+const reminderController = require("../controllers/reminderController");
 
 //login/register/changepassword
 router.get("/", (req, res) => {
@@ -56,14 +40,13 @@ router.post("/changePassword", authenticateToken, changePassword);
 router.get("/example", authenticateToken, getExampleTable);
 
 //adafruit - original routes with the new handler functions
-router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
+// router.get("/adafruit/thermal", authenticateToken, getAdafruitThermalData);
 
-router.get(
-  "/adafruit/earth-humid",
-  authenticateToken,
-  getAdafruitEarthHumidData
-);
-router.get("/adafruit/humid", authenticateToken, getAdafruitHumidData);
+// router.get(
+//   "/adafruit/earth-humid",
+//   authenticateToken,
+//   getAdafruitEarthHumidData
+// );
 
 //adafruit - sync routes
 router.get("/adafruit/sync-feed/:feedKey", authenticateToken, syncFeed);
@@ -72,54 +55,10 @@ router.get("/adafruit/:feedKey", authenticateToken, getFeedHistory);
 //threshold
 router.get("/threshold/:feedKey", authenticateToken, getThreshold);
 router.put("/threshold/:feedKey", authenticateToken, updateThreshold);
+
 //device
 router.get("/device/:feedKey", authenticateToken, getDeviceHistory);
 router.post("/device/:feedKey", authenticateToken, createDeviceData);
-
-// gửi lên adafruit
-
-router.get("/device/fan", authenticateToken, getAdafruitFanData);
-
-router.post("/device/fan", authenticateToken, createAdafruitFanData);
-
-router.get("/adafruit/light", authenticateToken, getAdafruitLightData);
-
-router.post(
-  "/device/light-control",
-  authenticateToken,
-  createAdafruitLightControlData
-);
-
-router.post(
-  "/device/water-pump",
-  authenticateToken,
-  createAdafruitWaterPumpData
-);
-
-router.get("/device/water-pump", authenticateToken, getAdafruitWaterPumpData);
-
-//publish
-router.get(
-  "/device/fan/:status",
-  authenticateToken,
-  DeviceController.controlFan
-);
-router.get(
-  "/device/light-control/:status",
-  authenticateToken,
-  DeviceController.controlLight
-);
-router.get(
-  "/device/water-pump/:status",
-  authenticateToken,
-  DeviceController.controlPump
-);
-
-router.get(
-  "/device/light-control",
-  authenticateToken,
-  getAdafruitLightControlData
-);
 
 //schedule
 router.post(
@@ -145,10 +84,13 @@ router.get("/indices", authenticateToken, getLatestSensorData);
 
 // reminder
 
-
 router.get("/reminders", authenticateToken, reminderController.getAllReminders);
 router.post("/reminders", authenticateToken, reminderController.createReminder);
-router.delete("/reminders/:id", authenticateToken, reminderController.deleteReminder);
+router.delete(
+  "/reminders/:id",
+  authenticateToken,
+  reminderController.deleteReminder
+);
 router.patch(
   "/reminders/:id/status",
   authenticateToken,

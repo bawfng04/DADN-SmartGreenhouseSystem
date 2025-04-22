@@ -36,6 +36,9 @@ class SensorModel {
 
   async getFeedHistory(feedName, startTime, endTime, page = 1, pageSize = 10) {
     const offset = (page - 1) * pageSize;
+    console.log(pageSize, "ádsadasdas");
+    console.log(feedName);
+
     const query = `
      SELECT * FROM sensors
      WHERE feed_name = $1
@@ -58,8 +61,6 @@ class SensorModel {
       throw error;
     }
   }
-
-
 
   // lấy dữ liệu trong range thời gian
   async getSensorDataByRange(feedName, startTime, endTime) {
@@ -92,29 +93,25 @@ class SensorModel {
         let newName = row.name;
         if (newName === "earth-humid") {
           newName = "soil-moisture";
-        }
-        else if (newName === "thermal") {
+        } else if (newName === "thermal") {
           newName = "temperature";
-        }
-        else if (newName === "humid") {
+        } else if (newName === "humid") {
           newName = "humidity";
         }
         return {
           id: row.id,
           name: newName,
           value: row.value,
-        }
-      })
-
-
-    }
-    catch (error) {
-      console.error("Error getting latest sensor data in SensorModel.js:", error);
+        };
+      });
+    } catch (error) {
+      console.error(
+        "Error getting latest sensor data in SensorModel.js:",
+        error
+      );
       throw error;
     }
   }
-
-
 }
 
 module.exports = new SensorModel();

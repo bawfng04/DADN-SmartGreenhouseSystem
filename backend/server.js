@@ -46,8 +46,8 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  startAutoSync();
-  startDeviceAutoSync();
+  // startAutoSync();
+  // startDeviceAutoSync();
   // chạy scheduler
   startScheduler(10000); // chạy 10s/lần
   console.log(`Server running on port ${PORT}`);
