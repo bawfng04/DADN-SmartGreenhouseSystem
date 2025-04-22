@@ -120,7 +120,7 @@ Fetch data nhiệt độ:
 ```javascript
 const [adafruitData, setAdafruitData] = useState([]);
 
-const API = `${BaseURL}/adafruit-thermal-data`;
+const API = `${BaseURL}/adafruit/thermal`
 
 async function fetchAdafruitData() {
   try {
