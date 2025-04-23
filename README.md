@@ -698,12 +698,12 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
 
 #### 16.4 Cập Nhật Trạng Thái Thiết Bị (Bật/Tắt)
 
-- **URL:** `/settings/{id}/status`
+- **URL:** `/settings/{name}/status`
 - **Phương thức:** `PATCH`
 - **Mô tả:** Bật hoặc tắt một thiết bị (toggle trạng thái `status`). Lệnh điều khiển MQTT sẽ được gửi.
 - **Tham số đường dẫn (Path Parameter):**
-  - `id`: ID của thiết bị (1 cho led, 2 cho fan, 3 cho pump).
-- **Nội dung yêu cầu:** (Không cần gửi body)
+  - `name`: Tên của thiết bị (led, fan, pump).
+- **Nội dung yêu cầu:** Không cần gửi body
 - **Phản hồi:**
   - `200 OK`: Cập nhật trạng thái thành công.
     ```json
@@ -723,7 +723,7 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
     }
     ```
   - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
-  - `404 Not Found`: Không tìm thấy thiết bị với `id` cung cấp.
+  - `404 Not Found`: Không tìm thấy thiết bị với `name` cung cấp.
   - `500 Internal Server Error`: Lỗi server.
 
 ***Yêu cầu token ở header của request.***
