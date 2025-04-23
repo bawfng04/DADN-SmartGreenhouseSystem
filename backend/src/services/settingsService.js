@@ -100,6 +100,7 @@ class SettingsService{
 
     async updateSettingStatusByName(name) {
         const currentSetting = await this.getSettingByName(name);
+        console.log("currentSetting", currentSetting);
         if (!currentSetting) {
             throw new Error("Settings not found");
         }
@@ -119,6 +120,7 @@ class SettingsService{
             publishToFeed(feedKey, payload);
         }
 
+        return updatedSettings;
     }
 }
 

@@ -675,12 +675,13 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
 - **Tham số đường dẫn (Path Parameter):**
   - `name`: Tên của thiết bị (led, fan, pump).
 - **Nội dung yêu cầu:** Gửi một object chứa các trường cần cập nhật. Ví dụ:
+  Cập nhật nhiều trường cùng lúc:
   ```json
   {
     "mode": "manual",
     "status": true,
     "intensity": 75,
-    "turn_off_after": 30 // Cập nhật nhiều trường cùng lúc
+    "turn_off_after": 30
   }
   ```
   Hoặc chỉ cập nhật một trường:

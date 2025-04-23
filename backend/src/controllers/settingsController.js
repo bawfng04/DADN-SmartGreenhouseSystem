@@ -68,8 +68,8 @@ class SettingsController {
     async updateSettingStatusByName(req, res) {
         try {
             const { name } = req.params;
-            const { status } = req.body;
-            const updatedSettings = await settingsService.updateSettingStatusByName(name, status);
+            const updatedSettings = await settingsService.updateSettingStatusByName(name);
+            console.log("updatedSettings", updatedSettings);
             if (!updatedSettings) {
                 return res.status(404).json({ message: "Settings not found" });
             }
