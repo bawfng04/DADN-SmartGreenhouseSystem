@@ -588,6 +588,8 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
     -   Danh sách các ngày cụ thể áp dụng lịch trình (chỉ dùng khi `repeat` là `'custom'`).
     -   Định dạng ngày: `'YYYY-MM-DD'`.
     -   Ví dụ: `["2025-04-23", "2025-04-25"]`.
+
+
 #### 16.1 Lấy Danh Sách Cài Đặt Hiện Tại
 
 - **URL:** `/settings`
@@ -709,7 +711,7 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
     ```json
     {
       "message": "Device status toggled successfully",
-      "setting": { // Thông tin chi tiết thiết bị sau khi cập nhật status
+      "setting": {
         "id": 1,
         "name": "led",
         "mode": "manual",
