@@ -49,6 +49,9 @@ class ReminderController {
             res.status(200).json({ message: "Reminder deleted" });
         } catch (error) {
             console.error("Error deleting reminder:", error);
+            if (error.message === "Reminder not found") {
+                return res.status(404).json({ message: "Reminder not found" });
+            }
             res.status(500).json({ message: "Error deleting reminder" });
         }
     }

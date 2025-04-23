@@ -553,6 +553,185 @@ fetchDashboardData(today);
 ***Yêu cầu token ở header của request.***
 
 
+
+### 16. Quản lý Cài đặt Thiết bị (Settings)
+
+#### Định dạng Dữ liệu Cài đặt (Settings Data Format)
+
+Dưới đây là mô tả các trường có thể có trong đối tượng cài đặt của một thiết bị:
+
+-   **`name`**: `string`
+    -   Tên định danh của thiết bị.
+    -   Giá trị hợp lệ: `'led'`, `'fan'`, `'pump'`.
+-   **`mode`**: `string`
+    -   Chế độ hoạt động của thiết bị.
+    -   Giá trị hợp lệ: `'manual'`, `'scheduled'`, `'automatic'`.
+-   **`status`**: `boolean`
+    -   Trạng thái bật/tắt của thiết bị.
+    -   Giá trị: `true` (bật), `false` (tắt).
+-   **`intensity`**: `number`
+    -   Cường độ hoạt động của thiết bị.
+    -   Khoảng giá trị:
+        -   `0` đến `1` cho `led`.
+        -   `0` đến `100` cho `fan` và `pump`.
+-   **`turn_off_after`**: `integer | null`
+    -   Thời gian (tính bằng phút) thiết bị sẽ tự động tắt sau khi được bật (chỉ áp dụng ở một số chế độ).
+    -   Ví dụ: `30` (tắt sau 30 phút).
+-   **`turn_on_at`**: `string | null`
+    -   Thời điểm cụ thể trong ngày thiết bị sẽ tự động bật (chỉ áp dụng ở chế độ 'scheduled').
+    -   Định dạng: `'HH:MM'` hoặc `'HH:MM:SS'`.
+    -   Ví dụ: `"23:00:00"`, `"08:30"`.
+-   **`repeat`**: `string | null`
+    -   Tần suất lặp lại của lịch trình (chỉ áp dụng ở chế độ 'scheduled').
+    -   Giá trị hợp lệ: `'today'`, `'everyday'`, `'custom'`.
+-   **`dates`**: `string[] | null`
+    -   Danh sách các ngày cụ thể áp dụng lịch trình (chỉ dùng khi `repeat` là `'custom'`).
+    -   Định dạng ngày: `'YYYY-MM-DD'`.
+    -   Ví dụ: `["2025-04-23", "2025-04-25"]`.
+
+
+#### 16.1 Lấy Danh Sách Cài Đặt Hiện Tại
+
+- **URL:** `/settings`
+- **Phương thức:** `GET`
+- **Mô tả:** Trả về tất cả settings của các thiết bị hiện tại (led, fan, pump).
+- **Phản hồi:**
+  - `200 OK`: Danh sách trạng thái.
+    ```json
+    [
+      {
+          "name": "led",
+          "mode": "manual",
+          "status": false,
+          "intensity": 50,
+          "turn_off_after": null,
+          "turn_on_at": null,
+          "repeat": null,
+          "dates": null,
+          "updated_at": "2025-04-22T23:13:08.158Z"
+      },
+      {
+          "name": "fan",
+          "mode": "manual",
+          "status": false,
+          "intensity": 0,
+          "turn_off_after": null,
+          "turn_on_at": null,
+          "repeat": null,
+          "dates": null,
+          "updated_at": "2025-04-22T23:13:08.158Z"
+      },
+      {
+          "name": "pump",
+          "mode": "manual",
+          "status": false,
+          "intensity": 0,
+          "turn_off_after": null,
+          "turn_on_at": null,
+          "repeat": null,
+          "dates": null,
+          "updated_at": "2025-04-22T23:13:08.158Z"
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 16.2 Lấy Thông Tin Chi Tiết Thiết Bị
+
+- **URL:** `/settings/{name}`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy settings của một thiết bị cụ thể.
+- **Tham số đường dẫn (Path Parameter):**
+  - `name`: Tên của thiết bị (led, fan, pump).
+- **Phản hồi:**
+  - `200 OK`: Thông tin chi tiết thiết bị.
+    ```json
+    {
+        "name": "fan",
+        "mode": "manual",
+        "status": false,
+        "intensity": 0,
+        "turn_off_after": null,
+        "turn_on_at": null,
+        "repeat": null,
+        "dates": null,
+        "updated_at": "2025-04-22T23:13:08.158Z"
+    }
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy thiết bị với `name` cung cấp.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 16.3 Cập Nhật Thông Tin Thiết Bị
+
+- **URL:** `/settings/{name}`
+- **Phương thức:** `PUT`
+- **Mô tả:** Cập nhật một hoặc nhiều thông tin cài đặt cho một thiết bị. Lệnh điều khiển MQTT sẽ được gửi nếu `status` hoặc `intensity` thay đổi.
+- **Tham số đường dẫn (Path Parameter):**
+  - `name`: Tên của thiết bị (led, fan, pump).
+- **Nội dung yêu cầu:** Gửi một object chứa các trường cần cập nhật. Ví dụ:
+  Cập nhật nhiều trường cùng lúc:
+  ```json
+  {
+    "mode": "manual",
+    "status": true,
+    "intensity": 75,
+    "turn_off_after": 30
+  }
+  ```
+  Hoặc chỉ cập nhật một trường:
+  ```json
+  {
+    "intensity": 90
+  }
+  ```
+- **Phản hồi:**
+  - `200 OK`: Cập nhật thành công. Trả về thông tin chi tiết thiết bị đã được cập nhật (tương tự response của GET `/settings/{name}`).
+  - `400 Bad Request`: Dữ liệu không hợp lệ (ví dụ: `mode` sai, `intensity` ngoài khoảng 0-100).
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy thiết bị với `id` cung cấp.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 16.4 Cập Nhật Trạng Thái Thiết Bị (Bật/Tắt)
+
+- **URL:** `/settings/{name}/status`
+- **Phương thức:** `PATCH`
+- **Mô tả:** Bật hoặc tắt một thiết bị (toggle trạng thái `status`). Lệnh điều khiển MQTT sẽ được gửi.
+- **Tham số đường dẫn (Path Parameter):**
+  - `name`: Tên của thiết bị (led, fan, pump).
+- **Nội dung yêu cầu:** Không cần gửi body
+- **Phản hồi:**
+  - `200 OK`: Cập nhật trạng thái thành công.
+    ```json
+    {
+      "message": "Device status toggled successfully",
+      "setting": {
+        "id": 1,
+        "name": "led",
+        "mode": "manual",
+        "status": false, // Trạng thái mới
+        "intensity": 50,
+        "turn_off_after": null,
+        "turn_on_at": null,
+        "repeat": null,
+        "dates": null
+      }
+    }
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy thiết bị với `name` cung cấp.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+
 <!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
 
 - **URL:** `/get-schedule`
