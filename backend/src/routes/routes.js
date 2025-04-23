@@ -7,6 +7,7 @@ const { loginUser } = require("../controllers/loginController");
 const { registerUser } = require("../controllers/registerController");
 const { getExampleTable } = require("../controllers/examplesController");
 const scheduleController = require("../controllers/scheduleControler");
+const settingsController = require("../controllers/settingsController");
 
 const {
   syncFeed,
@@ -95,6 +96,27 @@ router.patch(
   "/reminders/:id/status",
   authenticateToken,
   reminderController.updateReminderStatus
+);
+
+
+// settings
+router.get("/settings", authenticateToken, settingsController.getAllSettings);
+router.get(
+  "/settings/:name",
+  authenticateToken,
+  settingsController.getSettingsByName
+);
+
+router.put(
+  "/settings/:name",
+  authenticateToken,
+  settingsController.updateSettingByName
+);
+
+router.put(
+  "/settings/:name/status",
+  authenticateToken,
+  settingsController.updateSettingStatusByName
 );
 
 module.exports = { router };

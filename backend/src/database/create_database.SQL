@@ -363,7 +363,7 @@ DROP TABLE IF EXISTS device_configurations;
 CREATE TABLE device_configurations (
     name VARCHAR(50) PRIMARY KEY,
     mode VARCHAR(20) NOT NULL DEFAULT 'manual' CHECK (mode IN ('manual', 'scheduled', 'automatic')),
-    status BOOLEAN NOT NULL DEFAULT FALSE,
+    status BOOLEAN NOT NULL DEFAULT FALSE, -- true: on, false: off
     intensity INTEGER NOT NULL DEFAULT 0 CHECK (intensity >= 0 AND intensity <= 100),
     turn_off_after INTEGER, -- In minutes, NULL allowed only for manual/automatic
     turn_on_at TIME, -- Only for 'scheduled' mode
