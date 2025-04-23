@@ -358,4 +358,40 @@ ALTER TABLE ONLY public.schedule_tasks
 -- PostgreSQL database dump complete
 --
 
+-- bảng cho api /settings
+DROP TABLE IF EXISTS device_configurations;
+CREATE TABLE device_configurations (
+    name VARCHAR(50) PRIMARY KEY,
+    mode VARCHAR(20) NOT NULL DEFAULT 'manual' CHECK (mode IN ('manual', 'scheduled', 'automatic')),
+    status BOOLEAN NOT NULL DEFAULT FALSE,
+    intensity INTEGER NOT NULL DEFAULT 0 CHECK (intensity >= 0 AND intensity <= 100),
+    turn_off_after INTEGER, -- In minutes, NULL allowed only for manual/automatic
+    turn_on_at TIME, -- Only for 'scheduled' mode
+    repeat VARCHAR(10) CHECK (repeat IN ('today', 'everyday', 'custom')), -- Only for 'scheduled' mode
+    dates TEXT[], -- Array of 'YYYY-MM-DD' strings, only for 'scheduled' with 'custom' repeat
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO device_configurations (name, mode, status, intensity, turn_off_after) VALUES
+('led', 'manual', false, 50, null),
+('fan', 'manual', false, 0, null),
+('pump', 'manual', false, 0, null)
+ON CONFLICT (name) DO NOTHING;
+
+
+-- hàm để update update_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.updated_at = NOW();
+   RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- trigger cho device_configurations
+CREATE TRIGGER update_device_configurations_updated_at
+BEFORE UPDATE ON device_configurations
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
 SET search_path TO public
