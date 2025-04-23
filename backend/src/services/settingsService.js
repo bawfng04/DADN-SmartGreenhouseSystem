@@ -38,7 +38,7 @@ class SettingsService{
     async getAllSettings() {
         try {
             const settings = await settingsRepository.getAllSettings();
-            if (!setting || settings.length === 0) {
+            if (!settings || settings.length === 0) {
                 throw new Error("No settings found");
             }
             return settings;
@@ -50,8 +50,9 @@ class SettingsService{
 
     async getSettingByName(name) {
         try {
-            const settings = await settingsRepository.getSettingsByName(name);
+            const settings = await settingsRepository.getSettingByName(name);
             if (!settings || settings.length === 0) {
+                // console.log("THISSSS");
                 throw new Error("Settings not found");
             }
             return settings;
@@ -69,6 +70,19 @@ class SettingsService{
             }
             // lấy feedkey tương ứng với device name
             // vd: led -> light-control, fan -> fan, pump -> water-pump
+            if (name === "pump" || name === "fan") {
+                if(settingsData.intensity > 100 || settingsData.intensity < 0) {
+                    throw new Error("Invalid intensity value for pump, fan or led");
+                }
+            }
+            if (name === "led") {
+                if(settingsData.intensity > 1 || settingsData.intensity < 0) {
+                    throw new Error(
+                      "Invalid intensity value for pump, fan or led"
+                    );
+                }
+            }
+
             const feedKey = getFeedKey(name);
             if (feedKey) {
                 const payload = determineMQttPayload(name, settings);

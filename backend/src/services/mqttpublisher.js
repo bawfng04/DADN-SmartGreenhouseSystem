@@ -1,10 +1,44 @@
 const client = require("../utils/mqtt");
+require("dotenv").config();
+
+function publishToFeed(feedKey, payload) {
+  const topic = `${process.env.ADAFRUIT_IO_USERNAME}/feeds/${feedKey}`;
+  const payloadString = String(payload);
+  //validate payload
+  if (feedKey === "water-pump") {
+    if (payload > 100 || payload < 0) {
+      throw new Error("Invalid value for water pump");
+    }
+  }
+  if (feedKey === "light-control") {
+    if (payload > 1 || payload < 0) {
+      throw new Error("Invalid value for light control");
+    }
+  }
+  if (feedKey === "fan") {
+    if (payload > 100 || payload < 0) {
+      throw new Error("Invalid value for fan");
+    }
+  }
+  client.publish(topic, payloadString, (error) => {
+    if (error) {
+      console.error(`Failed to publish to MQTT feed ${feedKey}:`, error);
+      throw new Error(`Failed to publish to MQTT feed ${feedKey}`);
+    } else {
+      console.log(`Published to ${topic}: ${payloadString}`);
+    }
+  });
+}
+
 
 const createAdafruitWaterPumpData = async (req, res) => {
   try {
     const { value } = req.body;
     console.log(value);
-
+    //validate value
+    if (value > 100 || value < 0) {
+      return res.status(400).json({ message: "Invalid value for water pump" });
+    }
     const topic = `justkh29/feeds/water-pump`;
     const payload = value.toString();
 
@@ -26,6 +60,10 @@ const createAdafruitWaterPumpData = async (req, res) => {
 const createAdafruitLightControlData = async (req, res) => {
   try {
     const { value } = req.body;
+    //validate value
+    if (value > 1 || value < 0) {
+      return res.status(400).json({ message: "Invalid value for light control" });
+    }
     console.log(value);
 
     const topic = `justkh29/feeds/light-control`;
@@ -51,6 +89,10 @@ const createAdafruitFanData = async (req, res) => {
   try {
     const { value } = req.body;
     console.log(value);
+    //validate value
+    if (value > 100 || value < 0) {
+      return res.status(400).json({ message: "Invalid value for fan" });
+    }
 
     const topic = `justkh29/feeds/fan`;
     const payload = value.toString();
@@ -73,4 +115,5 @@ module.exports = {
   createAdafruitWaterPumpData,
   createAdafruitLightControlData,
   createAdafruitFanData,
+  publishToFeed,
 };

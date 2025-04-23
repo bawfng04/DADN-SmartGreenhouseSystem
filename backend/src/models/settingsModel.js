@@ -3,7 +3,7 @@ const { pool } = require("../database/PostgreDatabase");
 class SettingsModel {
     async getAllSettings() {
         const query =
-            `SELECT name, mode, status, intensity FROM device_configurations ORDER BY name ASC`;
+            `SELECT * FROM device_configurations`;
         try {
             const result = await pool.query(query);
             return result.rows;
@@ -15,7 +15,7 @@ class SettingsModel {
     }
 
     async getSettingByName(name) {
-        const query = `SELECT name, mode, status, intensity FROM device_configurations WHERE name = $1`;
+        const query = `SELECT * FROM device_configurations WHERE name = $1`;
         try {
             const result = await pool.query(query, [name]);
             // nếu không có result
