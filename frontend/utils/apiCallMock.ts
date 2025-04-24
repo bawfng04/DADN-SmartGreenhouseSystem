@@ -1,16 +1,12 @@
-import Constants from "expo-constants";
-
 interface ApiCallParams {
   endpoint: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: any;
 }
 
-const extra = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
+const apiUrl = "https://nhunng.ngrok.app/api";
 
-const { apiUrl, token } = extra;
-
-export const apiCall = async ({
+export const apiCallMock = async ({
   endpoint,
   method = "GET",
   body,
@@ -18,7 +14,6 @@ export const apiCall = async ({
   try {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     };
 
     const config: RequestInit = {

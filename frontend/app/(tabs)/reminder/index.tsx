@@ -28,7 +28,7 @@ const unit = {
   light: "lux",
 };
 
-const index = {
+const name = {
   temperature: "Nhiệt độ",
   soil_moisture: "Độ ẩm đất",
   humidity: "Độ ẩm không khí",
@@ -44,7 +44,7 @@ const icon = {
 
 interface ReminderType {
   id: string;
-  title: string;
+  index: string;
   higherThan: number;
   lowerThan: number;
   repeatAfter: number;
@@ -52,7 +52,7 @@ interface ReminderType {
 }
 const CardReminder: React.FC<ReminderType> = ({
   id,
-  title,
+  index,
   higherThan,
   lowerThan,
   repeatAfter,
@@ -69,10 +69,7 @@ const CardReminder: React.FC<ReminderType> = ({
     mutationFn: async () => {
       return apiCall({
         endpoint: `/reminders/${id}/status`,
-        method: "PUT",
-        body: {
-          active: !updateStatus,
-        },
+        method: "PATCH",
       });
     },
     onError: (error) => {
@@ -84,9 +81,9 @@ const CardReminder: React.FC<ReminderType> = ({
   return (
     <View style={styles.card}>
       <View style={styles.LeftSection}>
-        <Image source={icon[title as keyof typeof icon]} style={styles.icon} />
+        <Image source={icon[index as keyof typeof icon]} style={styles.icon} />
         <View style={styles.info}>
-          <Text style={styles.name}>{index[title as keyof typeof index]}</Text>
+          <Text style={styles.name}>{name[index as keyof typeof name]}</Text>
           <View style={styles.displayRow}>
             {higherThan && (
               <Text style={styles.label}>
@@ -94,7 +91,7 @@ const CardReminder: React.FC<ReminderType> = ({
                   ? "Cao hơn " +
                     higherThan +
                     " " +
-                    unit[title as keyof typeof unit]
+                    unit[index as keyof typeof unit]
                   : ""}
               </Text>
             )}
@@ -104,7 +101,7 @@ const CardReminder: React.FC<ReminderType> = ({
                   ? "Thấp hơn " +
                     lowerThan +
                     " " +
-                    unit[title as keyof typeof unit]
+                    unit[index as keyof typeof unit]
                   : ""}
               </Text>
             )}
@@ -129,14 +126,17 @@ export default function ReminderTab() {
   const router = useRouter();
   const listViewRef = useRef<any>(null);
   const queryClient = useQueryClient();
+
   useFocusEffect(
     useCallback(() => {
       listViewRef.current?.closeAllOpenRows?.();
+      refetch();
     }, [])
   );
 
   const handleDelete = useMutation({
     mutationFn: async (id: string) => {
+      console.log("handleDelete ~ id:", id);
       return apiCall({ endpoint: `/reminders/${id}`, method: "DELETE" });
     },
     onSuccess: () => {
@@ -151,17 +151,22 @@ export default function ReminderTab() {
     data: reminders,
     isSuccess,
     isLoading,
+    refetch,
   } = useQuery<any>({
     queryKey: ["reminders"],
-    queryFn: () => apiCall({ endpoint: `/reminders` }),
+    queryFn: async () => {
+      const response = await apiCall({ endpoint: `/reminders` });
+      console.log("🚀 ~ queryFn: ~ response:", response);
+      return response;
+    },
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (reminders) {
       console.log("reminders", reminders);
       setReminderList(reminders);
     }
-  }, [isSuccess]);
+  }, [reminders]);
 
   return (
     <SafeAreaView

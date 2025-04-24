@@ -12,18 +12,39 @@ import { useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
 import { router } from "expo-router";
 
+interface DeviceType {
+  name: string;
+  mode: string;
+  status: boolean;
+  intensity: number;
+  turn_off_after: string | null;
+  turn_on_at: string | null;
+  repeat: string | null;
+  dates: string[] | null;
+  updated_at: string;
+}
+
 const AutomaticSetting: React.FC<{
   device_name: string;
   notifySave: boolean;
   setNotifySave: (notifySave: boolean) => void;
   currentSettings: string;
-}> = ({ device_name, notifySave, setNotifySave, currentSettings }) => {
+  deviceSetting: DeviceType;
+}> = ({
+  device_name,
+  notifySave,
+  setNotifySave,
+  currentSettings,
+  deviceSetting,
+}) => {
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
       return apiCall({
         endpoint: `/settings/${device_name}`,
         method: "PUT",
-        body: {},
+        body: {
+          mode: "automatic",
+        },
       });
     },
     onSuccess: () => {

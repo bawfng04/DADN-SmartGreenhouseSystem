@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SettingsIcon from "@/assets/icons/setting-fill-22.svg";
 import {
   View,
@@ -10,17 +10,21 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
 import settingsMockData from "@/data/settings.mock.json";
 
 interface DeviceType {
-  id: number;
   name: string;
   mode: string;
   status: boolean;
   intensity: number;
+  turn_off_after: string | null;
+  turn_on_at: string | null;
+  repeat: string | null;
+  dates: string[] | null;
+  updated_at: string;
 }
 
 const devicesImage = {
@@ -35,8 +39,13 @@ const deviceName = {
   pump: "Bơm Nước",
 };
 
+const modeName = {
+  manual: "Thủ công",
+  automatic: "Tự động",
+  scheduled: "Hẹn giờ",
+};
+
 const CardDevice: React.FC<DeviceType> = ({
-  id,
   name,
   mode,
   status,
@@ -50,14 +59,15 @@ const CardDevice: React.FC<DeviceType> = ({
     saveSettingsMutation.mutate();
   };
 
+  useEffect(() => {
+    setUpdateStatus(status);
+  }, [status]);
+
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
       return apiCall({
         endpoint: `/settings/${name}/status`,
-        method: "PUT",
-        body: {
-          status: !updateStatus,
-        },
+        method: "PATCH",
       });
     },
     onError: (error) => {
@@ -90,7 +100,9 @@ const CardDevice: React.FC<DeviceType> = ({
         </View>
       </View>
       <View style={styles.ControlSection}>
-        <Text style={styles.mode}>{mode}</Text>
+        <Text style={styles.mode}>
+          {modeName[mode as keyof typeof modeName]}
+        </Text>
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() =>
@@ -109,22 +121,30 @@ const CardDevice: React.FC<DeviceType> = ({
 
 export default function SettingTab() {
   const insets = useSafeAreaInsets();
-  const [deviceList, setDeviceList] = useState<DeviceType[]>(settingsMockData);
+  const [deviceList, setDeviceList] = useState<DeviceType[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [])
+  );
 
   const {
     data: settings,
     isSuccess,
     isError,
+    refetch,
   } = useQuery<any>({
     queryKey: ["settings"],
     queryFn: () => apiCall({ endpoint: `/settings` }),
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (settings) {
+      console.log("settings here", settings);
       setDeviceList(settings);
     }
-  }, [isSuccess]);
+  }, [settings]);
 
   return (
     <SafeAreaView

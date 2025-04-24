@@ -19,10 +19,22 @@ import { useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
 
 interface Props {
-  selectedDates: { [key: string]: any };
+  selectedDates: string[];
   option: string;
   setOption: (option: string) => void;
-  setSelectedDates: (value: { [key: string]: any }) => void;
+  setSelectedDates: (value: string[]) => void;
+}
+
+interface DeviceType {
+  name: string;
+  mode: string;
+  status: boolean;
+  intensity: number;
+  turn_off_after: string | null;
+  turn_on_at: string | null;
+  repeat: string | null;
+  dates: string[] | null;
+  updated_at: string;
 }
 
 const RadioButtonSectionWithCombobox: React.FC<Props> = ({
@@ -32,14 +44,11 @@ const RadioButtonSectionWithCombobox: React.FC<Props> = ({
   setSelectedDates,
 }) => {
   const toggleDate = (date: string) => {
-    const newDates = { ...selectedDates };
-    if (newDates[date]) {
-      delete newDates[date]; // Bỏ chọn
+    const newDates = [...selectedDates];
+    if (newDates.includes(date)) {
+      newDates.splice(newDates.indexOf(date), 1);
     } else {
-      newDates[date] = {
-        selected: true,
-        selectedColor: "#FFA500", // Màu cam
-      };
+      newDates.push(date);
     }
     setSelectedDates(newDates);
   };
@@ -54,13 +63,18 @@ const RadioButtonSectionWithCombobox: React.FC<Props> = ({
       >
         <RadioButtonItem value="today" label={<Text>Ngày hôm nay</Text>} />
         <RadioButtonItem value="everyday" label={<Text>Mỗi ngày</Text>} />
-        <RadioButtonItem value="repeat" label={<Text>Lặp lại vào </Text>} />
+        <RadioButtonItem value="custom" label={<Text>Lặp lại vào </Text>} />
       </RadioButtonGroup>
-      {option === "repeat" && (
+      {option === "custom" && (
         <View>
           <Calendar
             onDayPress={(day: any) => toggleDate(day.dateString)}
-            markedDates={selectedDates}
+            markedDates={Object.fromEntries(
+              selectedDates.map((date) => [
+                date,
+                { selected: true, selectedColor: "#FFA500" },
+              ])
+            )}
             theme={{
               selectedDayBackgroundColor: "#FFA500",
               todayTextColor: "#FF6600",
@@ -78,22 +92,53 @@ const ScheduledSetting: React.FC<{
   notifySave: boolean;
   setNotifySave: (notifySave: boolean) => void;
   currentSettings: string;
-}> = ({ device_name, notifySave, setNotifySave, currentSettings }) => {
-  const [intensity, setIntensity] = useState("100");
+  deviceSetting: DeviceType;
+}> = ({
+  device_name,
+  notifySave,
+  setNotifySave,
+  currentSettings,
+  deviceSetting,
+}) => {
+  const [intensity, setIntensity] = useState(100);
   const [option, setOption] = useState("today");
-  const [OffTime, setOffTime] = useState("0");
+  const [OffTime, setOffTime] = useState("5");
   const [OnTime, setOnTime] = useState(getTimePlus30Minutes());
   const [show, setShow] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<{ [key: string]: any }>(
-    {}
-  );
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+
+  console.log("selectedDates", selectedDates);
+
+  useEffect(() => {
+    if (deviceSetting && currentSettings === "scheduled") {
+      setIntensity(deviceSetting.intensity);
+      setOption(deviceSetting.repeat || "today");
+      setOffTime(deviceSetting.turn_off_after || "5");
+      setOnTime(
+        deviceSetting.turn_on_at
+          ? parseTimeStringToDate(deviceSetting.turn_on_at)
+          : getTimePlus30Minutes()
+      );
+      setSelectedDates(deviceSetting.dates || []);
+    }
+  }, [deviceSetting, currentSettings]);
 
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
+      const body = {
+        mode: "scheduled",
+        status: deviceSetting.status,
+        intensity: Number(intensity),
+        turn_off_after: Number(OffTime),
+        turn_on_at: formatTime(OnTime),
+        repeat: option,
+        dates: selectedDates,
+      };
+      console.log("body scheduled", body);
       return apiCall({
         endpoint: `/settings/${device_name}`,
         method: "PUT",
-        body: {},
+        body,
       });
     },
     onSuccess: () => {
@@ -102,10 +147,6 @@ const ScheduledSetting: React.FC<{
       router.back();
     },
     onError: (error) => {
-      //------------------------TEMP---------------------------------
-      // setNotifySave(false);
-      // router.push("/setting");
-      //-------------------------------------------------------------
       console.error("Error saving settings:", error);
     },
   });
@@ -136,7 +177,7 @@ const ScheduledSetting: React.FC<{
   const handleChangeIntensity = (text: string) => {
     const numericValue = text.replace(/[^0-9]/g, "");
     const number = Math.max(0, Math.min(100, Number(numericValue)));
-    setIntensity(number.toString());
+    setIntensity(number);
   };
 
   const handleChangeOffTime = (text: string) => {
@@ -157,7 +198,7 @@ const ScheduledSetting: React.FC<{
             <Text style={{ fontSize: 14, fontWeight: "bold" }}>Cường độ: </Text>
             <TextInput
               onChangeText={handleChangeIntensity}
-              value={intensity}
+              value={intensity.toString()}
               keyboardType="numeric"
               placeholder="Enter numbers only"
               placeholderTextColor="#999"
@@ -212,7 +253,7 @@ const ScheduledSetting: React.FC<{
             <Text style={{ fontSize: 14, fontWeight: "bold" }}>Tắt sau: </Text>
             <TextInput
               onChangeText={handleChangeOffTime}
-              value={OffTime}
+              value={OffTime.toString()}
               keyboardType="numeric"
               placeholder="Enter numbers only"
               placeholderTextColor="#999"
@@ -262,5 +303,15 @@ const getTimePlus30Minutes = () => {
   now.setMinutes(now.getMinutes() + 30);
   return now;
 };
+
+function parseTimeStringToDate(timeStr: string): Date {
+  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+  const now = new Date();
+  now.setHours(hours);
+  now.setMinutes(minutes);
+  now.setSeconds(seconds || 0);
+  now.setMilliseconds(0);
+  return now;
+}
 
 export default ScheduledSetting;

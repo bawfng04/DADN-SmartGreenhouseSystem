@@ -27,10 +27,9 @@ const unit = {
 };
 
 const RadioButtonSection: React.FC<{
-  initialValue: string;
   option: string;
   setOption: (option: string) => void;
-}> = ({ initialValue, option, setOption }) => {
+}> = ({ option, setOption }) => {
   return (
     <View>
       <RadioButtonGroup
@@ -77,23 +76,26 @@ const SettingReminder: React.FC<{
 
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
+      const payload = {
+        index: option,
+        lowerThan: {
+          value: currentSettings.lowerThan.value ?? 0,
+          status: currentSettings.lowerThan.status,
+        },
+        higherThan: {
+          value: currentSettings.higherThan.value ?? 0,
+          status: currentSettings.higherThan.status,
+        },
+        repeatAfter: {
+          value: currentSettings.repeatAfter.value ?? 0,
+          status: currentSettings.repeatAfter.status,
+        },
+      };
+      console.log("📤 Sending reminder body:", payload);
       return apiCall({
         endpoint: `/reminders`,
         method: "POST",
-        body: {
-          lowerThan: {
-            value: currentSettings.lowerThan.value,
-            status: currentSettings.lowerThan.status,
-          },
-          higherThan: {
-            value: currentSettings.higherThan.value,
-            status: currentSettings.higherThan.status,
-          },
-          repeatAfter: {
-            value: currentSettings.repeatAfter.value,
-            status: currentSettings.repeatAfter.status,
-          },
-        },
+        body: payload,
       });
     },
     onSuccess: () => {
@@ -237,15 +239,15 @@ export default function ConfigScreen({ id }: { id: string }) {
   const [notifySave, setNotifySave] = useState(false);
   const [states, setState] = useState({
     lowerThan: {
-      value: null,
+      value: 0,
       status: false,
     },
     higherThan: {
-      value: null,
+      value: 0,
       status: false,
     },
     repeatAfter: {
-      value: null,
+      value: 0,
       status: false,
     },
   });
@@ -302,11 +304,7 @@ export default function ConfigScreen({ id }: { id: string }) {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Chỉ số</Text>
-            <RadioButtonSection
-              initialValue={initialValue}
-              option={option}
-              setOption={setOption}
-            />
+            <RadioButtonSection option={option} setOption={setOption} />
           </View>
 
           <SettingReminder

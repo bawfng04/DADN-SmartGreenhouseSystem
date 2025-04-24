@@ -12,8 +12,17 @@ import {
 import { LineChart } from "react-native-gifted-charts";
 import { Calendar } from "react-native-calendars";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
 
 const screenWidth = Dimensions.get("window").width;
+
+interface Dashboard {
+  temperature: { value: number; label: string }[];
+  humidity: { value: number; label: string }[];
+  soil_moisture: { value: number; label: string }[];
+  light: { value: number; label: string }[];
+}
 
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
@@ -21,6 +30,32 @@ export default function DashboardScreen() {
   const [type, setType] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tempDate, setTempDate] = useState(selectedDate);
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+
+  const { data, isSuccess } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const response = await apiCall({
+        endpoint: `/dashboard/${selectedDate.toISOString().split("T")[0]}`, //YYYY-MM-DD
+      });
+      const data = replaceNullData(response);
+      console.log("✅ response from API:", data);
+      setDashboard(data);
+      return data;
+    },
+  });
+
+  const { mutate: updateDashboard } = useMutation({
+    mutationFn: async () => {
+      const response = await apiCall({
+        endpoint: `/dashboard/${selectedDate.toISOString().split("T")[0]}`, //YYYY-MM-DD
+      });
+      const data = replaceNullData(response);
+      console.log("✅ response from API:", data);
+      setDashboard(data);
+      return data;
+    },
+  });
 
   const [yAxisRanges, setYAxisRanges] = useState({
     temperature: { min: 0, max: 50 },
@@ -54,40 +89,6 @@ export default function DashboardScreen() {
     height: 100,
   };
 
-  const temperatureData = [
-    { value: 18, label: "6h" },
-    { value: 20, label: "9h" },
-    { value: 34, label: "12h" },
-    { value: 30, label: "15h" },
-    { value: 24, label: "18h" },
-    { value: 24, label: "20h" },
-    { value: 24, label: "23h" },
-  ];
-
-  const humidityData = [
-    { value: 18, label: "6h" },
-    { value: 20, label: "9h" },
-    { value: 34, label: "12h" },
-    { value: 30, label: "15h" },
-    { value: 24, label: "18h" },
-  ];
-
-  const soilMoistureData = [
-    { value: 18, label: "6h" },
-    { value: 20, label: "9h" },
-    { value: 34, label: "12h" },
-    { value: 30, label: "15h" },
-    { value: 24, label: "18h" },
-  ];
-
-  const LightData = [
-    { value: 18, label: "6h" },
-    { value: 20, label: "9h" },
-    { value: 34, label: "12h" },
-    { value: 30, label: "15h" },
-    { value: 24, label: "18h" },
-  ];
-
   return (
     <SafeAreaView
       style={{
@@ -113,14 +114,6 @@ export default function DashboardScreen() {
               {selectedDate.toISOString().split("T")[0]}
             </Text>
           </View>
-          {/* <TouchableOpacity
-            style={styles.viewSelector}
-            onPress={() => setOpenCalendar(!openCalendar)}
-          >
-            {/* <Text style={styles.viewSelectorText}>
-              {openCalendar ? "Ngày" : "Tuần"}
-            </Text> */}
-          {/* </TouchableOpacity> */}
         </View>
 
         <View style={styles.chartContainer}>
@@ -129,7 +122,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>°C</Text>
           </View>
           <LineChart
-            data={temperatureData}
+            data={dashboard?.temperature}
             {...chartConfig}
             color="#FF0000"
             startFillColor="rgba(255, 0, 0, 0.7)"
@@ -142,7 +135,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={humidityData}
+            data={dashboard?.humidity}
             {...chartConfig}
             color="#008CFF"
             startFillColor="rgba(19, 0, 224, 0.7)"
@@ -155,7 +148,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={soilMoistureData}
+            data={dashboard?.soil_moisture}
             {...chartConfig}
             color="#00DA16"
             startFillColor="rgba(0, 229, 34, 0.7)"
@@ -168,7 +161,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>lux</Text>
           </View>
           <LineChart
-            data={LightData}
+            data={dashboard?.light}
             {...chartConfig}
             color="#FFCC00"
             startFillColor="rgba(229, 199, 0, 0.7)"
@@ -222,6 +215,7 @@ export default function DashboardScreen() {
                 onPress={() => {
                   setSelectedDate(tempDate);
                   setOpenCalendar(false);
+                  updateDashboard();
                 }}
               >
                 <Text style={styles.buttonText}>Confirm</Text>
@@ -351,3 +345,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+const replaceNullData = (data: any) => {
+  const filled: any = {};
+  for (const key in data) {
+    if (Array.isArray(data[key])) {
+      filled[key] = data[key].map((item: any) => ({
+        ...item,
+        value: item.value ?? 0,
+      }));
+    } else {
+      filled[key] = data[key];
+    }
+  }
+  return filled;
+};

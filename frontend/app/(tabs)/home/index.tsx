@@ -13,76 +13,107 @@ import {
 import { Card, Title } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 interface DeviceState {
   id: string;
   name: string;
   value: string;
-  icon: ImageSourcePropType;
 }
 
 interface EquipmentState {
   id: string;
   name: string;
   status: boolean;
-  icon: ImageSourcePropType;
 }
 
-const deviceStates: DeviceState[] = [
-  {
-    id: "1",
-    name: "Nhiệt độ",
-    value: "23 °C",
+const indicesIcon = {
+  temperature: {
     icon: require("@/assets/images/Temperature.png"),
+    unit: "°C",
+    name: "Nhiệt độ",
   },
-  {
-    id: "2",
-    name: "Độ ẩm không khí",
-    value: "50 %",
+  humidity: {
     icon: require("@/assets/images/Humidity.png"),
+    unit: "%",
+    name: "Độ ẩm không khí",
   },
-  {
-    id: "3",
-    name: "Độ ẩm đất",
-    value: "50 %",
+  "soil-moisture": {
     icon: require("@/assets/images/SoilMoisture.png"),
+    unit: "%",
+    name: "Độ ẩm đất",
   },
-  {
-    id: "4",
-    name: "Cường độ ánh sáng",
-    value: "300 lux",
+  light: {
     icon: require("@/assets/images/Sunlight.png"),
+    unit: "lux",
+    name: "Cường độ ánh sáng",
   },
-];
+};
 
-const equipmentStates: EquipmentState[] = [
-  {
-    id: "1",
-    name: "Đèn LED",
-    status: true,
+const equipmentIcon = {
+  led: {
     icon: require("@/assets/images/led.png"),
+    name: "Đèn LED",
   },
-  {
-    id: "2",
-    name: "Quạt",
-    status: true,
+  fan: {
     icon: require("@/assets/images/fan.png"),
+    name: "Quạt",
   },
-  {
-    id: "3",
-    name: "Bơm nước",
-    status: false,
+  pump: {
     icon: require("@/assets/images/pump.png"),
+    name: "Bơm nước",
   },
-];
+};
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [isNotification, setIsNotification] = useState(false);
   const router = useRouter();
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const date = new Date();
-  const formattedDate = date.toLocaleDateString("vi-VN", {
+  const {
+    data: indices,
+    isSuccess: isSuccessIndices,
+    refetch: refetchIndices,
+  } = useQuery({
+    queryKey: ["indices"],
+    queryFn: async () => {
+      const response = await apiCall({ endpoint: "/indices" });
+      console.log("✅ response from API:", response);
+      return response;
+    },
+  });
+
+  const {
+    data: settings,
+    isSuccess: isSuccessSettings,
+    refetch: refetchSettings,
+  } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      const response = await apiCall({ endpoint: "/settings" });
+      console.log("✅ Settings response from API:", response);
+      return response;
+    },
+  });
+
+  const handleRefresh = () => {
+    console.log("🔄 Refreshing indices...");
+    setCurrentDate(new Date());
+    refetchIndices();
+    refetchSettings();
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh();
+    }, [])
+  );
+
+  const formattedDate = currentDate.toLocaleDateString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
     day: "2-digit",
@@ -115,13 +146,13 @@ export default function HomeScreen() {
             {isNotification && (
               <Image
                 source={require("@/assets/images/active.png")}
-                style={{ width: 24, height: 24 }}
+                style={{ width: 20, height: 20 }}
               />
             )}
             {!isNotification && (
               <Image
                 source={require("@/assets/images/notification.png")}
-                style={{ width: 24, height: 24 }}
+                style={{ width: 20, height: 20 }}
               />
             )}
           </TouchableOpacity>
@@ -137,7 +168,10 @@ export default function HomeScreen() {
               <Text style={styles.areaTitle}>Khu đất ABC</Text>
               <Text style={styles.areaDate}>{formattedDate}</Text>
             </View>
-            <TouchableOpacity style={styles.refreshButton}>
+            <TouchableOpacity
+              style={styles.refreshButton}
+              onPress={handleRefresh}
+            >
               <Text style={styles.refreshText}>Refresh</Text>
             </TouchableOpacity>
           </View>
@@ -146,28 +180,51 @@ export default function HomeScreen() {
         <Card style={styles.metricsCard}>
           <Card.Content>
             <Title style={styles.cardTitle}>Chỉ số</Title>
-            {deviceStates.map((device) => (
-              <View key={device.id} style={styles.metricItem}>
-                <Image source={device.icon} style={styles.metricIcon} />
-                <Text style={styles.metricName}>{device.name}</Text>
-                <Text style={styles.metricValue}>{device.value}</Text>
-              </View>
-            ))}
+            {isSuccessIndices &&
+              indices.map((index: any, id: number) => (
+                <View key={id} style={styles.metricItem}>
+                  <Image
+                    source={
+                      indicesIcon[index.name as keyof typeof indicesIcon].icon
+                    }
+                    style={styles.metricIcon}
+                  />
+                  <Text style={styles.metricName}>
+                    {indicesIcon[index.name as keyof typeof indicesIcon].name}
+                  </Text>
+                  <Text style={styles.metricValue}>
+                    {index.value}{" "}
+                    {indicesIcon[index.name as keyof typeof indicesIcon].unit}
+                  </Text>
+                </View>
+              ))}
           </Card.Content>
         </Card>
 
         <Card style={styles.devicesCard}>
           <Card.Content>
             <Title style={styles.cardTitle}>Thiết bị</Title>
-            {equipmentStates.map((equipment) => (
-              <View key={equipment.id} style={styles.deviceItem}>
-                <Image source={equipment.icon} style={styles.deviceIcon} />
-                <Text style={styles.deviceName}>{equipment.name}</Text>
-                <Text style={styles.deviceStatus}>
-                  {equipment.status ? "Bật" : "Tắt"}
-                </Text>
-              </View>
-            ))}
+            {isSuccessSettings &&
+              settings.map((setting: any, index: number) => (
+                <View key={index} style={styles.deviceItem}>
+                  <Image
+                    source={
+                      equipmentIcon[setting.name as keyof typeof equipmentIcon]
+                        .icon
+                    }
+                    style={styles.deviceIcon}
+                  />
+                  <Text style={styles.deviceName}>
+                    {
+                      equipmentIcon[setting.name as keyof typeof equipmentIcon]
+                        .name
+                    }
+                  </Text>
+                  <Text style={styles.deviceStatus}>
+                    {setting.status ? "Bật" : "Tắt"}
+                  </Text>
+                </View>
+              ))}
           </Card.Content>
         </Card>
       </ScrollView>
@@ -201,9 +258,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF9500",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 15,
-    width: 40,
-    height: 40,
+    borderRadius: 12,
+    width: 36,
+    height: 36,
     alignItems: "center",
     justifyContent: "center",
   },

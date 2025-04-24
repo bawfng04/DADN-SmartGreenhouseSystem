@@ -15,6 +15,8 @@ import { RadioButtonGroup, RadioButtonItem } from "expo-radio-button";
 import ManualSetting from "@/components/setting/ManualSetting";
 import ScheduledSetting from "@/components/setting/ScheduledSetting";
 import AutomaticSetting from "@/components/setting/AutomaticSetting";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiCall } from "@/utils/apiCall";
 
 const deviceNameConst = {
   led: "Đèn Led",
@@ -27,6 +29,7 @@ const RadioButtonSection: React.FC<{
   option: string;
   setOption: (option: string) => void;
 }> = ({ initialValue, option, setOption }) => {
+  console.log("initialValue", initialValue);
   return (
     <View>
       <RadioButtonGroup
@@ -45,10 +48,10 @@ const RadioButtonSection: React.FC<{
           }
         />
         <RadioButtonItem
-          value="schedule"
+          value="scheduled"
           label={
             <Text>
-              Hẹn giờ {"schedule" === initialValue ? "(Hiện tại)" : ""}
+              Hẹn giờ {"scheduled" === initialValue ? "(Hiện tại)" : ""}
             </Text>
           }
         />
@@ -68,14 +71,26 @@ const RadioButtonSection: React.FC<{
 export default function ConfigScreen() {
   const { device_name } = useLocalSearchParams();
   const deviceName = device_name as string;
-  const initialValue = "manual";
   const router = useRouter();
-  const [option, setOption] = useState(initialValue);
+  const [option, setOption] = useState("manual");
+  const [initialValue, setInitialValue] = useState("manual");
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [notifySave, setNotifySave] = useState(false);
 
   let initialSettings;
+
+  const { data: deviceSetting, isSuccess } = useQuery({
+    queryKey: ["settings", deviceName],
+    queryFn: () => apiCall({ endpoint: `/settings/${deviceName}` }),
+  });
+
+  useEffect(() => {
+    if (deviceSetting) {
+      setOption(deviceSetting.mode);
+      setInitialValue(deviceSetting.mode);
+    }
+  }, [deviceSetting]);
 
   switch (option) {
     case "manual":
@@ -85,16 +100,18 @@ export default function ConfigScreen() {
           device_name={deviceName}
           notifySave={notifySave}
           setNotifySave={setNotifySave}
+          deviceSetting={deviceSetting}
         />
       );
       break;
-    case "schedule":
+    case "scheduled":
       initialSettings = (
         <ScheduledSetting
           currentSettings={initialValue}
           device_name={deviceName}
           notifySave={notifySave}
           setNotifySave={setNotifySave}
+          deviceSetting={deviceSetting}
         />
       );
       break;
@@ -105,6 +122,7 @@ export default function ConfigScreen() {
           device_name={deviceName}
           notifySave={notifySave}
           setNotifySave={setNotifySave}
+          deviceSetting={deviceSetting}
         />
       );
       break;
@@ -115,6 +133,7 @@ export default function ConfigScreen() {
           device_name={deviceName}
           notifySave={notifySave}
           setNotifySave={setNotifySave}
+          deviceSetting={deviceSetting}
         />
       );
   }
