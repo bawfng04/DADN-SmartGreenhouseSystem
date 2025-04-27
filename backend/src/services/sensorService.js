@@ -193,13 +193,12 @@ class SensorService {
 
   // Kiểm tra các sensor ở chế độ automatic của tất cả các sensor
   async triggerAutomationControl() {
-
       console.log(`[AutoControl] Checking automatic control condition...`)
       let allSettings;
     let latestSensors;
     // lấy settings và value mới nhất của các sensor
     try {
-      allSettings = await sensorRepository.getAllSettings();
+      allSettings = await settingsRepository.getAllSettings();
       latestSensors = await sensorRepository.getLatestSensorData();
       // latestSensors: [id, feed_name, value, timestamp]
     } catch (error) {
@@ -296,6 +295,7 @@ class SensorService {
                 ", "
               )}`
             );
+            continue;
           }
 
           // Predict

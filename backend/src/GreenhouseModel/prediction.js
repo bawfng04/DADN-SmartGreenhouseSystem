@@ -1,5 +1,5 @@
 // file này dùng để gọi các script python để dự đoán khi device ở automation mode
-const { spawm } = require("child_process");
+const { spawn } = require("child_process");
 const path = require("path");
 
 const backendRoot = path.resolve(__dirname, "../../");

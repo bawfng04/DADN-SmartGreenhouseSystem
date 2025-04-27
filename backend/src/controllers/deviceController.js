@@ -23,6 +23,7 @@ class DeviceController {
   async createDeviceData(req, res) {
     const feedKey = req.params.feedKey;
     const value = parseInt(req.body.value, 10);
+    const payload = parseInt(req.body.payload, 10);
     if (feedKey === "light-control") {
       if (payload != 0 && payload != 1) {
         return res.status(400).json({
