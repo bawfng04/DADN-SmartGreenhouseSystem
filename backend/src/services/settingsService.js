@@ -12,7 +12,9 @@ function getFeedKey(deviceName) {
         case 'led': return 'light-control';
         case 'fan': return 'fan';
         case 'pump': return 'water-pump';
-        default: return null;
+        default:
+            console.error(`Unknown device name: ${deviceName}`);
+            return null;
     }
 }
 
@@ -21,7 +23,7 @@ function determineMQttPayload(deviceName, data) {
     switch (deviceName) {
         case 'led':
             // intensity: 0-1
-            payload = data.status ? (data.intensity !== undefined ? data.intensity / 100 : 1) : 0;
+            payload = 1;
             break;
         case 'fan':
             // intensity: 0-100
@@ -34,6 +36,27 @@ function determineMQttPayload(deviceName, data) {
         default:
             console.error(`Unknown device name: ${deviceName}`);
     }
+
+    if (payload === null) {
+      console.warn(
+        `[SettingsService] Could not determine MQTT payload for ${deviceName} with status ${status} and intensity ${intensity}`
+      );
+    } else if (deviceName === "led" && payload !== 0 && payload !== 1) {
+      console.error(
+        `[SettingsService] Logic Error: Determined invalid payload ${payload} for LED. Forcing to 1.`
+      );
+      payload = 0;
+    } else if (
+      (deviceName === "fan" || deviceName === "pump") &&
+      (payload < 0 || payload > 100)
+    ) {
+      console.error(
+        `[SettingsService] Logic Error: Determined invalid payload ${payload} for ${deviceName}. Forcing to 100.`
+      );
+      payload = 100;
+    }
+
+
     return payload;
 }
 
@@ -42,7 +65,7 @@ class SettingsService{
     async getAllSettings() {
         try {
             const settings = await settingsRepository.getAllSettings();
-            if (!settings || settings.length === 0) {
+            if (!settings) {
                 throw new Error("No settings found");
             }
             return settings;
@@ -55,7 +78,7 @@ class SettingsService{
     async getSettingByName(name) {
         try {
             const settings = await settingsRepository.getSettingByName(name);
-            if (!settings || settings.length === 0) {
+            if (!settings) {
                 // console.log("THISSSS");
                 throw new Error("Settings not found");
             }
@@ -134,84 +157,112 @@ class SettingsService{
                 let relevantInputData = {};
 
                 try {
-                    // lấy data mới nhất của sensor
-                    const latestSensors = await sensorRepository.getLatestSensorData(name);
-                    if (!latestSensors) {
-                        throw new Error("No sensor data found for prediction");
-                    }
+                  // lấy data mới nhất của sensor
+                  const latestSensorsArray =
+                    await sensorRepository.getLatestSensorData(name);
+                  if (!latestSensorsArray) {
+                    throw new Error("No sensor data found for prediction");
+                  }
 
-                    // chuẩn bị input data cho model
+                  const latestSensors = latestSensorsArray.reduce(
+                    (acc, sensor) => {
+                      let keyName = sensor.name;
+                      if (keyName === "soil-moisture") keyName = "earth-humid";
+                      if (keyName === "temperature") keyName = "thermal";
+                      if (keyName === "humidity") keyName = "humid";
 
-                    switch (name) {
-                        // ================ FAN =================
-                        case 'fan':
-                            if (latestSensors["thermal"] && latestSensors["humid"]) {
-                                relevantInputData = {
-                                    temperature: latestSensors["thermal"].value,
-                                    humidity: latestSensors["humid"].value,
-                                }
-                            }
-                            else {
+                      acc[keyName] = sensor; // Lưu cả object sensor
+                      return acc;
+                    },
+                    {}
+                  );
 
-                                canPredict = false;
-                            }
-                            break;
-                        // ================ LED =================
-                        case 'led':
-                            if (latestSensors["light"] && latestSensors["thermal"] && latestSensors["humid"]) {
-                                const currentDate = new Date();
-                                const minuteOfDay = currentDate.getHours() * 60 + currentDate.getMinutes();
-                                relevantInputData = {
-                                    light: latestSensors["light"].value,
-                                    temperature: latestSensors["thermal"].value,
-                                    humidity: latestSensors["humid"].value,
-                                    Minute_Of_Day: minuteOfDay,
-                                }
-                            }
-                            else {
-                                canPredict = false;
-                            }
-                            break;
-                        // =============== PUMP =================
-                        case 'pump':
-                            if (latestSensors["earth-humid"] && latestSensors["thermal"] && latestSensors["humid"]) {
-                                relevantInputData = {
-                                    "Soil Moisture":
-                                        latestSensors["earth-humid"].value,
-                                    "Temperature": latestSensors["thermal"].value,
-                                    "Air humidity (%)":
-                                        latestSensors["humid"].value,
-                                };
-                            }
-                            else {
-                                canPredict = false;
-                            }
-                            break;
-                        // ================ DEFAULT ================
-                        default:
-                                console.error(`Unknown device name: ${name}`);
-                                canPredict = false;
-                    }
+                  // chuẩn bị input data cho model
+                  switch (name) {
+                    // ================ FAN =================
+                    case "fan":
+                      if (latestSensors["thermal"] && latestSensors["humid"]) {
+                        relevantInputData = {
+                          temperature: latestSensors["thermal"].value,
+                          humidity: latestSensors["humid"].value,
+                        };
+                      } else {
+                        canPredict = false;
+                      }
+                      break;
+                    // ================ LED =================
+                    case "led":
+                      if (
+                        latestSensors["light"] &&
+                        latestSensors["thermal"] &&
+                        latestSensors["humid"]
+                      ) {
+                          const currentDate = new Date();
 
+                        const minuteOfDay =
+                          currentDate.getHours() * 60 +
+                              currentDate.getMinutes();
 
-                    if (canPredict) {
-                        console.log(
-                          `[SettingsService] Predicting for device ${name} with data: ${JSON.stringify(
-                            relevantInputData
-                          )}`
-                        );
-                        const predictionResult = await getPrediction(name, relevantInputData);
-                        predictedStatus = (predictionResult === "BẬT"); //true/false
-                        console.log(`[SettingsService] Prediction result for device ${name}: ${predictedStatus}`);
-                    }
-                    else {
-                        const missingFeeds = ["thermal", "humid", "light", "earth-humid"].filter(feed => !latestSensors[feed]);
-                        console.warn(
+                        relevantInputData = {
+                          Light_Intensity: latestSensors["light"].value,
+                          Temperature: latestSensors["thermal"].value,
+                          Humidity: latestSensors["humid"].value,
+                          Minute_Of_Day: minuteOfDay,
+                        };
+                      } else {
+                        canPredict = false;
+                      }
+                      break;
+                    // =============== PUMP =================
+                    case "pump":
+                      if (
+                        latestSensors["earth-humid"] &&
+                        latestSensors["thermal"] &&
+                        latestSensors["humid"]
+                      ) {
+                        relevantInputData = {
+                          "Soil Moisture": latestSensors["earth-humid"].value,
+                          Temperature: latestSensors["thermal"].value,
+                          "Air humidity (%)": latestSensors["humid"].value,
+                        };
+                      } else {
+                        canPredict = false;
+                      }
+                      break;
+                    // ================ DEFAULT ================
+                    default:
+                      console.error(`Unknown device name: ${name}`);
+                      canPredict = false;
+                  }
 
-                            `Cannot predict for device ${name} due to missing sensor data: ${missingFeeds.join(", ")}`
-                        )
-                        predictedStatus = false; // mặc định là tắt nếu không thể predict
-                    }
+                  if (canPredict) {
+                    console.log(
+                      `[SettingsService] Predicting for device ${name} with data: ${JSON.stringify(
+                        relevantInputData
+                      )}`
+                    );
+                    const predictionResult = await getPrediction(
+                      name,
+                      relevantInputData
+                    );
+                    predictedStatus = predictionResult === "BẬT"; //true/false
+                    console.log(
+                      `[SettingsService] Prediction result for device ${name}: ${predictedStatus}`
+                    );
+                  } else {
+                    const missingFeeds = [
+                      "thermal",
+                      "humid",
+                      "light",
+                      "earth-humid",
+                    ].filter((feed) => !latestSensors[feed]);
+                    console.warn(
+                      `Cannot predict for device ${name} due to missing sensor data: ${missingFeeds.join(
+                        ", "
+                      )}`
+                    );
+                    predictedStatus = false; // mặc định là tắt nếu không thể predict
+                  }
                 }
                 catch (error) {
                     console.error("Error getting latest sensor data:", error);

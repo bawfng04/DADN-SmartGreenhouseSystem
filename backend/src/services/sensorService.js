@@ -195,11 +195,15 @@ class SensorService {
   async triggerAutomationControl() {
       console.log(`[AutoControl] Checking automatic control condition...`)
       let allSettings;
-    let latestSensors;
+    let latestSensorObj = {};
     // lấy settings và value mới nhất của các sensor
     try {
       allSettings = await settingsRepository.getAllSettings();
-      latestSensors = await sensorRepository.getLatestSensorData();
+      const latestSensorsArray = await sensorRepository.getLatestSensorData();
+      if(!allSettings || !latestSensorsArray) {
+        console.warn("[AutoControl] No settings or latest sensor data found.");
+        return;
+      }
       // latestSensors: [id, feed_name, value, timestamp]
     } catch (error) {
         console.error(
@@ -208,6 +212,23 @@ class SensorService {
         );
       throw error;
     }
+
+
+    // chuyển latestSensorsArray thành object
+    latestSensorObj = latestSensorsArray.reduce((acc, sensor) => {
+      let keyName = sensor.feed_name;
+      if (keyName === 'soil-moisture') {
+        keyName = 'earth-humid';
+      }
+      if (keyName === 'temperature') {
+        keyName = 'thermal';
+      }
+      if (keyName === 'humidity') {
+        keyName = 'humid';
+      }
+      acc[keyName] = sensor; // {thermal: {id, value, timestamp}, humid: {...}, ...}
+      return acc;
+    }, {});
 
     for (const setting of allSettings) {
       // lấy hết mấy thằng automatic
@@ -227,10 +248,10 @@ class SensorService {
             case "fan":
               requiredSensorFeeds = ["thermal", "humid"];
               modelInputKeys = ["temperature", "humidity"]; // keys trong model infer
-              if (latestSensors["thermal"] && latestSensors["humid"]) {
+              if (latestSensorObj["thermal"] && latestSensorObj["humid"]) {
                 relevantInputData = {
-                  temperature: latestSensors["thermal"].value,
-                  humidity: latestSensors["humid"].value,
+                  temperature: latestSensorObj["thermal"].value,
+                  humidity: latestSensorObj["humid"].value,
                 };
               } else {
                 canPredict = false; // không thể dự đoán nếu không có dữ liệu
@@ -245,14 +266,14 @@ class SensorService {
                 "Humidity",
                 "Minute_Of_Day",
               ]; // Key trong infer_led_control.py
-              if (latestSensors["light"] && latestSensors["thermal"] && latestSensors["humid"]) {
+              if (latestSensorObj["light"] && latestSensorObj["thermal"] && latestSensorObj["humid"]) {
                 const currentDate = new Date();
                 const minutOfDay = currentDate.getHours() * 60 + currentDate.getMinutes();
 
                 relevantInputData = {
-                  Light_Intensity: latestSensors["light"].value,
-                  Temperature: latestSensors["thermal"].value,
-                  Humidity: latestSensors["humid"].value,
+                  Light_Intensity: latestSensorObj["light"].value,
+                  Temperature: latestSensorObj["thermal"].value,
+                  Humidity: latestSensorObj["humid"].value,
                   Minute_Of_Day: minutOfDay,
                 };
               } else {
@@ -267,11 +288,15 @@ class SensorService {
                 "Temperature",
                 "Air humidity (%)",
               ]; // key trong model infer
-              if (latestSensors["earth-humid"] && latestSensors["thermal"] && latestSensors["humid"]) {
+              if (
+                latestSensorObj["earth-humid"] &&
+                latestSensorObj["thermal"] &&
+                latestSensorObj["humid"]
+              ) {
                 relevantInputData = {
-                  'Soil Moisture': latestSensors["earth-humid"].value,
-                  'Temperature': latestSensors["thermal"].value,
-                  'Air humidity (%)': latestSensors["humid"].value,
+                  "Soil Moisture": latestSensorObj["earth-humid"].value,
+                  Temperature: latestSensorObj["thermal"].value,
+                  "Air humidity (%)": latestSensorObj["humid"].value,
                 };
               } else {
                 canPredict = false; // không thể dự đoán nếu không có dữ liệu

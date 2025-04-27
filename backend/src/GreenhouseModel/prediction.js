@@ -76,7 +76,7 @@ function getPrediction(deviceType, inputData) {
       `Running Python script: ${pythonExecutable} ${scriptPath} ${inputJson}`
     );
 
-    const pythonProcess = spawm(pythonExecutable, [scriptPath, inputJson]);
+    const pythonProcess = spawn(pythonExecutable, [scriptPath, inputJson]);
 
     let prediction = "";
     let errorOutput = "";
