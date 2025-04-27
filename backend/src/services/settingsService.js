@@ -20,42 +20,28 @@ function getFeedKey(deviceName) {
 
 function determineMQttPayload(deviceName, data) {
     let payload = null;
-    switch (deviceName) {
-        case 'led':
-            // intensity: 0-1
-            payload = 1;
-            break;
-        case 'fan':
-            // intensity: 0-100
-            payload = data.status ? (data.intensity !== undefined ? data.intensity : 100) : 0;
-            break;
-        case 'pump':
-            // intensity: 0-100
-            payload = data.status ? (data.intensity !== undefined ? data.intensity : 100) : 0;
-            break;
-        default:
-            console.error(`Unknown device name: ${deviceName}`);
+    const status = data.status;
+    if (!status) {
+        payload = 0;
     }
-
-    if (payload === null) {
-      console.warn(
-        `[SettingsService] Could not determine MQTT payload for ${deviceName} with status ${status} and intensity ${intensity}`
-      );
-    } else if (deviceName === "led" && payload !== 0 && payload !== 1) {
-      console.error(
-        `[SettingsService] Logic Error: Determined invalid payload ${payload} for LED. Forcing to 1.`
-      );
-      payload = 0;
-    } else if (
-      (deviceName === "fan" || deviceName === "pump") &&
-      (payload < 0 || payload > 100)
-    ) {
-      console.error(
-        `[SettingsService] Logic Error: Determined invalid payload ${payload} for ${deviceName}. Forcing to 100.`
-      );
-      payload = 100;
+    else {
+        switch (deviceName) {
+            case 'led':
+                // intensity: 0-1
+                payload = 1;
+                break;
+            case 'fan':
+                // intensity: 0-100
+                payload = data.status ? (data.intensity !== undefined ? data.intensity : 100) : 0;
+                break;
+            case 'pump':
+                // intensity: 0-100
+                payload = data.status ? (data.intensity !== undefined ? data.intensity : 100) : 0;
+                break;
+            default:
+                console.error(`Unknown device name: ${deviceName}`);
+        }
     }
-
 
     return payload;
 }
@@ -182,7 +168,8 @@ class SettingsService{
                     // ================ FAN =================
                     case "fan":
                       if (latestSensors["thermal"] && latestSensors["humid"]) {
-                        relevantInputData = {
+                          relevantInputData = {
+
                           temperature: latestSensors["thermal"].value,
                           humidity: latestSensors["humid"].value,
                         };
