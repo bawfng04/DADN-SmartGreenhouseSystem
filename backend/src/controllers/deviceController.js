@@ -24,6 +24,8 @@ class DeviceController {
     const feedKey = req.params.feedKey;
     const value = parseInt(req.body.value, 10);
     if (feedKey === "light-control") {
+      console.log("THIS PAYLOAD: ", req.body.value);
+      const payload = parseInt(req.body.value, 10);
       if (payload != 0 && payload != 1) {
         return res.status(400).json({
           message: "Invalid value for light control. Must be 0 or 1.",
