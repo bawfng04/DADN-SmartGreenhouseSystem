@@ -474,3 +474,4 @@ module.exports = new SettingsService();
 // helpers
 module.exports.calculateScheduledStatus = calculateScheduledStatus;
 module.exports.getFeedKey = getFeedKey;
+module.exports.determineMQttPayload = determineMQttPayload;

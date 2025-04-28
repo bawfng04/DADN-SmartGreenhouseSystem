@@ -757,3 +757,7 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
   - `500 Internal Server Error`: Lỗi server.
 
 ***Yêu cầu token ở header của request.*** -->
+
+
+
+`dashboard_url`: `https://io.adafruit.com/justkh29/dashboards/dadn`
