@@ -732,31 +732,84 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
 ***Yêu cầu token ở header của request.***
 
 
-<!-- ### 13. Lấy Danh Sách Lịch Trình Đang Chờ (Optional)
+### 17. WebSocket Real-time Updates
 
-- **URL:** `/get-schedule`
-- **Phương thức:** `GET`
-- **Mô tả:** Lấy danh sách các lịch trình đang ở trạng thái 'PENDING' và có thời gian thực thi đã qua.
-- **Phản hồi:**
-  - `200 OK`: Trả về danh sách các task đang chờ.
-    ```json
-    [
-      {
-        "id": number,
-        "user_id": number,
-        "feed_key": "string",
-        "payload": "string",
-        "execute_at": "timestamp",
-        "status": "PENDING",
-        "created_at": "timestamp",
-        "updated_at": "timestamp"
-      },
-      // ... more tasks
-    ]
-    ```
-  - `500 Internal Server Error`: Lỗi server.
+Hệ thống WebSocket endpoint để client kết nối và nhận thông báo cập nhật trạng thái thiết bị hoặc các sự kiện khác theo thời gian thực (hiện tại chỉ có update settings của thiết bị mới có thông báo).
 
-***Yêu cầu token ở header của request.*** -->
+#### 17.1 Lấy Thông Tin Kết Nối WebSocket
+
+-   **URL:** `/ws-info` (Endpoint này nằm ở root, không phải `/api/ws-info`)
+-   **Phương thức:** `GET`
+-   **Mô tả:** Cung cấp URL để kết nối đến WebSocket server và mô tả định dạng dữ liệu.
+-   **Phản hồi:**
+    -   `200 OK`: Thông tin kết nối WebSocket.
+        ```json
+        {
+            "message": "Connect to the WebSocket server using the URL below to receive real-time updates.",
+            "websocketUrl": "ws://localhost:8000", // Hoặc 'wss://dadn-2.onrender.com'
+            "connectionNotes": [
+                "The server will push messages when device settings change or other relevant events occur.",
+                "Messages are JSON strings.",
+                "Ensure your client handles reconnection if the connection drops."
+            ],
+            "exampleFormat": {
+                "type": "DEVICE_UPDATE | SENSOR_ALERT | ...",
+                "payload": {
+                    // Dữ liệu cụ thể tùy thuộc vào 'type'
+                    // Ví dụ cho DEVICE_UPDATE:
+                    "name": "fan",
+                    "mode": "automatic",
+                    "status": true,
+                    "intensity": 100,
+                    "updated_at": "2025-04-28T10:00:00.000Z"
+                }
+            }
+        }
+        ```
+    -   `500 Internal Server Error`: Lỗi server khi lấy thông tin.
+
+<!-- #### 17.2 Kết Nối và Nhận Tin Nhắn
+
+1.  **Lấy URL:** Gọi API `GET /ws-info` để lấy `websocketUrl`.
+2.  **Kết nối:** Sử dụng thư viện WebSocket của client (ví dụ: `WebSocket` API trong trình duyệt hoặc thư viện tương ứng trong React Native) để kết nối đến `websocketUrl` đã nhận được.
+    -   Nếu backend chạy trên local (HTTP), URL sẽ là `ws://localhost:PORT`.
+    -   Nếu backend được deploy (HTTPS), URL sẽ là `wss://your-deployed-domain.com`.
+3.  **Lắng nghe sự kiện `onmessage`:** Server sẽ tự động gửi (push) các tin nhắn đến client khi có sự kiện xảy ra (ví dụ: cài đặt thiết bị thay đổi).
+4.  **Xử lý tin nhắn:** Dữ liệu nhận được sẽ là một chuỗi JSON. Client cần parse chuỗi này thành object để sử dụng.
+    -   Trường `type` cho biết loại sự kiện (ví dụ: `DEVICE_UPDATE`).
+    -   Trường `payload` chứa dữ liệu chi tiết của sự kiện đó (ví dụ: thông tin cài đặt mới của thiết bị). -->
+
+#### Định Dạng Tin Nhắn (Message Format)
+
+Server sẽ gửi các tin nhắn dưới dạng JSON string với cấu trúc sau:
+
+```json
+{
+  "type": "string", // Loại sự kiện, ví dụ: "DEVICE_UPDATE", "SENSOR_ALERT", "SCHEDULE_TRIGGERED", "WELCOME"
+  "payload": object // Đối tượng chứa dữ liệu liên quan đến sự kiện
+}
+```
+
+**Ví dụ:** Khi cài đặt của thiết bị `fan` được cập nhật:
+
+```json
+{
+  "type": "DEVICE_UPDATE",
+  "payload": {
+    "name": "fan",
+    "mode": "manual",
+    "status": true,
+    "intensity": 80,
+    "turn_off_after": null,
+    "turn_on_at": null,
+    "repeat": null,
+    "dates": null,
+    "updated_at": "2025-04-28T11:25:10.123Z"
+  }
+}
+```
+
+
 
 
 
