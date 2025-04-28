@@ -736,6 +736,8 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
 
 Hệ thống WebSocket endpoint để client kết nối và nhận thông báo cập nhật trạng thái thiết bị hoặc các sự kiện khác theo thời gian thực (hiện tại chỉ có update settings của thiết bị mới có thông báo).
 
+Notes: Có thể dùng file `websocket_test.html` để test.
+
 #### 17.1 Lấy Thông Tin Kết Nối WebSocket
 
 -   **URL:** `/ws-info` (Endpoint này nằm ở root, không phải `/api/ws-info`)
@@ -808,9 +810,3 @@ Server sẽ gửi các tin nhắn dưới dạng JSON string với cấu trúc s
   }
 }
 ```
-
-
-
-
-
-`dashboard_url`: `https://io.adafruit.com/justkh29/dashboards/dadn`
