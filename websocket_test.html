@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test Client</title>
+</head>
+<body>
+    <h1>WebSocket Test Client</h1>
+    <p>Check the browser console (F12) for messages.</p>
+    <div id="messages">
+        <h2>Received Messages:</h2>
+        <ul id="messageList"></ul>
+    </div>
+
+    <script>
+        const wsUrl = 'ws://localhost:8000';
+        const messageList = document.getElementById('messageList');
+
+        console.log(`Attempting to connect to ${wsUrl}...`);
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function(event) {
+            console.log('[WebSocket] Connection established!');
+            const li = document.createElement('li');
+            li.textContent = '[System] Connection established!';
+            li.style.color = 'green';
+            messageList.appendChild(li);
+        };
+
+        socket.onmessage = function(event) {
+            console.log('[WebSocket] Message from server:', event.data);
+            const li = document.createElement('li');
+            try {
+                const messageData = JSON.parse(event.data);
+                li.textContent = `[Received] ${JSON.stringify(messageData, null, 2)}`;
+            } catch (e) {
+                li.textContent = `[Received] ${event.data}`;
+            }
+            messageList.appendChild(li);
+            messageList.scrollTop = messageList.scrollHeight;
+        };
+
+        socket.onerror = function(error) {
+            console.error('[WebSocket] Error:', error);
+            const li = document.createElement('li');
+            li.textContent = `[Error] WebSocket error. See console for details.`;
+            li.style.color = 'red';
+            messageList.appendChild(li);
+        };
+
+        socket.onclose = function(event) {
+            console.log('[WebSocket] Connection closed:', event.code, event.reason);
+            const li = document.createElement('li');
+            li.textContent = `[System] Connection closed (Code: ${event.code})`;
+            li.style.color = 'orange';
+            messageList.appendChild(li);
+        };
+
+    </script>
+</body>
+</html>
