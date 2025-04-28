@@ -113,7 +113,7 @@ router.put(
   settingsController.updateSettingByName
 );
 
-router.patch(
+router.put(
   "/settings/:name/status",
   authenticateToken,
   settingsController.updateSettingStatusByName
