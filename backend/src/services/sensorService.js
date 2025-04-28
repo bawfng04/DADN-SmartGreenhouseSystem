@@ -17,10 +17,15 @@ const {
 } = require("../GreenhouseModel/prediction");
 
 const settingsRepository = require("../repository/settingsRepository");
-const {getFeedKey} = require("./settingsService");
+const {
+  getFeedKey,
+  calculateScheduledStatus,
+  determineMQttPayload: determineMqttPayloadFromSettings,
+} = require("./settingsService");
 
 
 const { publishToFeed } = require("./mqttpublisher");
+
 
 // dùng cho dashboard, trả về dữ liệu 7 giờ 1 ngày
 const TARGET_HOURS = [8, 9, 12, 15, 18, 20, 23];
@@ -182,237 +187,193 @@ class SensorService {
   async saveSensorDataAndTriggerControl(feedName, value, timestamp) {
     try {
       const savedData = await sensorRepository.saveSensor(feedName, value, timestamp);
-      console.log(`Sensor data saaved for ${feedName}:, ${value}`);
+      console.log(`Sensor data saved for ${feedName}:, ${value}`);
       await this.triggerAutomationControl(feedName, value, timestamp);
     }
     catch (error) {
       console.error(`Error saving sensor data for ${feedName}:`, error);
-      throw error;
+      // throw error;
     }
   }
 
   // Kiểm tra các sensor ở chế độ automatic của tất cả các sensor
   async triggerAutomationControl() {
-      console.log(`[AutoControl] Checking automatic control condition...`)
-      let allSettings;
+    console.log(`[AutoControl] Checking automatic and scheduled control conditions...`);
+    let allSettings;
     let latestSensorObj = {};
-    // lấy settings và value mới nhất của các sensor
+
     try {
       allSettings = await settingsRepository.getAllSettings();
-      const latestSensorsArray = await sensorRepository.getLatestSensorData();
-      if(!allSettings || !latestSensorsArray) {
+      const latestSensorsArray = await sensorRepository.getLatestSensorData(); // Lấy hết data sensor mới nhất
+
+      if (!allSettings || !latestSensorsArray || latestSensorsArray.length === 0) {
         console.warn("[AutoControl] No settings or latest sensor data found.");
         return;
       }
-      // latestSensors: [id, feed_name, value, timestamp]
+
+      // Chuyển latestSensorsArray thành object
+      latestSensorObj = latestSensorsArray.reduce((acc, sensor) => {
+        let keyName = sensor.name; // Dùng name từ DB (đã map trong model)
+        if (keyName === "soil-moisture") keyName = "earth-humid";
+        else if (keyName === "temperature") keyName = "thermal";
+        else if (keyName === "humidity") keyName = "humid";
+        else if (keyName === "light") keyName = "light";
+
+        acc[keyName] = sensor;
+        return acc;
+      }, {});
+
     } catch (error) {
-        console.error(
-          "[AutoControl] Error fetching settings or latest sensor data:",
-          error
-        );
-      throw error;
+      console.error("[AutoControl] Error fetching settings or latest sensor data:", error);
+      return;
     }
 
-
-    // chuyển latestSensorsArray thành object
-    latestSensorObj = latestSensorsArray.reduce((acc, sensor) => {
-      let keyName = sensor.feed_name;
-      if (keyName === 'soil-moisture') {
-        keyName = 'earth-humid';
-      }
-      if (keyName === 'temperature') {
-        keyName = 'thermal';
-      }
-      if (keyName === 'humidity') {
-        keyName = 'humid';
-      }
-      acc[keyName] = sensor; // {thermal: {id, value, timestamp}, humid: {...}, ...}
-      return acc;
-    }, {});
-
     for (const setting of allSettings) {
-      // lấy hết mấy thằng automatic
+      const deviceName = setting.name;
+
+      // === Xử lý AUTOMATIC mode ===
       if (setting.mode === "automatic") {
-        const deviceName = setting.name; // [led, fan, pump];
-
         let relevantInputData = {};
-        let requiredSensorFeeds = [];
-        let modelInputKeys = [];
-
-        let canPredict = true; // flag để dự đoán
+        let canPredict = true;
 
         try {
-
+          // Chuẩn bị input data
           switch (deviceName) {
-            // ================================= FAN ==================================
-            case "fan":
-              requiredSensorFeeds = ["thermal", "humid"];
-              modelInputKeys = ["temperature", "humidity"]; // keys trong model infer
-              if (latestSensorObj["thermal"] && latestSensorObj["humid"]) {
-                relevantInputData = {
-                  temperature: latestSensorObj["thermal"].value,
-                  humidity: latestSensorObj["humid"].value,
-                };
-              } else {
-                canPredict = false; // không thể dự đoán nếu không có dữ liệu
-              }
-              break;
-            // ================================= LED ==================================
-            case "led":
-              requiredSensorFeeds = ["light", "thermal", "humid"];
-              modelInputKeys = [
-                "Light_Intensity",
-                "Temperature",
-                "Humidity",
-                "Minute_Of_Day",
-              ]; // Key trong infer_led_control.py
-              if (latestSensorObj["light"] && latestSensorObj["thermal"] && latestSensorObj["humid"]) {
-                const currentDate = new Date();
-                const minutOfDay = currentDate.getHours() * 60 + currentDate.getMinutes();
-
-                relevantInputData = {
-                  Light_Intensity: latestSensorObj["light"].value,
-                  Temperature: latestSensorObj["thermal"].value,
-                  Humidity: latestSensorObj["humid"].value,
-                  Minute_Of_Day: minutOfDay,
-                };
-              } else {
-                canPredict = false;
-              }
-              break;
-            // ================================= PUMP ==================================
-            case "pump":
-              requiredSensorFeeds = ["earth-humid", "thermal", "humid"];
-              modelInputKeys = [
-                "Soil Moisture",
-                "Temperature",
-                "Air humidity (%)",
-              ]; // key trong model infer
-              if (
-                latestSensorObj["earth-humid"] &&
-                latestSensorObj["thermal"] &&
-                latestSensorObj["humid"]
-              ) {
-                relevantInputData = {
-                  "Soil Moisture": latestSensorObj["earth-humid"].value,
-                  Temperature: latestSensorObj["thermal"].value,
-                  "Air humidity (%)": latestSensorObj["humid"].value,
-                };
-              } else {
-                canPredict = false; // không thể dự đoán nếu không có dữ liệu
-              }
-              break;
-            // ================================== DEFAULT =============================
-            default:
-              console.warn(
-                `[AutoControl] Unknown device name: ${deviceName}`
-              );
-              continue; // bỏ qua nếu không biết tên thiết bị
+             case "fan":
+                if (latestSensorObj["thermal"] && latestSensorObj["humid"]) {
+                    relevantInputData = {
+                        temperature: latestSensorObj["thermal"].value,
+                        humidity: latestSensorObj["humid"].value,
+                    };
+                } else { canPredict = false; }
+                break;
+             case "led":
+                if (latestSensorObj["light"] && latestSensorObj["thermal"] && latestSensorObj["humid"]) {
+                    const currentDate = new Date();
+                    const minuteOfDay = currentDate.getHours() * 60 + currentDate.getMinutes();
+                    relevantInputData = {
+                        Light_Intensity: latestSensorObj["light"].value,
+                        Temperature: latestSensorObj["thermal"].value,
+                        Humidity: latestSensorObj["humid"].value,
+                        Minute_Of_Day: minuteOfDay,
+                    };
+                } else { canPredict = false; }
+                break;
+             case "pump":
+                if (latestSensorObj["earth-humid"] && latestSensorObj["thermal"] && latestSensorObj["humid"]) {
+                    relevantInputData = {
+                        "Soil Moisture": latestSensorObj["earth-humid"].value,
+                        Temperature: latestSensorObj["thermal"].value,
+                        "Air humidity (%)": latestSensorObj["humid"].value,
+                    };
+                } else { canPredict = false; }
+                break;
+             default:
+                console.warn(`[AutoControl] Unknown device name in automatic check: ${deviceName}`);
+                continue; // Bỏ qua thiết bị không xác định
           }
 
-          // check xem có đủ dữ liệu để dự đoán không
           if (!canPredict) {
-            const missingFeeds = requiredSensorFeeds.filter(
-              (feed) => !latestSensors[feed]
-            );
-            console.warn(
-              `[AutoControl] Missing sensor data for ${deviceName}: ${missingFeeds.join(
-                ", "
-              )}`
-            );
-            continue;
+             const requiredFeedsMap = { fan: ["thermal", "humid"], led: ["light", "thermal", "humid"], pump: ["earth-humid", "thermal", "humid"] };
+             const missingFeeds = (requiredFeedsMap[deviceName] || []).filter(feed => !latestSensorObj[feed]);
+             console.warn(`[AutoControl] Cannot predict for ${deviceName} due to missing sensor data: ${missingFeeds.join(", ")}`);
+             continue; // Bỏ qua nếu thiếu dữ liệu
           }
 
           // Predict
-          console.log(
-            `[AutoControl] Predicting control for ${deviceName} with data: ${JSON.stringify(
-              relevantInputData
-            )}`
-          );
-          const predictionResult = await getPrediction(
-            deviceName,
-            relevantInputData,
-          );
+          console.log(`[AutoControl] Predicting control for ${deviceName} with data: ${JSON.stringify(relevantInputData)}`);
+          const predictionResult = await getPrediction(deviceName, relevantInputData);
 
-          console.log(
-            `[AutoControl] Prediction result for ${deviceName}: ${JSON.stringify(
-              predictionResult
-            )}`
-          );
-
-          // Xử lí result và gửi về MQTT
-          // const mappingName = {
-          //   led: "light-control",
-          //   fan: "fan",
-          //   pump: "water-pump",
-          // }
-
-          // const feedKey = mappingName[deviceName];
-          const feedKey = getFeedKey(deviceName); // lấy feedkey tương ứng với device name
-          if (!feedKey) {
-            console.warn(
-              `[AutoControl] Unknown device name for MQTT: ${deviceName}`
-            );
-            continue; // bỏ qua nếu không biết tên thiết bị
+          // Xử lý kết quả prediction
+          let predictedStatus;
+          if (deviceName === 'led') {
+              predictedStatus = parseInt(predictionResult, 10) === 1;
+          } else {
+              predictedStatus = predictionResult === "BẬT";
           }
+          console.log(`[AutoControl] Prediction result for ${deviceName}: ${predictedStatus}`);
 
-          let mqttPayload = null;
-          const predictedStatus = (predictionResult === "BẬT"); //true/false
-
-          switch (deviceName) {
-            case "fan":
-              mqttPayload = predictedStatus ? (100) : (0);
-              break;
-            case "led":
-              mqttPayload = predicetdStatus ? (1) : (0);
-              break;
-            case "pump":
-              mqttPayload = predictedStatus ? (100) : (0);
-              break;
-            default:
-              console.warn(
-                `[AutoControl] Unknown device name for MQTT: ${deviceName}`
-              );
-              continue; // bỏ qua nếu không biết tên thiết bị
-          }
-
-          if(mqttPayload !== null) {
-            console.log(
-              `[AutoControl ${deviceName}] Status changed (${setting.status} -> ${predictedStatus}). Publishing to ${feedKey} payload: ${mqttPayload}`
-            );
-            // gửi lên MQTT
-            publishToFeed(feedKey, mqttPayload);
-            try {
-              await settingsRepository.updateSettingByName(
-                deviceName,
-                { status: predictedStatus } // cập nhật status trong database
-              );
-              console.log(
-                `[AutoControl ${deviceName}] Updated database status to ${predictedStatus}`
-              );
-            } catch (dbError) {
-              console.error(
-                `[AutoControl ${deviceName}] Failed to update database status after prediction:`,
-                dbError
-              );
+          // *** CHỈ CẬP NHẬT VÀ PUBLISH NẾU STATUS THAY ĐỔI ***
+          if (setting.status !== predictedStatus) {
+            console.log(`[AutoControl ${deviceName}] Status changed by prediction (${setting.status} -> ${predictedStatus}).`);
+            const feedKey = getFeedKey(deviceName);
+            if (!feedKey) {
+              console.warn(`[AutoControl] Unknown feed key for device: ${deviceName}`);
+              continue;
             }
 
+            // Tính payload MQTT dựa trên status mới và intensity hiện tại
+            const settingsForPayload = { ...setting, status: predictedStatus }; // Dùng intensity hiện tại từ DB
+            const mqttPayload = determineMqttPayloadFromSettings(deviceName, settingsForPayload);
+
+            if (mqttPayload !== null) {
+              console.log(`[AutoControl ${deviceName}] Publishing to ${feedKey} payload: ${mqttPayload}`);
+              publishToFeed(feedKey, mqttPayload); // Gửi MQTT
+
+              // Cập nhật status mới vào DB
+              try {
+                await settingsRepository.updateSettingByName(deviceName, { status: predictedStatus });
+                console.log(`[AutoControl ${deviceName}] Updated database status to ${predictedStatus}`);
+              } catch (dbError) {
+                console.error(`[AutoControl ${deviceName}] Failed to update database status after prediction:`, dbError);
+              }
+            } else {
+                 console.warn(`[AutoControl ${deviceName}] Could not determine MQTT payload.`);
+            }
+          } else {
+             console.log(`[AutoControl ${deviceName}] Status (${predictedStatus}) matches prediction. No change needed.`);
           }
+
         } catch (error) {
-          console.error(
-            `[AutoControl] Error during prediction or control`,
-            error
-          );
-          canPredict = false; // không thể dự đoán nếu có lỗi xảy ra
+          console.error(`[AutoControl] Error during prediction or control for ${deviceName}:`, error);
         }
 
+      // === Xử lý SCHEDULED mode ===
+      } else if (setting.mode === "scheduled") {
+        try {
+          // Tính toán status mới dựa trên lịch trình
+          const calculatedStatus = calculateScheduledStatus(setting);
+          console.log(`[ScheduleCheck ${deviceName}] Current DB status: ${setting.status}, Calculated scheduled status: ${calculatedStatus}`);
+
+          // Nếu trạng thái trong DB khác với trạng thái tính toán được
+          // -> gửi MQTT và cập nhật DB
+          if (setting.status !== calculatedStatus) {
+            console.log(`[ScheduleCheck ${deviceName}] Status mismatch detected (${setting.status} -> ${calculatedStatus}). Updating...`);
+            const feedKey = getFeedKey(deviceName);
+            if (!feedKey) {
+              console.warn(`[ScheduleCheck] Unknown feed key for device: ${deviceName}`);
+              continue;
+            }
+
+            // Tính payload MQTT dựa trên status mới và intensity hiện tại
+            const settingsForPayload = { ...setting, status: calculatedStatus };
+            const mqttPayload = determineMqttPayloadFromSettings(deviceName, settingsForPayload);
+
+            if (mqttPayload !== null) {
+              console.log(`[ScheduleCheck ${deviceName}] Publishing to ${feedKey} payload: ${mqttPayload}`);
+              publishToFeed(feedKey, mqttPayload); // Gửi MQTT
+
+              // Cập nhật status mới vào DB
+              try {
+                await settingsRepository.updateSettingByName(deviceName, { status: calculatedStatus });
+                console.log(`[ScheduleCheck ${deviceName}] Updated database status to ${calculatedStatus}`);
+              } catch (dbError) {
+                console.error(`[ScheduleCheck ${deviceName}] Failed to update database status:`, dbError);
+              }
+            } else {
+                 console.warn(`[ScheduleCheck ${deviceName}] Could not determine MQTT payload.`);
+            }
+          }
+          // else {
+          //    console.log(`[ScheduleCheck ${deviceName}] Status matches schedule. No change needed.`);
+          // }
+
+        } catch (error) {
+          console.error(`[ScheduleCheck] Error during scheduled check for ${deviceName}:`, error);
+        }
       }
     }
-
   }
-
-
-
 
 }
 
@@ -436,7 +397,26 @@ function startAutoSync() {
   }, 10 * 1000);
 }
 
+
+function startControlCheck() {
+  console.log(
+    "[ControlCheck] Starting periodic control checks(15s)..."
+  );
+  setInterval(async () => {
+    try {
+      await sensorService.triggerAutomationControl();
+    } catch (error) {
+      console.error(
+        "[ControlCheck] Error during periodic control check:",
+        error
+      );
+    }
+  }, 15 * 1000);
+}
+
+
 module.exports = {
   sensorService,
   startAutoSync,
+  startControlCheck,
 };

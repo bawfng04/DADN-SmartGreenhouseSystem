@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8000;
 const { pool } = require("./src/database/PostgreDatabase");
 
 const router = require("./src/routes/routes");
-const { startAutoSync } = require("./src/services/sensorService");
+const { startAutoSync, startControlCheck } = require("./src/services/sensorService");
 const { startDeviceAutoSync } = require("./src/services/deviceService");
 const { startScheduler } = require("./src/services/scheduleService");
 
@@ -50,5 +50,6 @@ app.listen(PORT, () => {
   // startDeviceAutoSync();
   // chạy scheduler
   startScheduler(10000); // chạy 10s/lần
+  startControlCheck(15000);
   console.log(`Server running on port ${PORT}`);
 });
