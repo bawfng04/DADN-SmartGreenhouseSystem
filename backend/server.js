@@ -49,7 +49,7 @@ app.listen(PORT, () => {
   // startAutoSync();
   // startDeviceAutoSync();
   // chạy scheduler
-  startScheduler(10000); // chạy 10s/lần
-  startControlCheck(15000);
+  startScheduler(); // chạy 10s/lần
+  startControlCheck();
   console.log(`Server running on port ${PORT}`);
 });

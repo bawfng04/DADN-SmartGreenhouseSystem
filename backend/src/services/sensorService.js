@@ -411,7 +411,7 @@ function startControlCheck() {
         error
       );
     }
-  }, 15 * 1000);
+  }, 20 * 1000);
 }
 
 
