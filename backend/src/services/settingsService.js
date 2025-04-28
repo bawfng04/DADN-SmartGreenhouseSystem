@@ -47,6 +47,87 @@ function determineMQttPayload(deviceName, data) {
 }
 
 
+// Helper function để tính status theo schedule
+function calculateScheduledStatus(scheduleParams) {
+  // repeat: 'today', 'everyday', 'custom'
+  // nếu repeat là 'custom' thì sẽ dùng dates để check
+  // turn_on_at: 'HH:MM' hoặc 'HH:MM:SS'
+  // turn_off_after: integer -> sẽ tắt sau x phút
+
+  const { turn_on_at, turn_off_after, repeat, dates } = scheduleParams;
+
+  // validate
+  if (turn_on_at === null || turn_on_at === undefined || turn_off_after === null || turn_off_after === undefined || !repeat) {
+    console.warn(
+      "[calculateScheduledStatus] Invalid schedule parameters provided"
+    );
+    return false;
+  }
+  if (repeat === "custom" && (!Array.isArray(dates) || dates.length === 0)) {
+    console.warn("[calculateScheduledStatus] Missing dates for custom repeat.");
+    return false;
+  }
+
+  try {
+    const currentDate = new Date();
+    const currentDateInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+
+    // validate turn_on_at
+    const [onHour, onMinute] = turn_on_at.split(':').map(Number);
+    if (isNaN(onHour) || isNaN(onMinute)) {
+        console.warn("[calculateScheduledStatus] Invalid turn_on_at format.");
+        return false;
+    }
+
+    const turnOnTimeInMinutes = onHour * 60 + onMinute;
+
+    const durationMinutes = parseInt(turn_off_after, 10);
+    if (isNaN(durationMinutes) || durationMinutes < 0) {
+        console.warn("[calculateScheduledStatus] Invalid turn_off_after value.");
+        return false;
+    }
+
+    // giờ sẽ tắt
+    const turnOffTimeInMinutes = (turnOnTimeInMinutes + durationMinutes) % (24 * 60); // wrap 24h
+
+    // check có đang trong thời gian bật không
+    let isInTimeWindow = false;
+    if (turnOnTimeInMinutes < turnOffTimeInMinutes) {
+      isInTimeWindow = currentDateInMinutes >= turnOnTimeInMinutes && currentDateInMinutes < turnOffTimeInMinutes;
+    }
+    // qua ngày mới
+    else if (turnOnTimeInMinutes > turnOffTimeInMinutes) {
+      isInTimeWindow = currentDateInMinutes >= turnOnTimeInMinutes || currentDateInMinutes < turnOffTimeInMinutes;
+    }
+    else {
+      isInTimeWindow = true; // turnOnTimeInMinutes = turnOffTimeInMinutes
+      // tức là bật liên tục
+    }
+
+    if (!isInTimeWindow) {
+      return false; // không nằm trong thời gian bật -> tắt
+    }
+
+    const todayYYYYMMDD = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD
+
+    switch (repeat) {
+      case "today":
+        return isInTimeWindow; // chỉ bật hôm nay
+      case "everyday":
+        return isInTimeWindow; // bật mỗi ngày
+      case "custom":
+        return isInTimeWindow && dates.includes(todayYYYYMMDD);
+      default:
+        console.warn("[calculateScheduledStatus] Invalid repeat value.");
+        return false;
+    }
+  }
+  catch (error) {
+    console.error("[calculateScheduledStatus] Error calculating scheduled status:", error);
+    return false;
+  }
+}
+
 class SettingsService{
     async getAllSettings() {
         try {
@@ -118,7 +199,11 @@ class SettingsService{
             }
             let finalUpdatedSettings = null;
             // nếu trong db chưa auto, nhận request auto từ fe
-            const isSwitchingToAuto = settingsData.mode === 'automatic' && currentSettings.mode !== 'automatic';
+          const isSwitchingToAuto = settingsData.mode === 'automatic' && currentSettings.mode !== 'automatic';
+          const isScheduledMode = settingsData.mode === 'scheduled';
+
+
+
             if (isSwitchingToAuto) {
                 console.log(`[SettingsService] Device ${name} switched to automatic mode`);
                 const autoSettings = { ...settingsData }; //settings gốc do fe gửi về
@@ -271,7 +356,36 @@ class SettingsService{
                     console.log(`[SettingsService] Published MQTT payload for device ${name}: ${mqttPayload}`);
                 }
             }
-            // nếu không phải là auto, update như bình thường
+              // ========================= Check scheduled mode =========================
+            else if (isScheduledMode) {
+                console.log(
+                    `[SettingsService] Device ${name} switched to scheduled mode`
+                );
+              const calculatedStatus = calculateScheduledStatus(settingsData);
+              console.log(`[SettingsService] Calculated scheduled status for device ${name}: ${calculatedStatus}`);
+              // cập nhật status vào db
+              const dataToUpdate = { ...settingsData, status: calculatedStatus };
+              finalUpdatedSettings = await settingsRepository.updateSettingByName(name, dataToUpdate);
+              if(!finalUpdatedSettings) {
+                throw new Error("Settings not found");
+              }
+              console.log(
+                `[SettingsService] Updated settings for device ${name}: ${JSON.stringify(
+                  finalUpdatedSettings
+                )}`
+              );
+              // gửi lên mqtt
+              const feedKey = getFeedKey(name);
+              const mqttPayload = determineMQttPayload(name, finalUpdatedSettings);
+              if(feedKey && mqttPayload !== null) {
+                publishToFeed(feedKey, mqttPayload);
+                console.log(
+                  `[SettingsService] Published MQTT payload for device ${name}: ${mqttPayload}`
+                );
+              }
+            }
+              // ======================== Check manual mode =========================
+            // nếu không phải là auto và scheduled, update như bình thường (manual mode)
             else {
               console.log(
                 `[SettingsService] Updating settings for device ${name} with mode: ${settingsData.mode}`
@@ -334,7 +448,8 @@ class SettingsService{
         if (!currentSetting) {
             throw new Error("Settings not found");
         }
-        const newStatus = !currentSetting.status;
+      const newStatus = !currentSetting.status;
+      // cập nhật settings vào db
         const updatedSettings = await settingsRepository.updateSettingStatusByName(name, newStatus);
         if (!updatedSettings) {
             throw new Error("Failed to update settings status");
@@ -355,3 +470,6 @@ class SettingsService{
 }
 
 module.exports = new SettingsService();
+// helpers
+module.exports.calculateScheduledStatus = calculateScheduledStatus;
+module.exports.getFeedKey = getFeedKey;
