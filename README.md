@@ -702,7 +702,7 @@ Dưới đây là mô tả các trường có thể có trong đối tượng c�
 #### 16.4 Cập Nhật Trạng Thái Thiết Bị (Bật/Tắt)
 
 - **URL:** `/settings/{name}/status`
-- **Phương thức:** `PATCH`
+- **Phương thức:** `PUT`
 - **Mô tả:** Bật hoặc tắt một thiết bị (toggle trạng thái `status`). Lệnh điều khiển MQTT sẽ được gửi.
 - **Tham số đường dẫn (Path Parameter):**
   - `name`: Tên của thiết bị (led, fan, pump).
