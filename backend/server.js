@@ -68,7 +68,7 @@ const server = http.createServer(app);
 initWebSocketServer(server);
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   // startAutoSync();
   // startDeviceAutoSync();
   // chạy scheduler

@@ -4,7 +4,7 @@ const { publishToFeed } = require(`./mqttpublisher`);
 const { getPrediction } = require('../GreenhouseModel/prediction');
 const sensorRepository = require('../repository/sensorRepository');
 const settingsmodel = require('../models/settingsModel');
-const {boardcast} = require("./webSocketService");
+const {broadcast} = require("./webSocketService");
 
 
 // map device name với feed key
@@ -361,7 +361,10 @@ class SettingsService{
                     console.log(`[SettingsService] Published MQTT payload for device ${name}: ${mqttPayload}`);
               }
               if (finalUpdatedSettings) {
-                boardcast({type: 'DEVICE_UPDATE', payload: finalUpdatedSettings});
+                broadcast({
+                  type: "DEVICE_UPDATE",
+                  payload: finalUpdatedSettings,
+                });
               }
 
 
@@ -394,7 +397,10 @@ class SettingsService{
                 );
               }
               if (finalUpdatedSettings) {
-                boardcast({type: 'DEVICE_UPDATE', payload: finalUpdatedSettings});
+                broadcast({
+                  type: "DEVICE_UPDATE",
+                  payload: finalUpdatedSettings,
+                });
               }
             }
               // ======================== Check manual mode =========================
@@ -441,7 +447,10 @@ class SettingsService{
                     }
                 }
                 if (finalUpdatedSettings) {
-                    boardcast({type: 'DEVICE_UPDATE', payload: finalUpdatedSettings});
+                   broadcast({
+                     type: "DEVICE_UPDATE",
+                     payload: finalUpdatedSettings,
+                   });
                 }
             }
             return finalUpdatedSettings;
@@ -481,7 +490,7 @@ class SettingsService{
             publishToFeed(feedKey, payload);
       }
       if (updatedSettings) {
-        boardcast({ type: 'DEVICE_UPDATE', payload: updatedSettings });
+        broadcast({ type: "DEVICE_UPDATE", payload: updatedSettings });
       }
 
         return updatedSettings;
