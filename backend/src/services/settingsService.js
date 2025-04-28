@@ -191,6 +191,7 @@ class SettingsService{
         //     throw error;
         // }
 
+        // Cứuuuuuuuuu SOS SOS
         try {
             const currentSettings = await this.getSettingByName(name); // lấy settings hiện tại
             if (!currentSettings) {
@@ -230,7 +231,7 @@ class SettingsService{
                 try {
                   // lấy data mới nhất của sensor
                   const latestSensorsArray =
-                    await sensorRepository.getLatestSensorData(name);
+                    await sensorRepository.getLatestSensorData();
                   if (!latestSensorsArray) {
                     throw new Error("No sensor data found for prediction");
                   }
