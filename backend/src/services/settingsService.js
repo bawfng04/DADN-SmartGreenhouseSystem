@@ -191,7 +191,7 @@ class SettingsService{
         //     throw error;
         // }
 
-        // Cứuuuuuuuuu SOS SOS
+        // troi oi cai gi vay cuu toi
         try {
             const currentSettings = await this.getSettingByName(name); // lấy settings hiện tại
             if (!currentSettings) {
