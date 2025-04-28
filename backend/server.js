@@ -1,7 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+
 const PORT = process.env.PORT || 8000;
+
 
 const { pool } = require("./src/database/PostgreDatabase");
 
@@ -9,6 +12,9 @@ const router = require("./src/routes/routes");
 const { startAutoSync, startControlCheck } = require("./src/services/sensorService");
 const { startDeviceAutoSync } = require("./src/services/deviceService");
 const { startScheduler } = require("./src/services/scheduleService");
+const mqttClient = require("./src/utils/mqtt");
+const { getWebSocketInfo, initWebSocketServer } = require("./src/services/webSocketService");
+
 
 // vercel --prod
 
@@ -45,11 +51,28 @@ app.get("/", (req, res) => {
   res.json({ message: "Server is running!" });
 });
 
-app.listen(PORT, () => {
+// WebSocket route
+app.get("/ws-info", (req, res) => {
+  try {
+    const info = getWebSocketInfo(req);
+    res.status(200).json(info);
+  } catch (e) {
+    console.error("Error getting WebSocket info:", e);
+    res.status(500).json({ error: "Failed to get WebSocket info" });
+  }
+});
+
+// tạo server từ express app
+const server = http.createServer(app);
+//init websocket
+initWebSocketServer(server);
+
+
+server.listen(PORT, () => {
   // startAutoSync();
   // startDeviceAutoSync();
   // chạy scheduler
-  startScheduler(10000); // chạy 10s/lần
-  startControlCheck(15000);
+  startScheduler(); // chạy 10s/lần
+  startControlCheck();
   console.log(`Server running on port ${PORT}`);
 });

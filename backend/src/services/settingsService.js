@@ -4,6 +4,7 @@ const { publishToFeed } = require(`./mqttpublisher`);
 const { getPrediction } = require('../GreenhouseModel/prediction');
 const sensorRepository = require('../repository/sensorRepository');
 const settingsmodel = require('../models/settingsModel');
+const {broadcast} = require("./webSocketService");
 
 
 // map device name với feed key
@@ -347,6 +348,9 @@ class SettingsService{
                 finalUpdatedSettings = await settingsRepository.updateSettingByName(name, { status: predictedStatus });
                 console.log(`[SettingsService] Updated predicted status ${name}: ${predictedStatus}`);
 
+              // gửi thông báo
+
+
                 // gửi lên mqtt
                 const feedKey = getFeedKey(name);
                 const settingsForPayload = {...finalUpdatedSettings, status: predictedStatus, intensity: autoSettings.intensity};
@@ -355,7 +359,15 @@ class SettingsService{
                 if(feedKey && mqttPayload !== null) {
                     publishToFeed(feedKey, mqttPayload);
                     console.log(`[SettingsService] Published MQTT payload for device ${name}: ${mqttPayload}`);
-                }
+              }
+              if (finalUpdatedSettings) {
+                broadcast({
+                  type: "DEVICE_UPDATE",
+                  payload: finalUpdatedSettings,
+                });
+              }
+
+
             }
               // ========================= Check scheduled mode =========================
             else if (isScheduledMode) {
@@ -383,6 +395,12 @@ class SettingsService{
                 console.log(
                   `[SettingsService] Published MQTT payload for device ${name}: ${mqttPayload}`
                 );
+              }
+              if (finalUpdatedSettings) {
+                broadcast({
+                  type: "DEVICE_UPDATE",
+                  payload: finalUpdatedSettings,
+                });
               }
             }
               // ======================== Check manual mode =========================
@@ -428,6 +446,12 @@ class SettingsService{
                         );
                     }
                 }
+                if (finalUpdatedSettings) {
+                   broadcast({
+                     type: "DEVICE_UPDATE",
+                     payload: finalUpdatedSettings,
+                   });
+                }
             }
             return finalUpdatedSettings;
         }
@@ -464,7 +488,10 @@ class SettingsService{
                 throw new Error("Invalid payload for MQTT publish");
             }
             publishToFeed(feedKey, payload);
-        }
+      }
+      if (updatedSettings) {
+        broadcast({ type: "DEVICE_UPDATE", payload: updatedSettings });
+      }
 
         return updatedSettings;
     }
@@ -474,3 +501,4 @@ module.exports = new SettingsService();
 // helpers
 module.exports.calculateScheduledStatus = calculateScheduledStatus;
 module.exports.getFeedKey = getFeedKey;
+module.exports.determineMQttPayload = determineMQttPayload;
