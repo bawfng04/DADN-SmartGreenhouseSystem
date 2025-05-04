@@ -17,6 +17,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 const unit = {
   temperature: "°C",
@@ -24,30 +25,51 @@ const unit = {
   humidity: "%",
   light: "lux",
 };
+const device = {
+  fan: "Quạt",
+  led: "Đèn",
+  pump: "Bơm",
+};
+const mode = {
+  manual: "Thủ công",
+  scheduled: "Hẹn giờ",
+  automatic: "Tự động",
+};
 
-interface Notification {
-  timestamp: string;
-  message: string;
+const sensor = {
+  temperature: "Nhiệt độ",
+  soil_moisture: "Độ ẩm đất",
+  humidity: "Độ ẩm không khí",
+  light: "Ánh sáng",
+};
+
+interface DeviceMessage {
+  type: string;
+  payload: {
+    name: string;
+    mode: string;
+    status: boolean;
+    intensity: number;
+    turn_off_after: string | null;
+    turn_on_at: string | null;
+    repeat: string | null;
+    dates: string | null;
+    updated_at: string;
+  };
 }
 
-const mockDeviceNotifications: Notification[] = [
-  {
-    timestamp: "15:30, 06/01/2025",
-    message: "Quạt được bật (thủ công), cường độ 50%",
-  },
-  {
-    timestamp: "15:30, 06/01/2025",
-    message: "Quạt được tắt (tự động)",
-  },
-  {
-    timestamp: "15:30, 06/01/2025",
-    message: "Quạt được bật (thủ công), cường độ 50%",
-  },
-  {
-    timestamp: "15:30, 06/01/2025",
-    message: "Quạt được bật (thủ công), cường độ 50%",
-  },
-];
+interface SensorMessage {
+  type: string;
+  payload: {
+    id: string;
+    index: string;
+    higherThan: number | null;
+    lowerThan: number | null;
+    repeatAfter: number | null;
+    active: boolean;
+    updated_at: string;
+  };
+}
 
 // const mockReminderNotifications = [
 //   {
@@ -56,13 +78,18 @@ const mockDeviceNotifications: Notification[] = [
 //   },
 // ];
 
-const mockReminderNotifications: Notification[] = [];
-
 export default function NotificationScreen({ id }: { id: string }) {
   const router = useRouter();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [type, setType] = useState("device");
+  const { notifications } = useNotifications();
+  const deviceNotifications: DeviceMessage[] = notifications.filter(
+    (notification) => notification.type === "DEVICE_UPDATE"
+  ) as DeviceMessage[];
+  const sensorNotifications: SensorMessage[] = notifications.filter(
+    (notification) => notification.type === "SENSOR_ALERT"
+  ) as SensorMessage[];
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -132,14 +159,19 @@ export default function NotificationScreen({ id }: { id: string }) {
 
       <ScrollView style={styles.notificationList}>
         {type === "device" &&
-          mockDeviceNotifications.length > 0 &&
-          mockDeviceNotifications.map((notification, index) => (
+          deviceNotifications.length > 0 &&
+          deviceNotifications.map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
-              <Text style={styles.timestamp}>{notification.timestamp}</Text>
-              <Text style={styles.message}>{notification.message}</Text>
+              <Text style={styles.timestamp}>
+                {formatDateTime(notification.payload.updated_at)}
+              </Text>
+              <Text style={styles.message}>
+                {formatDeviceMessage(notification)}
+              </Text>
             </View>
           ))}
-        {type === "device" && mockDeviceNotifications.length === 0 && (
+
+        {type === "device" && deviceNotifications.length === 0 && (
           <View style={styles.loadingContainer}>
             <Image
               source={require("@/assets/images/empty-state.png")}
@@ -149,14 +181,18 @@ export default function NotificationScreen({ id }: { id: string }) {
           </View>
         )}
         {type === "reminder" &&
-          mockReminderNotifications.length > 0 &&
-          mockReminderNotifications.map((notification, index) => (
+          sensorNotifications.length > 0 &&
+          sensorNotifications.map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
-              <Text style={styles.timestamp}>{notification.timestamp}</Text>
-              <Text style={styles.message}>{notification.message}</Text>
+              <Text style={styles.timestamp}>
+                {formatDateTime(notification.payload.updated_at)}
+              </Text>
+              <Text style={styles.message}>
+                {formatSensorMessage(notification)}
+              </Text>
             </View>
           ))}
-        {type === "reminder" && mockReminderNotifications.length === 0 && (
+        {type === "reminder" && sensorNotifications.length === 0 && (
           <View style={styles.loadingContainer}>
             <Image
               source={require("@/assets/images/empty-state.png")}
@@ -169,6 +205,44 @@ export default function NotificationScreen({ id }: { id: string }) {
     </SafeAreaView>
   );
 }
+
+function formatDateTime(isoString: string): string {
+  const date = new Date(isoString);
+
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes}, ${day}-${month}-${year}`;
+}
+
+function formatDeviceMessage(message: DeviceMessage): string {
+  const deviceName = message.payload.name as keyof typeof device;
+  const deviceMode = message.payload.mode as keyof typeof mode;
+  return `${device[deviceName]} được ${
+    message.payload.status ? "bật" : "tắt"
+  } (${mode[deviceMode]}) ${
+    message.payload.status ? `, cường độ ${message.payload.intensity}%` : ""
+  }`;
+}
+
+function formatSensorMessage(message: SensorMessage): string {
+  const sensorName = message.payload.index as keyof typeof sensor;
+  return `${sensor[sensorName]} ${
+    message.payload.higherThan ? "cao hơn " + message.payload.higherThan : ""
+  } ${
+    message.payload.lowerThan ? "thấp hơn " + message.payload.lowerThan : ""
+  } ${unit[sensorName as keyof typeof unit] || ""}`;
+}
+
+// function formatSensorMessage(message: SensorMessage): string {
+//   const sensorName = message.payload.name as string;
+//   return `Cảnh báo: ${sensorName} đã ${message.payload.status ? "vượt ngưỡng" : "trở lại bình thường"}, giá trị hiện tại: ${message.payload.intensity}${unit[sensorName as keyof typeof unit] || ''}`;
+// }
 
 const styles = StyleSheet.create({
   container: {

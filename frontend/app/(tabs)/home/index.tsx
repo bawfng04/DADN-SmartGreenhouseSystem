@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 
 interface DeviceState {
   id: string;
@@ -73,6 +74,17 @@ export default function HomeScreen() {
   const [isNotification, setIsNotification] = useState(false);
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const webSocketContext = useWebSocket();
+  const messages = webSocketContext?.messages || [];
+
+  useEffect(() => {
+    setIsNotification(true);
+  }, [messages]);
+
+  const handleNotification = () => {
+    setIsNotification(false);
+    router.push("/home/notification");
+  };
 
   const {
     data: indices,
@@ -82,7 +94,7 @@ export default function HomeScreen() {
     queryKey: ["indices"],
     queryFn: async () => {
       const response = await apiCall({ endpoint: "/indices" });
-      console.log("✅ response from API:", response);
+      console.log("response from API:", response);
       return response;
     },
   });
@@ -95,13 +107,13 @@ export default function HomeScreen() {
     queryKey: ["settings"],
     queryFn: async () => {
       const response = await apiCall({ endpoint: "/settings" });
-      console.log("✅ Settings response from API:", response);
+      console.log("Settings response from API:", response);
       return response;
     },
   });
 
   const handleRefresh = () => {
-    console.log("🔄 Refreshing indices...");
+    console.log("efreshing indices...");
     setCurrentDate(new Date());
     refetchIndices();
     refetchSettings();
@@ -120,10 +132,6 @@ export default function HomeScreen() {
     month: "2-digit",
     year: "numeric",
   });
-
-  const handleNotification = () => {
-    router.push("/home/notification");
-  };
 
   return (
     <SafeAreaView
