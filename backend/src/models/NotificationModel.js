@@ -12,7 +12,6 @@ const { pool } = require("../database/PostgreDatabase");
 // );
 
 class NotificationModel {
-
     async createNotification(user_id, message, type, is_read = false, related_entity_id = "") {
         try {
             const query = `
@@ -96,9 +95,6 @@ class NotificationModel {
             throw new Error("Error mark all notification as read");
         }
     }
-
-
-
 }
 
 module.exports = NotificationModel
