@@ -405,7 +405,7 @@ CREATE TABLE public.notifications (
     message TEXT NOT NULL,
     type VARCHAR(50), -- 'DEVICE_UPDATE', 'SENSOR_ALERT', 'SCHEDULE_COMPLETED', 'REMINDER'...
     is_read BOOLEAN DEFAULT FALSE,
-    related_entity_id VARCHAR(255), -- ID hoặc tên của thiết bị/sensor/lịch trình liên quan (tùy chọn)
+    related_entity_id VARCHAR(255),
     timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE -- xoá user -> xoá notification của user
 );
