@@ -24,10 +24,6 @@ class NotificationModel {
             if (result.rows && result.rows.length > 0) {
                 return result[0]; // thằng mới tạo
             }
-            else {
-                console.log("Failed to create new notification");
-                throw new Error("Failed to create new notification")
-            }
         }
         catch (error) {
             console.log("Error creating notification at NotificationModel.js");
@@ -49,7 +45,7 @@ class NotificationModel {
             return result.rows; // cái mảng mấy cái vừa lấy
         }
         catch (error) {
-            console.log("Error getAllNotifications:", error.message);
+            console.log("Error getAllNotifications:", error);
             throw new Error("Error getAllNotifications");
         }
     }
@@ -66,12 +62,9 @@ class NotificationModel {
             if (result.rows && result.rows.length > 0) {
                 return result.rows[0];
             }
-            else {
-                throw new Error("Error mark as read", error.message);
-            }
         }
         catch (error) {
-            console.log("Error mark notification", error.message);
+            console.log("Error mark notification", error);
             throw new Error("Error mark notification");
         }
     }
@@ -88,12 +81,9 @@ class NotificationModel {
             if (result.rows && result.rows.length > 0) {
                 return result.rowCount; // số lượng thông báo đánh dấu đã đọc
             }
-            else {
-                throw new Error("Error mark all as read", error.message);
-            }
         }
         catch (error) {
-            console.log("Error mark all notification as read", error.message);
+            console.log("Error mark all notification as read", error);
             throw new Error("Error mark all notification as read");
         }
     }
