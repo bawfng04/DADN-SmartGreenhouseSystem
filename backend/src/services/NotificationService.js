@@ -6,7 +6,7 @@ class NotificationService {
       throw new Error("Missing required paremeters for creating notification");
     }
     try {
-      const notification = await notificationRepository.createNotification(
+      const notification = await notificationRepository.create(
         userId,
         message,
         type,
@@ -81,3 +81,4 @@ class NotificationService {
 }
 
 module.exports = new NotificationService();
+

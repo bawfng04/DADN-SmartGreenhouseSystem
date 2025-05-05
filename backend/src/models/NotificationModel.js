@@ -79,7 +79,9 @@ class NotificationModel {
     async markAllAsRead(userId) {
         try {
             const query = `
-            UPDATE notifications SET is_read = TRUE WHERE user_id = $1 RETURNING id
+            UPDATE notifications SET is_read = TRUE
+            WHERE user_id = $1 AND is_read = FALSE
+            RETURNING id
             `
             const values = [userId];
             const result = await pool.query(query, values);
