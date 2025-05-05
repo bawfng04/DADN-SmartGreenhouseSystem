@@ -27,6 +27,7 @@ const {
 } = require("../controllers/deviceController");
 
 const reminderController = require("../controllers/reminderController");
+const notificationController = require("../controllers/NotificationController")
 
 //login/register/changepassword
 router.get("/", (req, res) => {
@@ -117,6 +118,23 @@ router.put(
   "/settings/:name/status",
   authenticateToken,
   settingsController.updateSettingStatusByName
+);
+
+// notifications
+router.get(
+  "/notifications",
+  authenticateToken,
+  notificationController.getUserNotifications
+);
+router.patch(
+  "/notifications/read-all",
+  authenticateToken,
+  notificationController.markAllAsRead
+);
+router.patch(
+  "/notifications/:id/read",
+  authenticateToken,
+  notificationController.markAsRead
 );
 
 module.exports = { router };

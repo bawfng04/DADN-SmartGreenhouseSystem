@@ -31,8 +31,9 @@ class SettingsController {
     async updateSettingByName(req, res) {
         try {
             const { name } = req.params;
+            const userId = req.user?.id; // lấy user id từ token
             const settingsData = req.body;
-            const updatedSettings = await settingsService.updateSettingByName(name, settingsData);
+            const updatedSettings = await settingsService.updateSettingByName(name, settingsData, userId);
             if (!updatedSettings) {
                 // console.log("THISSSS");
                 return res.status(404).json({ message: "Settings not found" });
@@ -68,7 +69,8 @@ class SettingsController {
     async updateSettingStatusByName(req, res) {
         try {
             const { name } = req.params;
-            const updatedSettings = await settingsService.updateSettingStatusByName(name);
+            const userId = req.user?.id; // lấy user id từ token
+            const updatedSettings = await settingsService.updateSettingStatusByName(name, userId);
             console.log("updatedSettings", updatedSettings);
             if (!updatedSettings) {
                 return res.status(404).json({ message: "Settings not found" });

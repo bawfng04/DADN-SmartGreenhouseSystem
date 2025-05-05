@@ -395,3 +395,17 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 SET search_path TO public
+
+
+-- update 05/05/2025 - notifications
+DROP TABLE IF EXISTS notifications;
+CREATE TABLE public.notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50), -- 'DEVICE_UPDATE', 'SENSOR_ALERT', 'SCHEDULE_COMPLETED', 'REMINDER'...
+    is_read BOOLEAN DEFAULT FALSE,
+    related_entity_id VARCHAR(255),
+    timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE -- xoá user -> xoá notification của user
+);

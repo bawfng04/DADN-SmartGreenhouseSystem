@@ -810,3 +810,89 @@ Server sẽ gửi các tin nhắn dưới dạng JSON string với cấu trúc s
   }
 }
 ```
+
+### 18. Quản lý Thông báo (Notifications)
+
+Quản lý và truy xuất lịch sử thông báo cho người dùng đã đăng nhập.
+
+#### 18.1 Lấy Danh Sách Thông Báo
+
+- **URL:** `/notifications`
+- **Phương thức:** `GET`
+- **Mô tả:** Lấy danh sách tất cả thông báo của người dùng hiện tại, sắp xếp theo thời gian mới nhất trước.
+- **Phản hồi:**
+  - `200 OK`: Trả về một mảng các đối tượng thông báo.
+    ```json
+    [
+      {
+        "id": 15,
+        "user_id": 1, // ID của người dùng
+        "message": "Device 'fan' was automatically turned ON based on sensor readings.",
+        "type": "AUTO_CONTROL", // Loại thông báo (DEVICE_UPDATE, AUTO_CONTROL, SCHEDULE_CONTROL, REMINDER_ALERT...)
+        "is_read": false, // Trạng thái đã đọc hay chưa
+        "related_entity_id": "fan", // ID hoặc tên của thực thể liên quan (ví dụ: tên thiết bị) (có thể là "")
+        "timestamp": "2025-05-05T10:30:00.123Z" // Thời gian tạo thông báo
+      },
+      {
+        "id": 14,
+        "user_id": 1,
+        "message": "Device 'led' status toggled to ON.",
+        "type": "DEVICE_UPDATE",
+        "is_read": true,
+        "related_entity_id": "led",
+        "timestamp": "2025-05-05T09:15:45.567Z"
+      }
+      // ... các thông báo khác
+    ]
+    ```
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server khi truy vấn dữ liệu.
+
+***Yêu cầu token ở header của request.***
+
+#### 18.2 Đánh Dấu Đã Đọc Một Thông Báo
+
+- **URL:** `/notifications/{id}/read`
+- **Phương thức:** `PATCH`
+- **Mô tả:** Đánh dấu một thông báo cụ thể là đã đọc.
+- **Tham số đường dẫn (Path Parameter):**
+  - `id`: ID của thông báo cần đánh dấu đã đọc.
+- **Nội dung yêu cầu:** (Không cần gửi body)
+- **Phản hồi:**
+  - `200 OK`: Đánh dấu thành công. Trả về đối tượng thông báo đã được cập nhật.
+    ```json
+    {
+      "id": 15,
+      "user_id": 1,
+      "message": "Device 'fan' was automatically turned ON based on sensor readings.",
+      "type": "AUTO_CONTROL",
+      "is_read": true, // Trạng thái đã được cập nhật thành true
+      "related_entity_id": "fan",
+      "timestamp": "2025-05-05T10:30:00.123Z"
+    }
+    ```
+  - `400 Bad Request`: Định dạng `id` không hợp lệ.
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `404 Not Found`: Không tìm thấy thông báo với `id` cung cấp, hoặc thông báo không thuộc về người dùng, hoặc đã được đánh dấu đọc trước đó.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***
+
+#### 18.3 Đánh Dấu Tất Cả Thông Báo Là Đã Đọc
+
+- **URL:** `/notifications/read-all`
+- **Phương thức:** `PATCH`
+- **Mô tả:** Đánh dấu tất cả các thông báo **chưa đọc** của người dùng hiện tại là đã đọc.
+- **Nội dung yêu cầu:** (Không cần gửi body)
+- **Phản hồi:**
+  - `200 OK`: Đánh dấu thành công.
+    ```json
+    {
+      "message": "Successfully marked 5 notifications as read." // Số lượng thông báo đã được đánh dấu
+    }
+    ```
+    *(Nếu không có thông báo nào chưa đọc, message sẽ là "Successfully marked 0 notifications as read.")*
+  - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
+  - `500 Internal Server Error`: Lỗi server.
+
+***Yêu cầu token ở header của request.***

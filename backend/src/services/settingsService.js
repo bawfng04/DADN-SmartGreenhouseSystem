@@ -4,7 +4,8 @@ const { publishToFeed } = require(`./mqttpublisher`);
 const { getPrediction } = require('../GreenhouseModel/prediction');
 const sensorRepository = require('../repository/sensorRepository');
 const settingsmodel = require('../models/settingsModel');
-const {broadcast} = require("./webSocketService");
+const { broadcast } = require("./webSocketService");
+const notificationService = require("./NotificationService");
 
 
 // map device name với feed key
@@ -157,7 +158,7 @@ class SettingsService{
         }
     }
 
-    async updateSettingByName(name, settingsData) {
+    async updateSettingByName(name, settingsData, userId) {
         // try {
         //     const settings = await settingsRepository.updateSettingByName(name, settingsData);
         //     if (!settings || settings.length === 0) {
@@ -199,7 +200,8 @@ class SettingsService{
 
                     throw new Error("Settings not found");
             }
-            let finalUpdatedSettings = null;
+          let finalUpdatedSettings = null;
+          let notificationMessage = `Device ${name} has been updated`;
             // nếu trong db chưa auto, nhận request auto từ fe
           const isSwitchingToAuto = settingsData.mode === 'automatic' && currentSettings.mode !== 'automatic';
           const isScheduledMode = settingsData.mode === 'scheduled';
@@ -452,7 +454,48 @@ class SettingsService{
                      payload: finalUpdatedSettings,
                    });
                 }
-            }
+          }
+                      if (finalUpdatedSettings && userId) {
+                        // Kiểm tra có kết quả và userId
+                        try {
+                          // Tạo message cụ thể hơn nếu có thể
+                          if (
+                            settingsData.mode &&
+                            settingsData.mode !== currentSettings.mode
+                          ) {
+                            notificationMessage += ` Mode changed to ${finalUpdatedSettings.mode}.`;
+                          } else if (
+                            settingsData.hasOwnProperty("status") &&
+                            settingsData.status !== currentSettings.status
+                          ) {
+                            notificationMessage += ` Status turned ${
+                              finalUpdatedSettings.status ? "ON" : "OFF"
+                            }.`;
+                          } else if (
+                            settingsData.hasOwnProperty("intensity") &&
+                            settingsData.intensity !== currentSettings.intensity
+                          ) {
+                            notificationMessage += ` Intensity set to ${finalUpdatedSettings.intensity}.`;
+                          }
+                          // ... thêm các trường khác nếu cần ...
+
+                          await notificationService.createNotification(
+                            userId,
+                            notificationMessage,
+                            "DEVICE_UPDATE", // Loại thông báo
+                            name // ID liên quan (tên thiết bị)
+                          );
+                          console.log(
+                            `[Notification] Created for user ${userId} - ${name} update`
+                          );
+                        } catch (notificationError) {
+                          console.error(
+                            `[Notification] Failed to create for user ${userId} - ${name} update:`,
+                            notificationError
+                          );
+                          // Không throw lỗi ở đây để không ảnh hưởng luồng chính
+                        }
+                      }
             return finalUpdatedSettings;
         }
         catch (error) {
@@ -467,7 +510,7 @@ class SettingsService{
     }
 
     // toggle status
-    async updateSettingStatusByName(name) {
+    async updateSettingStatusByName(name, userId) {
         const currentSetting = await this.getSettingByName(name);
         console.log("currentSetting", currentSetting);
         if (!currentSetting) {
@@ -492,6 +535,29 @@ class SettingsService{
       if (updatedSettings) {
         broadcast({ type: "DEVICE_UPDATE", payload: updatedSettings });
       }
+                  if (updatedSettings && userId) {
+                    // Kiểm tra có kết quả và userId
+                    try {
+                      const notificationMessage = `Device '${name}' status toggled to ${
+                        updatedSettings.status ? "ON" : "OFF"
+                      }.`;
+
+                      await notificationService.createNotification(
+                        userId,
+                        notificationMessage,
+                        "DEVICE_UPDATE",
+                        name
+                      );
+                      console.log(
+                        `[Notification] Created for user ${userId} - ${name} status toggle`
+                      );
+                    } catch (notificationError) {
+                      console.error(
+                        `[Notification] Failed to create for user ${userId} - ${name} toggle:`,
+                        notificationError
+                      );
+                    }
+                  }
 
         return updatedSettings;
     }
