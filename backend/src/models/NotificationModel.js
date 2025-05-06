@@ -14,16 +14,36 @@ const { pool } = require("../database/PostgreDatabase");
 class NotificationModel {
     async createNotification(user_id, message, type, is_read = false, related_entity_id = "") {
         try {
-            const query = `
+
+          console.log(
+            "[NotificationModel.createNotification] Received parameters:"
+          );
+          console.log("  user_id:", user_id, typeof user_id);
+          console.log("  message:", message, typeof message);
+          console.log("  type:", type, typeof type);
+          console.log("  is_read:", is_read, typeof is_read);
+          console.log(
+            "  related_entity_id:",
+            related_entity_id,
+            typeof related_entity_id
+          );
+
+          const query = `
             INSERT INTO notifications
             (user_id, message, type, is_read, related_entity_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *`;
-            // const now = new Date();
-            const result = await pool.query(query, [user_id, message, type, is_read, related_entity_id]);
-            if (result.rows && result.rows.length > 0) {
-                return result[0]; // thằng mới tạo
-            }
+          // const now = new Date();
+          const result = await pool.query(query, [
+            user_id,
+            message,
+            type,
+            is_read,
+            related_entity_id,
+          ]);
+          if (result.rows && result.rows.length > 0) {
+            return result.rows[0]; // thằng mới tạo
+          }
         }
         catch (error) {
             console.log("Error creating notification at NotificationModel.js");
@@ -89,4 +109,4 @@ class NotificationModel {
     }
 }
 
-module.exports = NotificationModel
+module.exports = NotificationModel;

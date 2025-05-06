@@ -27,12 +27,13 @@ class ReminderController {
 
     async createReminder(req, res) {
         try {
+            const userId = req.user?.id; // lấy từ token
         const { index, lowerThan, higherThan, repeatAfter } = req.body;
         if (!index) {
             return res.status(400).json({ message: "Invalid or missing 'index'" });
         }
 
-        const result = await reminderService.addReminder(req.body);
+        const result = await reminderService.addReminder(req.body, userId);
         res
             .status(201)
             .json({ message: "Reminder created", reminderId: result.id });
