@@ -55,7 +55,7 @@ class ReminderModel {
   }
 
   // update timestamp của reminder
-  async updateReminderLastTriggeredd(reminderId) {
+  async updateReminderLastTriggered(reminderId) {
     const query = `
         UPDATE reminders
         SET last_triggered_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
