@@ -83,6 +83,19 @@ class SensorService {
     return getHistory(feedKey, startTime, endTime, page, pageSize);
   }
 
+  // 06 05 2025
+  async getLatestSensorDataForAllFeeds() {
+    const feeds = ["thermal", "humid", "light", "earth-humid"];
+    const latestData = {};
+    for (const feed of feeds) {
+      const data = await sensorRepository.getLatest(feed);
+      if (data) {
+        latestData[feed] = data.value;
+      }
+    }
+    return latestData;
+  }
+
   // update 16 04 2025
   async getDailyDashboardData(date) {
     const startTime = `${date} 00:00:00`;

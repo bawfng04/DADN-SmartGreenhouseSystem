@@ -14,11 +14,12 @@ class ReminderService{
         })).filter(r => r!== null);
     }
 
-    async addReminder(data) {
-        const newReminder = await reminderRepository.createReminder(data);
+    async addReminder(data, userId) {
+        const newReminder = await reminderRepository.createReminder(data, userId);
         //data đã bao gồm lowerThan, higherThan, repeatAfter...
         return {
             id: String(newReminder.id),
+            userId: newReminder.user_id,
             index: newReminder.index_name,
             higherThan: newReminder.higher_than_status ? newReminder.higher_than_value : null,
             lowerThan: newReminder.lower_than_status ? newReminder.lower_than_value : null,

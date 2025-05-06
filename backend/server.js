@@ -14,6 +14,8 @@ const { startDeviceAutoSync } = require("./src/services/deviceService");
 const { startScheduler } = require("./src/services/scheduleService");
 const mqttClient = require("./src/utils/mqtt");
 const { getWebSocketInfo, initWebSocketServer } = require("./src/services/webSocketService");
+const notificationService = require("./src/services/NotificationService");
+
 
 
 // vercel --prod
@@ -74,5 +76,28 @@ server.listen(PORT, () => {
   // chạy scheduler
   startScheduler(); // chạy 10s/lần
   startControlCheck();
+
+
+  const REMINDER_CHECK_INTERVAL = 60 * 1000; // 60 giây = 1 phút
+  console.log(
+    `[ReminderCheck] Starting periodic reminder checks every ${
+      REMINDER_CHECK_INTERVAL / 1000
+    }s...`
+  );
+  setInterval(async () => {
+    try {
+      await notificationService.checkAndTriggerReminders();
+    } catch (error) {
+      console.error(
+        "[ReminderCheck] Error during periodic reminder check in setInterval:",
+        error
+      );
+    }
+  }, REMINDER_CHECK_INTERVAL);
+
+
+
+
+
   console.log(`Server running on port ${PORT}`);
 });
