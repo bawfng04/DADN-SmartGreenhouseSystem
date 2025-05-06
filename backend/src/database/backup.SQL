@@ -28,6 +28,17 @@ SET default_table_access_method = heap;
 -- Name: devices; Type: TABLE; Schema: public; Owner: postgres
 --
 
+CREATE TABLE public.users (
+    id SERIAL PRIMARY KEY,
+    username character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+
 CREATE TABLE public.devices (
     id integer NOT NULL,
     feed_name character varying(255) NOT NULL,
@@ -67,21 +78,23 @@ ALTER SEQUENCE public.devices_id_seq OWNED BY public.devices.id;
 -- Name: reminders; Type: TABLE; Schema: public; Owner: postgres
 --
 
+DROP TABLE IF EXISTS public.reminders;
 CREATE TABLE public.reminders (
-    id integer NOT NULL,
-    index_name character varying(50) NOT NULL,
-    higher_than_value numeric,
-    higher_than_status boolean DEFAULT false,
-    lower_than_value numeric,
-    lower_than_status boolean DEFAULT false,
-    repeat_after_value integer,
-    repeat_after_status boolean DEFAULT false,
-    active boolean DEFAULT true,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    index_name VARCHAR(50) NOT NULL,
+    higher_than_value NUMERIC,
+    higher_than_status BOOLEAN DEFAULT FALSE,
+    lower_than_value NUMERIC,
+    lower_than_status BOOLEAN DEFAULT FALSE,
+    repeat_after_value INTEGER, -- Thời gian lặp lại cảnh báo (phút)
+    repeat_after_status BOOLEAN DEFAULT FALSE,
+    last_triggered_at TIMESTAMP WITHOUT TIME ZONE,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
-
-
 
 --
 -- TOC entry 226 (class 1259 OID 16807)
@@ -206,12 +219,6 @@ CREATE TABLE public.threshold (
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    username character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
-);
 
 
 
@@ -276,8 +283,6 @@ ALTER TABLE ONLY public.sensors ALTER COLUMN id SET DEFAULT nextval('public.sens
 -- TOC entry 4719 (class 2604 OID 16692)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
 --
-
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
@@ -394,7 +399,7 @@ BEFORE UPDATE ON device_configurations
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
-SET search_path TO public
+SET search_path TO public;
 
 
 -- update 05/05/2025 - notifications
