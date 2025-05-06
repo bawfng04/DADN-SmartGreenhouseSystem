@@ -15,18 +15,18 @@ class NotificationModel {
     async createNotification(user_id, message, type, is_read = false, related_entity_id = "") {
         try {
 
-          console.log(
-            "[NotificationModel.createNotification] Received parameters:"
-          );
-          console.log("  user_id:", user_id, typeof user_id);
-          console.log("  message:", message, typeof message);
-          console.log("  type:", type, typeof type);
-          console.log("  is_read:", is_read, typeof is_read);
-          console.log(
-            "  related_entity_id:",
-            related_entity_id,
-            typeof related_entity_id
-          );
+        //   console.log(
+        //     "[NotificationModel.createNotification] Received parameters:"
+        //   );
+        //   console.log("  user_id:", user_id, typeof user_id);
+        //   console.log("  message:", message, typeof message);
+        //   console.log("  type:", type, typeof type);
+        //   console.log("  is_read:", is_read, typeof is_read);
+        //   console.log(
+        //     "  related_entity_id:",
+        //     related_entity_id,
+        //     typeof related_entity_id
+        //   );
 
           const query = `
             INSERT INTO notifications
