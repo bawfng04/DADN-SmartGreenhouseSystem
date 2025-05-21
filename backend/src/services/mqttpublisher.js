@@ -15,7 +15,7 @@ function publishToFeed(feedKey, payload) {
       throw new Error("Invalid value for light control");
     }
   }
-  if (feedKey === "fan") {
+  if (feedKey === "fan-control") {
     if (payload > 100 || payload < 0) {
       throw new Error("Invalid value for fan");
     }
@@ -94,7 +94,7 @@ const createAdafruitFanData = async (req, res) => {
       return res.status(400).json({ message: "Invalid value for fan" });
     }
 
-    const topic = `justkh29/feeds/fan`;
+    const topic = `justkh29/feeds/fan-control`;
     const payload = value.toString();
 
     client.publish(topic, payload, (error) => {

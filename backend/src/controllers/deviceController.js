@@ -41,6 +41,7 @@ class DeviceController {
     try {
       switch (feedKey) {
         case "fan":
+        case "fan-control":
           return await createAdafruitFanData(req, res);
         case "light-control":
           return await createAdafruitLightControlData(req, res);

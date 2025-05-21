@@ -12,7 +12,7 @@ const notificationService = require("./NotificationService");
 function getFeedKey(deviceName) {
     switch (deviceName) {
         case 'led': return 'light-control';
-        case 'fan': return 'fan';
+        case 'fan': return 'fan-control';
         case 'pump': return 'water-pump';
         default:
             console.error(`Unknown device name: ${deviceName}`);
