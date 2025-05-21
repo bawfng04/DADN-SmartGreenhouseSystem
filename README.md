@@ -265,7 +265,7 @@ async function turnLightOn() {
   - `401 Unauthorized`: Token không hợp lệ hoặc thiếu.
   - `500 Internal Server Error`: Lỗi server khi tạo lịch trình.
 
-![create-schedule-ex](backend/images/image.png)
+![create-schedule-ex](images/image.png)
 
 **_Yêu cầu token ở header của request._**
 
