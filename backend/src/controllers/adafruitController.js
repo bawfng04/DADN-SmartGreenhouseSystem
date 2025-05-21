@@ -34,16 +34,24 @@ const fetchAdafruitFeedData = async (feedKey) => {
 };
 
 const getAdafruitThermalData = async (req, res) => {
+  console.log("API endpoint called: /api/adafruit/thermal");
   try {
     const data = await fetchAdafruitFeedData("thermal");
+    console.log(
+      "Thermal data to be returned:",
+      JSON.stringify(data).substring(0, 100) + "..."
+    );
     // nếu được gọi từ route handler, res sẽ là đối tượng response
     // nếu không, return về data (để sync)
     if (res) {
+      console.log("Returning thermal data via API response");
       res.json(data);
     } else {
+      console.log("Returning thermal data directly (sync mode)");
       return data;
     }
   } catch (error) {
+    console.error("Error in getAdafruitThermalData:", error);
     if (res) {
       const status = error.response?.status || 500;
       const message =

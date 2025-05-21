@@ -71,7 +71,7 @@ initWebSocketServer(server);
 
 
 server.listen(PORT, () => {
-  // startAutoSync();
+  startAutoSync();
   // startDeviceAutoSync();
   // chạy scheduler
   startScheduler(); // chạy 10s/lần
