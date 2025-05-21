@@ -1,7 +1,7 @@
 const notificationRepository = require("../repository/NotificationRepository");
 const reminderRepository = require("../repository/reminderRepository");
 // const {getLatestSensorDataForAllFeeds} = require("../repository/sensorRepository");
-const sensorService = require("./sensorService");
+const { sensorService } = require("./sensorService");
 
 class NotificationService {
   async createNotification(userId, message, type, related_entity_id = "") {
