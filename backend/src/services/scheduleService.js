@@ -159,7 +159,7 @@ class ScheduleService {
 const scheduleServiceInstance = new ScheduleService();
 
 // 10s 1 lần
-function startScheduler(interval = 10000) {
+function startScheduler(interval = 20000) {
     console.log("Scheduler started. Checking for pending tasks every minute (scheduleService.js).");
     //chạy lần đầu
     scheduleServiceInstance.processPendingTasks();

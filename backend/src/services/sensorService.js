@@ -541,7 +541,7 @@ function startAutoSync() {
     }
 
     console.log("sensorService.js/Autosync: Auto-sync completed!");
-  }, 10 * 1000);
+  }, 20 * 1000);
 }
 
 function startControlCheck() {

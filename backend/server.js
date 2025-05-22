@@ -78,7 +78,7 @@ server.listen(PORT, () => {
   startControlCheck();
 
 
-  const REMINDER_CHECK_INTERVAL = 60 * 1000; // 60 giây = 1 phút
+  const REMINDER_CHECK_INTERVAL = 60 * 2000; // 2 phút
   console.log(
     `[ReminderCheck] Starting periodic reminder checks every ${
       REMINDER_CHECK_INTERVAL / 1000
