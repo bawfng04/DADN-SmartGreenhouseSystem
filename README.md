@@ -6,6 +6,8 @@
 
 `https://dadn-2.onrender.com/api`
 
+`https://dadn-smartgreenhousesystem.onrender.com/api`
+
 ## Endpoints
 
 ### 1. Đăng Ký Người Dùng
