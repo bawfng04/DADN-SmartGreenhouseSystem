@@ -6,7 +6,7 @@
 
 `https://dadn-2.onrender.com/api`
 
-`https://dadn-smartgreenhousesystem.onrender.com`
+`https://dadn-smartgreenhousesystem.onrender.com/api`
 
 ## Endpoints
 
