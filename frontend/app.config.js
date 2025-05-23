@@ -7,8 +7,8 @@ export default {
     version: "1.0.0",
     extra: {
       apiUrl: process.env.API_URL,
-      token: process.env.TOKEN,
       websocketUrl: process.env.WEBSOCKET_URL,
     },
+    plugins: ["expo-secure-store"],
   },
 };

@@ -14,7 +14,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
 import settingsMockData from "@/data/settings.mock.json";
-
+import { useAuth } from "@/contexts/AuthContext";
 interface DeviceType {
   name: string;
   mode: string;
@@ -66,8 +66,11 @@ const CardDevice: React.FC<DeviceType> = ({
   const saveSettingsMutation = useMutation({
     mutationFn: async () => {
       return apiCall({
-        endpoint: `/settings/${name}/status`,
-        method: "PATCH",
+        endpoint: `/settings/${name}`,
+        method: "PUT",
+        body: {
+          status: updateStatus,
+        },
       });
     },
     onError: (error) => {
@@ -122,7 +125,7 @@ const CardDevice: React.FC<DeviceType> = ({
 export default function SettingTab() {
   const insets = useSafeAreaInsets();
   const [deviceList, setDeviceList] = useState<DeviceType[]>([]);
-
+  const { isAuthenticated } = useAuth();
   useFocusEffect(
     useCallback(() => {
       refetch();
@@ -136,7 +139,11 @@ export default function SettingTab() {
     refetch,
   } = useQuery<any>({
     queryKey: ["settings"],
-    queryFn: () => apiCall({ endpoint: `/settings` }),
+    queryFn: async () => {
+      const response = await apiCall({ endpoint: `/settings` });
+      return response ?? [];
+    },
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {

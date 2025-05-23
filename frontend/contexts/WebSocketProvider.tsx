@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AppState, AppStateStatus } from "react-native";
 import Constants from "expo-constants";
-
+import { useAuth } from "./AuthContext";
 const extra = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
 
 const { websocketUrl } = extra;
@@ -50,7 +50,9 @@ export const WebSocketProvider = ({
   const socketRef = useRef<WebSocket | null>(null);
   const appState = useRef(AppState.currentState);
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const { token } = useAuth();
   useEffect(() => {
+    if (!token) return;
     const connectSocket = () => {
       if (
         socketRef.current === null ||

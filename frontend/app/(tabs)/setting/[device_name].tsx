@@ -17,6 +17,7 @@ import ScheduledSetting from "@/components/setting/ScheduledSetting";
 import AutomaticSetting from "@/components/setting/AutomaticSetting";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
+import { useAuth } from "@/contexts/AuthContext";
 
 const deviceNameConst = {
   led: "Đèn Led",
@@ -77,12 +78,14 @@ export default function ConfigScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [notifySave, setNotifySave] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   let initialSettings;
 
   const { data: deviceSetting, isSuccess } = useQuery({
     queryKey: ["settings", deviceName],
     queryFn: () => apiCall({ endpoint: `/settings/${deviceName}` }),
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {

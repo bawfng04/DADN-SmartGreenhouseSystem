@@ -11,19 +11,21 @@ import "react-native-reanimated";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEffect } from "react";
+
 import { WebSocketProvider } from "@/contexts/WebSocketProvider";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-// Create a client
-const queryClient = new QueryClient();
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function AppLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (loaded) {
@@ -31,23 +33,36 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
+
+  const AppStack = (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+    </Stack>
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <WebSocketProvider>
-          <NotificationProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
-          </NotificationProvider>
-        </WebSocketProvider>
+        {isAuthenticated ? (
+          <WebSocketProvider>
+            <NotificationProvider>{AppStack}</NotificationProvider>
+          </WebSocketProvider>
+        ) : (
+          AppStack
+        )}
+        <StatusBar style="auto" />
       </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <AppLayout />
+    </AuthProvider>
   );
 }

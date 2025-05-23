@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { useWebSocket } from "./WebSocketProvider";
-import { apiCallMock } from "@/utils/apiCallMock";
+import { apiCall } from "@/utils/apiCall";
+import { useAuth } from "./AuthContext";
 
 interface DeviceMessage {
   type: string;
@@ -49,10 +50,11 @@ export const NotificationProvider = ({
   const messages = webSocketContext?.messages || [];
   const [notifications, setNotifications] = useState<MessageType[]>([]);
   const hasFetched = useRef(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!hasFetched.current) {
-      apiCallMock({
+      apiCall({
         method: "GET",
         endpoint: "/notifications",
       }).then((data) => {
@@ -61,6 +63,24 @@ export const NotificationProvider = ({
       });
     }
   }, []);
+  useEffect(() => {
+    if (!token || hasFetched.current) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const data = await apiCall({
+          method: "GET",
+          endpoint: "/notifications",
+        });
+        setNotifications(data);
+        hasFetched.current = true;
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      }
+    };
+
+    fetchNotifications();
+  }, [token]);
 
   useEffect(() => {
     const merge = () => {

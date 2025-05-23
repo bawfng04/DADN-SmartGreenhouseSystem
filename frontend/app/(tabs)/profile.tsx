@@ -14,11 +14,14 @@ import {
 } from "react-native";
 import { Card, Title } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
+  const { removeToken } = useAuth();
 
   const toggleNotification = () => {
     setIsNotification(!isNotification);
@@ -26,6 +29,8 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     setIsLoggedOut(!isLoggedOut);
+    removeToken();
+    router.replace("/auth/login");
   };
 
   return (

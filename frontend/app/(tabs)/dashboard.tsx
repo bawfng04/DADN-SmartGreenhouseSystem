@@ -14,7 +14,8 @@ import { Calendar } from "react-native-calendars";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiCall } from "@/utils/apiCall";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 const screenWidth = Dimensions.get("window").width;
 
 interface Dashboard {
@@ -24,13 +25,22 @@ interface Dashboard {
   light: { value: number; label: string }[];
 }
 
+const testData = [
+  { label: "1", value: 20 },
+  { label: "2", value: 20 },
+  { label: "3", value: 20 },
+  { label: "4", value: 20 },
+  { label: "5", value: 20 },
+];
+
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const [openCalendar, setOpenCalendar] = useState(false);
   const [type, setType] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tempDate, setTempDate] = useState(selectedDate);
-  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
   const { data, isSuccess } = useQuery({
     queryKey: ["dashboard"],
@@ -38,11 +48,10 @@ export default function DashboardScreen() {
       const response = await apiCall({
         endpoint: `/dashboard/${selectedDate.toISOString().split("T")[0]}`, //YYYY-MM-DD
       });
-      const data = replaceNullData(response);
-      console.log("✅ response from API:", data);
-      setDashboard(data);
-      return data;
+      const newData = replaceNullData(response);
+      return newData;
     },
+    enabled: isAuthenticated,
   });
 
   const { mutate: updateDashboard } = useMutation({
@@ -51,17 +60,13 @@ export default function DashboardScreen() {
         endpoint: `/dashboard/${selectedDate.toISOString().split("T")[0]}`, //YYYY-MM-DD
       });
       const data = replaceNullData(response);
-      console.log("✅ response from API:", data);
-      setDashboard(data);
+      console.log("response from API:", data);
       return data;
     },
-  });
-
-  const [yAxisRanges, setYAxisRanges] = useState({
-    temperature: { min: 0, max: 50 },
-    atmosphere: { min: 0, max: 100 },
-    soil: { min: 0, max: 100 },
-    light: { min: 0, max: 100 },
+    onSuccess: (data) => {
+      console.log("update dashboard response from API:", data);
+      queryClient.setQueryData(["dashboard"], data);
+    },
   });
 
   const chartConfig = {
@@ -80,10 +85,10 @@ export default function DashboardScreen() {
     endSpacing: 0,
     yAxisLabelWidth: 30,
     yAxisTextStyle: { fontSize: 12 },
-    yAxisOffset: yAxisRanges.temperature.min,
+    yAxisOffset: 0,
     noOfSections: 3,
     hideRules: true,
-    maxValue: yAxisRanges.temperature.max - yAxisRanges.temperature.min,
+    maxValue: 50,
     width: screenWidth - 96,
     adjustToWidth: true,
     height: 100,
@@ -122,7 +127,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>°C</Text>
           </View>
           <LineChart
-            data={dashboard?.temperature}
+            data={data?.temperature}
             {...chartConfig}
             color="#FF0000"
             startFillColor="rgba(255, 0, 0, 0.7)"
@@ -135,7 +140,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={dashboard?.humidity}
+            data={data?.humidity}
             {...chartConfig}
             color="#008CFF"
             startFillColor="rgba(19, 0, 224, 0.7)"
@@ -148,7 +153,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={dashboard?.soil_moisture}
+            data={data?.soil_moisture}
             {...chartConfig}
             color="#00DA16"
             startFillColor="rgba(0, 229, 34, 0.7)"
@@ -161,7 +166,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>lux</Text>
           </View>
           <LineChart
-            data={dashboard?.light}
+            data={data?.light}
             {...chartConfig}
             color="#FFCC00"
             startFillColor="rgba(229, 199, 0, 0.7)"

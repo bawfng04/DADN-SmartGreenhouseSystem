@@ -18,6 +18,7 @@ import { apiCall } from "@/utils/apiCall";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DeviceState {
   id: string;
@@ -76,9 +77,12 @@ export default function HomeScreen() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const webSocketContext = useWebSocket();
   const messages = webSocketContext?.messages || [];
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    setIsNotification(true);
+    if (messages.length > 0) {
+      setIsNotification(true);
+    }
   }, [messages]);
 
   const handleNotification = () => {
@@ -94,9 +98,9 @@ export default function HomeScreen() {
     queryKey: ["indices"],
     queryFn: async () => {
       const response = await apiCall({ endpoint: "/indices" });
-      console.log("response from API:", response);
-      return response;
+      return response ?? [];
     },
+    enabled: isAuthenticated,
   });
 
   const {
@@ -107,13 +111,13 @@ export default function HomeScreen() {
     queryKey: ["settings"],
     queryFn: async () => {
       const response = await apiCall({ endpoint: "/settings" });
-      console.log("Settings response from API:", response);
-      return response;
+      return response ?? [];
     },
+    enabled: isAuthenticated,
   });
 
   const handleRefresh = () => {
-    console.log("efreshing indices...");
+    console.log("Refreshing indices...");
     setCurrentDate(new Date());
     refetchIndices();
     refetchSettings();

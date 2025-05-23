@@ -20,6 +20,7 @@ import AddNewButton from "@/assets/images/addButton.svg";
 import { SwipeListView } from "react-native-swipe-list-view";
 import RemoveButton from "@/assets/images/Remove.svg";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const unit = {
   temperature: "°C",
@@ -126,6 +127,7 @@ export default function ReminderTab() {
   const router = useRouter();
   const listViewRef = useRef<any>(null);
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -159,6 +161,7 @@ export default function ReminderTab() {
       console.log("🚀 ~ queryFn: ~ response:", response);
       return response;
     },
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {
