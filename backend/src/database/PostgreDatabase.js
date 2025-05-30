@@ -20,6 +20,7 @@ const poolConfig = connectionString
         rejectUnauthorized: false, //chỉ dùng khi connect bên ngoài
       },
     };
+
 const pool = new Pool(poolConfig);
 
 

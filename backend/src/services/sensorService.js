@@ -14,13 +14,13 @@ const {
 
 const { getPrediction } = require("../GreenhouseModel/prediction");
 
-const settingsRepository = require("../repository/settingsRepository");
-const {
-  getFeedKey,
-  calculateScheduledStatus,
-  determineMQttPayload: determineMqttPayloadFromSettings,
-} = require("./settingsService");
 
+const settingsService = require("./settingsService");
+
+// Import trực tiếp từ module
+const getFeedKey = settingsService.getFeedKey;
+const calculateScheduledStatus = settingsService.calculateScheduledStatus;
+const determineMqttPayloadFromSettings = settingsService.determineMQttPayload;
 const { publishToFeed } = require("./mqttpublisher");
 const notificationService = require("../services/NotificationService");
 
