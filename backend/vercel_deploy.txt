@@ -17,10 +17,10 @@ vercel env add SECRET_KEY production
 # Enter value: bangdeptraivcl
 
 vercel env add ADAFRUIT_IO_USERNAME production
-# Enter value: justkh29
+#
 
 vercel env add ADAFRUIT_IO_KEY production
-# Enter value: aio_CwaS71Yp5GcJdu9ytfT5ZsX4tn6N
+#
 
 ## Domains
 
