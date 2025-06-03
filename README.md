@@ -32,38 +32,11 @@
 - **Fan Control**: Ventilation management with variable speed (0-100%)
 - **Water Pump**: Automated irrigation system with flow control (0-100%)
 
-### 📱 Mobile & Web App
-- **Cross-platform**: iOS, Android, and Web support
-- **Responsive Design**: Modern UI with React Native Paper
-- **Real-time Notifications**: Push notifications for alerts and updates
-- **Offline Support**: Basic functionality when connection is lost
-
 ### 🔔 Smart Alerts
 - **Threshold Monitoring**: Custom alerts for sensor values
 - **Reminder System**: Scheduled notifications and maintenance reminders
 - **Alert History**: Track all notifications and system events
 
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   IoT Sensors   │───▶│   Backend API   │───▶│  Frontend App   │
-│                 │    │                 │    │                 │
-│ • Temperature   │    │ • Node.js       │    │ • React Native  │
-│ • Humidity      │    │ • Express.js    │    │ • Expo          │
-│ • Soil Moisture │    │ • PostgreSQL    │    │ • TypeScript    │
-│ • Light         │    │ • WebSocket     │    │ • Charts        │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Adafruit IO    │    │   ML Models     │    │   Push Notifs   │
-│                 │    │                 │    │                 │
-│ • MQTT Broker   │    │ • Python        │    │ • Real-time     │
-│ • Data Feeds    │    │ • Scikit-learn  │    │ • Alerts        │
-│ • Device Ctrl   │    │ • RandomForest  │    │ • Reminders     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
 
 ## 🛠️ Tech Stack
 
