@@ -36,7 +36,7 @@ class SensorModel {
 
   async getFeedHistory(feedName, startTime, endTime, page = 1, pageSize = 10) {
     const offset = (page - 1) * pageSize;
-    console.log(pageSize, "ádsadasdas");
+    console.log(pageSize, "");
     console.log(feedName);
 
     const query = `

@@ -14,6 +14,7 @@ const {
 
 const { getPrediction } = require("../GreenhouseModel/prediction");
 
+const settingsRepository = require("../repository/settingsRepository");
 
 const settingsService = require("./settingsService");
 
