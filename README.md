@@ -84,7 +84,6 @@ cd DADN-SmartGreenhouseSystem
    - Navigate to `backend/src/database/create.sql`
    - Copy the SQL content and execute it in your PostgreSQL database
    - Or run: `psql -U postgres -d <database name> -f backend/src/database/create.sql`
-   ```
 
 ### 3. Backend Setup
 
