@@ -535,7 +535,7 @@ function startAutoSync() {
     for (const feedKey of FEEDS) {
       try {
         const result = await sensorService.syncFeed(feedKey);
-        console.log(`Synced feed: ${feedKey}`, result);
+        // console.log(`Synced feed: ${feedKey}`, result);
       } catch (error) {
         console.error(`Error syncing feed ${feedKey}:`, error);
       }
