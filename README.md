@@ -35,7 +35,7 @@ A complete IoT greenhouse monitoring and control system with AI-powered automati
    PORT = <yours>
 
    # Postgres connection - For local database
-   POSTGRES_HOST=<yours>
+   POSTGRES_HOST=localhost
    POSTGRES_PORT=<yours>
    POSTGRES_DB=<yours>
    POSTGRES_USER=<yours>
