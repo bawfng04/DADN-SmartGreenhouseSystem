@@ -125,7 +125,7 @@ cd DADN-SmartGreenhouseSystem
 
    # Postgres connection - For local database
    POSTGRES_HOST=localhost
-   POSTGRES_PORT=<yours> (default is 5432)
+   POSTGRES_PORT=5432
    POSTGRES_DB=<yours>
    POSTGRES_USER=<yours>
    POSTGRES_PASSWORD=<yours>
