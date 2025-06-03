@@ -24,7 +24,7 @@ const poolConfig = connectionString
 const pool = new Pool(poolConfig);
 
 
-// local local local
+// // local local local
 // const pool = new Pool({
 //   user: process.env.POSTGRES_USER,
 //   host: process.env.POSTGRES_HOST,

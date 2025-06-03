@@ -1,5 +1,6 @@
 const settingsModel = require('../models/settingsModel');
 
+
 class SettingsRepository {
     async getAllSettings() {
         return settingsModel.getAllSettings();
