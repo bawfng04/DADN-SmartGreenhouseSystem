@@ -68,7 +68,6 @@ class NotificationService {
       throw new Error("User ID is required.");
     }
     try {
-      // The repository method already handles the logic
       const count = await notificationRepository.markAllAsRead(userId);
       return count;
     } catch (error) {
@@ -82,7 +81,6 @@ class NotificationService {
     }
   }
 
-
   // 06 05 2025
   async checkAndTriggerReminders() {
     try {
@@ -94,7 +92,8 @@ class NotificationService {
       }
 
       // lấy dữ liệu cảm biến mới nhất
-      const latestSensorData = await sensorService.getLatestSensorDataForAllFeeds();
+      const latestSensorData =
+        await sensorService.getLatestSensorDataForAllFeeds();
       if (!latestSensorData || Object.keys(latestSensorData).length === 0) {
         console.warn(
           "[ReminderCheck] No sensor data available to check reminders."
@@ -103,8 +102,17 @@ class NotificationService {
       }
       console.log("[ReminderCheck] Latest sensor data:", latestSensorData);
 
+      // mapping layer
+      const mappedSensorData = {
+        temperature: latestSensorData.thermal,
+        humidity: latestSensorData.humid,
+        soil_moisture: latestSensorData["earth-humid"],
+        light: latestSensorData.light,
+      };
+      console.log("[ReminderCheck] Mapped sensor data:", mappedSensorData);
+
       for (const reminder of activeReminders) {
-        const sensorValueStr = latestSensorData[reminder.index_name]; // ví dụ: reminder.index_name là 'thermal'
+        const sensorValueStr = mappedSensorData[reminder.index_name]; // ví dụ: reminder.index_name là 'temperature'
 
         if (sensorValueStr === undefined || sensorValueStr === null) {
           console.log(
@@ -149,7 +157,15 @@ class NotificationService {
               (now.getTime() - lastTriggeredTime.getTime()) / (1000 * 60);
 
             if (diffMinutes < reminder.repeat_after_value) {
-              console.log(`[ReminderCheck] Reminder ${reminder.id} for ${reminder.index_name} (User ${reminder.user_id}) already triggered within repeat interval of ${reminder.repeat_after_value} mins. Waited ${diffMinutes.toFixed(1)} mins.`);
+              console.log(
+                `[ReminderCheck] Reminder ${reminder.id} for ${
+                  reminder.index_name
+                } (User ${
+                  reminder.user_id
+                }) already triggered within repeat interval of ${
+                  reminder.repeat_after_value
+                } mins. Waited ${diffMinutes.toFixed(1)} mins.`
+              );
               continue; // Bỏ qua nếu vẫn trong thời gian chờ lặp lại
             }
           }
