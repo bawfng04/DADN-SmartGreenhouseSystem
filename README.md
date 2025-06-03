@@ -1,10 +1,24 @@
+# Smart Greenhouse IoT System
+
 ## Description
 
-Backend server using Node.js and Express.js, with PostgreSQL as the database.
+A complete IoT greenhouse monitoring and control system with AI-powered automation.
 
-Hosted on Render and Vercel for deployment.
+**Backend:** Node.js + Express.js + PostgreSQL + MQTT + WebSocket
+**Frontend:** React Native + Expo
+**IoT Integration:** Adafruit IO + MQTT
+**AI Features:** Automatic device control based on sensor predictions
+**Deployment:** Render, Vercel, Ngrok support
 
-Frontend using React Native and Expo.
+## Features
+
+- 🌡️ **Real-time sensor monitoring** (Temperature, Humidity, Soil Moisture, Light)
+- 🤖 **AI-powered automatic control** (LED, Fan, Water Pump)
+- ⏰ **Scheduled device control** with custom timing
+- 🔔 **Smart notifications & reminders** based on sensor thresholds
+- 📊 **Historical data tracking** and analytics
+- 🌐 **Real-time WebSocket updates**
+- 📱 **Cross-platform mobile app**
 
 ## Project Setup
 
@@ -16,43 +30,46 @@ Frontend using React Native and Expo.
    ```
 2. Install the dependencies:
    ```sh
-   npm install
+   pip install -r requirements.txt && npm install
    ```
 3. Configure the environment variables:
 
    - Create a `.env` file in the `backend` directory with the following content:
 
-     ```
-     # Port to run the server on
-     PORT = <yours>
+   ```
+   # Port to run the server on
+   PORT = <yours>
 
-     # SSMS Database configuration
-     DATABASE_SERVER = <yours>
-     DATABASE_NAME = <yours>
-     DATABASE_USER = <yours>
-     DATABASE_PASSWORD = <yours>
+   # Postgres connection - For local database
+   POSTGRES_HOST=<yours>
+   POSTGRES_PORT=<yours>
+   POSTGRES_DB=<yours>
+   POSTGRES_USER=<yours>
+   POSTGRES_PASSWORD=<yours>
 
-     # POSTGRESQL Database configuration
-     POSTGRES_HOST= <yours>
-     POSTGRES_PORT= <yours>
-     POSTGRES_DB= <yours>
-     POSTGRES_USER= <yours>
-     POSTGRES_PASSWORD= <yours>
-     POSTGRES_EXTERNAL_URL= <yours>
+   # Postgres connection - For hosted database
+   # POSTGRES_HOST=<yours>
+   # POSTGRES_PORT=<yours>
+   # POSTGRES_DB=<yours>
+   # POSTGRES_USER=<yours>
+   # POSTGRES_PASSWORD=<yours>
+   # DB_SSLMODE=require
+   # POSTGRES_EXTERNAL_URL=<yours>?ssl=true
 
-     # Secret key for encrypting password
-     SECRET_KEY = <yours>
+   # Secret key for encrypting password
+   SECRET_KEY=<yours>
 
-     # JWT Authentication
-     JWT_SECRET_KEY = <your_secure_secret_key>
+   # Secret key for token
+   JWT_SECRET_KEY=<yours>
 
-     # Adafruit IO configuration
-     ADAFRUIT_IO_USERNAME = <yours>
-     ADAFRUIT_IO_KEY = <yours>
+   # Adafruit IO configuration
+   ADAFRUIT_IO_USERNAME=<yours>
+   ADAFRUIT_IO_KEY=<yours>
 
-     # Frontend URL
-     FRONTEND_URL = <yours>
-     ```
+   # Frontend URL
+   FRONTEND_URL=<yours>
+
+   ```
 
 4. Start the backend server:
    ```sh
