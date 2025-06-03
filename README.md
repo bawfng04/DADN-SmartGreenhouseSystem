@@ -12,6 +12,26 @@
 
 </div>
 
+## Table of Contents
+
+- [🌿 Smart Greenhouse IoT System](#-smart-greenhouse-iot-system)
+- [✨ Features](#-features)
+  - [🔍 Real-time Monitoring](#-real-time-monitoring)
+  - [🤖 Smart Automation](#-smart-automation)
+  - [🎛️ Device Management](#️-device-management)
+  - [🔔 Smart Alerts](#-smart-alerts)
+- [🛠️ Tech Stack](#️-tech-stack)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Machine Learning](#machine-learning)
+  - [DevOps & Deployment](#devops--deployment)
+- [Project Setup](#project-setup)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Database Setup](#2-database-setup)
+  - [3. Backend Setup](#3-backend-setup)
+  - [4. Frontend Setup](#4-frontend-setup)
+- [📁 Project Structure](#-project-structure)
+
 
 ## ✨ Features
 
@@ -105,19 +125,19 @@ cd DADN-SmartGreenhouseSystem
 
    # Postgres connection - For local database
    POSTGRES_HOST=localhost
-   POSTGRES_PORT=<yours>
+   POSTGRES_PORT=<yours> (default is 5432)
    POSTGRES_DB=<yours>
    POSTGRES_USER=<yours>
    POSTGRES_PASSWORD=<yours>
 
-   # Postgres connection - For hosted database
-   # POSTGRES_HOST=<yours>
-   # POSTGRES_PORT=<yours>
-   # POSTGRES_DB=<yours>
-   # POSTGRES_USER=<yours>
-   # POSTGRES_PASSWORD=<yours>
-   # DB_SSLMODE=require
-   # POSTGRES_EXTERNAL_URL=<yours>?ssl=true
+   ~~# Postgres connection - For hosted database~~
+   ~~# POSTGRES_HOST=<yours>~~
+   ~~# POSTGRES_PORT=<yours>~~
+   ~~# POSTGRES_DB=<yours>~~
+   ~~# POSTGRES_USER=<yours>~~
+   ~~# POSTGRES_PASSWORD=<yours>~~
+   ~~# DB_SSLMODE=require~~
+   ~~# POSTGRES_EXTERNAL_URL=<yours>?ssl=true~~
 
    # Secret key for encrypting password
    SECRET_KEY=<yours>
