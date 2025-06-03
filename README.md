@@ -52,7 +52,7 @@
 - **Framework**: React Native with Expo
 - **Language**: TypeScript
 - **UI Library**: React Native Paper
-- **Navigation**: Expo Router (file-based routing)
+- **Navigation**: Expo Router
 - **State Management**: React Query
 - **Charts**: React Native Chart Kit & Gifted Charts
 
@@ -75,7 +75,18 @@
 git clone https://github.com/bawfng04/DADN-SmartGreenhouseSystem.git
 cd DADN-SmartGreenhouseSystem
 ```
-### 2. Backend Setup
+
+### 2. Database Setup
+
+1. **Install PostgreSQL** and create a database.
+
+2. **Import database schema:**
+   - Navigate to `backend/src/database/create.sql`
+   - Copy the SQL content and execute it in your PostgreSQL database
+   - Or run: `psql -U postgres -d <database name> -f backend/src/database/create.sql`
+   ```
+
+### 3. Backend Setup
 
 1. Navigate to the backend directory:
    ```sh
@@ -131,7 +142,7 @@ cd DADN-SmartGreenhouseSystem
 
 For complete API documentation, see [backend/README.md](backend/README.md).
 
-### 3. Frontend Setup
+### 4. Frontend Setup
 
 1. Navigate to the frontend directory:
    ```sh
