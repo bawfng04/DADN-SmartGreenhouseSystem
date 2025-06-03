@@ -72,8 +72,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/smart-greenhouse-iot.git
-cd smart-greenhouse-iot
+git clone https://github.com/bawfng04/DADN-SmartGreenhouseSystem.git
+cd DADN-SmartGreenhouseSystem
 ```
 ### 2. Backend Setup
 
