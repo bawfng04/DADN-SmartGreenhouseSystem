@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   aiImage: {
-    width: 354,
+    width: "100%",
     height: 200,
     justifyContent: "center",
     padding: 16,

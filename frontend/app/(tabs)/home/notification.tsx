@@ -43,40 +43,25 @@ const sensor = {
   light: "Ánh sáng",
 };
 
-interface DeviceMessage {
+interface MessageType {
+  id: number;
+  is_read: boolean;
+  message: string;
+  related_entity_id: string;
+  timestamp: string;
   type: string;
-  payload: {
-    name: string;
-    mode: string;
-    status: boolean;
-    intensity: number;
-    turn_off_after: string | null;
-    turn_on_at: string | null;
-    repeat: string | null;
-    dates: string | null;
-    updated_at: string;
-  };
+  user_id: number;
 }
 
-interface SensorMessage {
-  type: string;
-  payload: {
-    id: string;
-    index: string;
-    higherThan: number | null;
-    lowerThan: number | null;
-    repeatAfter: number | null;
-    active: boolean;
-    updated_at: string;
-  };
-}
-
-// const mockReminderNotifications = [
-//   {
-//     timestamp: "15:30, 06/01/2025",
-//     message: "Quạt được bật (thủ công), cường độ 50%",
-//   },
-// ];
+// {
+//   "id": 15,
+//   "user_id": 1, // ID của người dùng
+//   "message": "Device 'fan' was automatically turned ON based on sensor readings.",
+//   "type": "AUTO_CONTROL", // Loại thông báo (DEVICE_UPDATE, AUTO_CONTROL, SCHEDULE_CONTROL, REMINDER_ALERT...)
+//   "is_read": false, // Trạng thái đã đọc hay chưa
+//   "related_entity_id": "fan", // ID hoặc tên của thực thể liên quan (ví dụ: tên thiết bị) (có thể là "")
+//   "timestamp": "2025-05-05T10:30:00.123Z" // Thời gian tạo thông báo
+// },
 
 export default function NotificationScreen({ id }: { id: string }) {
   const router = useRouter();
@@ -84,13 +69,15 @@ export default function NotificationScreen({ id }: { id: string }) {
   const insets = useSafeAreaInsets();
   const [type, setType] = useState("device");
   const { notifications } = useNotifications();
-  const deviceNotifications: DeviceMessage[] = notifications.filter(
+  console.log("notifications", notifications);
+  const deviceNotifications: MessageType[] = notifications.filter(
     (notification) => notification.type === "DEVICE_UPDATE"
-  ) as DeviceMessage[];
-  const sensorNotifications: SensorMessage[] = notifications.filter(
+  ) as MessageType[];
+  const sensorNotifications: MessageType[] = notifications.filter(
     (notification) => notification.type === "SENSOR_ALERT"
-  ) as SensorMessage[];
-
+  ) as MessageType[];
+  console.log(deviceNotifications);
+  console.log(sensorNotifications);
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, []);
@@ -163,11 +150,9 @@ export default function NotificationScreen({ id }: { id: string }) {
           deviceNotifications.map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
               <Text style={styles.timestamp}>
-                {formatDateTime(notification.payload.updated_at)}
+                {formatDateTime(notification.timestamp)}
               </Text>
-              <Text style={styles.message}>
-                {formatDeviceMessage(notification)}
-              </Text>
+              <Text style={styles.message}>{notification.message}</Text>
             </View>
           ))}
 
@@ -185,11 +170,9 @@ export default function NotificationScreen({ id }: { id: string }) {
           sensorNotifications.map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
               <Text style={styles.timestamp}>
-                {formatDateTime(notification.payload.updated_at)}
+                {formatDateTime(notification.timestamp)}
               </Text>
-              <Text style={styles.message}>
-                {formatSensorMessage(notification)}
-              </Text>
+              <Text style={styles.message}>{notification.message}</Text>
             </View>
           ))}
         {type === "reminder" && sensorNotifications.length === 0 && (
@@ -220,24 +203,24 @@ function formatDateTime(isoString: string): string {
   return `${hours}:${minutes}, ${day}-${month}-${year}`;
 }
 
-function formatDeviceMessage(message: DeviceMessage): string {
-  const deviceName = message.payload.name as keyof typeof device;
-  const deviceMode = message.payload.mode as keyof typeof mode;
-  return `${device[deviceName]} được ${
-    message.payload.status ? "bật" : "tắt"
-  } (${mode[deviceMode]}) ${
-    message.payload.status ? `, cường độ ${message.payload.intensity}%` : ""
-  }`;
-}
+// function formatDeviceMessage(message: DeviceMessage): string {
+//   const deviceName = message.payload.name as keyof typeof device;
+//   const deviceMode = message.payload.mode as keyof typeof mode;
+//   return `${device[deviceName]} được ${
+//     message.payload.status ? "bật" : "tắt"
+//   } (${mode[deviceMode]}) ${
+//     message.payload.status ? `, cường độ ${message.payload.intensity}%` : ""
+//   }`;
+// }
 
-function formatSensorMessage(message: SensorMessage): string {
-  const sensorName = message.payload.index as keyof typeof sensor;
-  return `${sensor[sensorName]} ${
-    message.payload.higherThan ? "cao hơn " + message.payload.higherThan : ""
-  } ${
-    message.payload.lowerThan ? "thấp hơn " + message.payload.lowerThan : ""
-  } ${unit[sensorName as keyof typeof unit] || ""}`;
-}
+// function formatSensorMessage(message: SensorMessage): string {
+//   const sensorName = message.payload.index as keyof typeof sensor;
+//   return `${sensor[sensorName]} ${
+//     message.payload.higherThan ? "cao hơn " + message.payload.higherThan : ""
+//   } ${
+//     message.payload.lowerThan ? "thấp hơn " + message.payload.lowerThan : ""
+//   } ${unit[sensorName as keyof typeof unit] || ""}`;
+// }
 
 // function formatSensorMessage(message: SensorMessage): string {
 //   const sensorName = message.payload.name as string;

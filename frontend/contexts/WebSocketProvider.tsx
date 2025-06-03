@@ -6,34 +6,15 @@ const extra = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
 
 const { websocketUrl } = extra;
 
-interface DeviceMessage {
+interface MessageType {
+  id: number;
+  is_read: boolean;
+  message: string;
+  related_entity_id: string;
+  timestamp: string;
   type: string;
-  payload: {
-    name: string;
-    mode: string;
-    status: boolean;
-    intensity: number;
-    turn_off_after: string | null;
-    turn_on_at: string | null;
-    repeat: string | null;
-    dates: string | null;
-    updated_at: string;
-  };
+  user_id: number;
 }
-
-interface SensorMessage {
-  type: string;
-  payload: {
-    id: string;
-    index: string;
-    higherThan: number | null;
-    lowerThan: number | null;
-    repeatAfter: number | null;
-    active: boolean;
-    updated_at: string;
-  };
-}
-type MessageType = DeviceMessage | SensorMessage;
 
 interface WebSocketContextType {
   socket: WebSocket | null;
@@ -69,10 +50,7 @@ export const WebSocketProvider = ({
         socket.onmessage = (event) => {
           console.log("[WebSocket] Message:", event.data);
           const data = JSON.parse(event.data);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { type: data.type, payload: data.payload },
-          ]);
+          setMessages((prevMessages) => [...prevMessages, data]);
         };
 
         socket.onerror = (error) => {

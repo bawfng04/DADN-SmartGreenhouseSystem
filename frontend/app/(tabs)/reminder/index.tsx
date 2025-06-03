@@ -158,7 +158,7 @@ export default function ReminderTab() {
     queryKey: ["reminders"],
     queryFn: async () => {
       const response = await apiCall({ endpoint: `/reminders` });
-      console.log("🚀 ~ queryFn: ~ response:", response);
+      console.log(" ~ queryFn: ~ response:", response);
       return response;
     },
     enabled: isAuthenticated,

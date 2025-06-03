@@ -41,6 +41,10 @@ export default function LoginScreen() {
       await setToken(data.token);
       router.replace("/(tabs)");
     },
+    onError: (error) => {
+      console.log("Login error", error);
+      alert("Login error" + error.message);
+    },
   });
 
   return (

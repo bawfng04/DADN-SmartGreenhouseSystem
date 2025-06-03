@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
+import { getValueFor, removeValueFor } from "./handleAccessToken";
 import { router } from "expo-router";
-import { getValueFor } from "./handleAccessToken";
 
 interface ApiCallParams {
   endpoint: string;
@@ -54,7 +54,10 @@ export const apiCall = async ({
 
     if (!response.ok) {
       console.error("HTTP status error:", response.status);
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await removeValueFor("token");
+      router.push("/auth/login");
+      return;
+      // throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     try {

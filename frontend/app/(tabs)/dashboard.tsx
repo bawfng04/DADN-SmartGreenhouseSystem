@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -25,12 +25,19 @@ interface Dashboard {
   light: { value: number; label: string }[];
 }
 
-const testData = [
-  { label: "1", value: 20 },
-  { label: "2", value: 20 },
-  { label: "3", value: 20 },
-  { label: "4", value: 20 },
-  { label: "5", value: 20 },
+type Data = {
+  label: string;
+  value: number;
+};
+
+const testData: Data[] = [
+  { label: "8", value: 20 },
+  { label: "9", value: 20 },
+  { label: "12", value: 23 },
+  { label: "15", value: 25 },
+  { label: "18", value: 27 },
+  { label: "20", value: 28 },
+  { label: "23", value: 30 },
 ];
 
 export default function DashboardScreen() {
@@ -41,6 +48,10 @@ export default function DashboardScreen() {
   const [tempDate, setTempDate] = useState(selectedDate);
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
+  const [dataTemp, setDataTemp] = useState<Data[]>([]);
+  const [dataHumidity, setDataHumidity] = useState<Data[]>([]);
+  const [dataSoilMoisture, setDataSoilMoisture] = useState<Data[]>([]);
+  const [dataLight, setDataLight] = useState<Data[]>([]);
 
   const { data, isSuccess } = useQuery({
     queryKey: ["dashboard"],
@@ -54,7 +65,7 @@ export default function DashboardScreen() {
     enabled: isAuthenticated,
   });
 
-  const { mutate: updateDashboard } = useMutation({
+  const { data: updateData, mutate: updateDashboard } = useMutation({
     mutationFn: async () => {
       const response = await apiCall({
         endpoint: `/dashboard/${selectedDate.toISOString().split("T")[0]}`, //YYYY-MM-DD
@@ -68,6 +79,28 @@ export default function DashboardScreen() {
       queryClient.setQueryData(["dashboard"], data);
     },
   });
+
+  useEffect(() => {
+    if (data) {
+      setDataTemp(data.temperature);
+      setDataHumidity(data.humidity);
+      setDataSoilMoisture(data.soil_moisture);
+      setDataLight(data.light);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (updateData) {
+      console.log("updateData", updateData);
+      setDataTemp(updateData.temperature);
+      setDataHumidity(updateData.humidity);
+      setDataSoilMoisture(updateData.soil_moisture);
+      setDataLight(updateData.light);
+    }
+  }, [updateData]);
+
+  console.log("dataTemp", dataTemp);
+  console.log("testData", testData);
 
   const chartConfig = {
     curved: true,
@@ -127,7 +160,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>°C</Text>
           </View>
           <LineChart
-            data={data?.temperature}
+            data={dataTemp.length ? dataTemp : testData}
             {...chartConfig}
             color="#FF0000"
             startFillColor="rgba(255, 0, 0, 0.7)"
@@ -140,7 +173,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={data?.humidity}
+            data={dataHumidity.length ? dataHumidity : testData}
             {...chartConfig}
             color="#008CFF"
             startFillColor="rgba(19, 0, 224, 0.7)"
@@ -153,7 +186,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>%</Text>
           </View>
           <LineChart
-            data={data?.soil_moisture}
+            data={dataSoilMoisture.length ? dataSoilMoisture : testData}
             {...chartConfig}
             color="#00DA16"
             startFillColor="rgba(0, 229, 34, 0.7)"
@@ -166,7 +199,7 @@ export default function DashboardScreen() {
             <Text style={styles.unit}>lux</Text>
           </View>
           <LineChart
-            data={data?.light}
+            data={dataLight.length ? dataLight : testData}
             {...chartConfig}
             color="#FFCC00"
             startFillColor="rgba(229, 199, 0, 0.7)"
