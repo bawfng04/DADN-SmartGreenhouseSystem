@@ -155,14 +155,17 @@ For complete API documentation, see [backend/README.md](backend/README.md).
 ## 📁 Project Structure
 
 ```
-smart-greenhouse-iot/
+DADN-SmartGreenhouseSystem/
 ├── backend/                    # Node.js Backend
 │   ├── src/
 │   │   ├── controllers/        # API route handlers
 │   │   ├── models/            # Database models
 │   │   ├── services/          # Business logic
 │   │   ├── repository/        # Data access layer
-│   │   └── database/          # Database configuration
+│   │   ├── routes/            # Route definitions
+│   │   ├── utils/             # Utilities (MQTT, etc.)
+│   │   ├── database/          # Database configuration
+│   │   └── GreenhouseModel/   # AI prediction models
 │   ├── .env                   # Environment variables
 │   ├── server.js              # Entry point
 │   └── package.json
@@ -171,8 +174,11 @@ smart-greenhouse-iot/
 │   ├── app/                   # App screens (Expo Router)
 │   ├── components/            # Reusable components
 │   ├── constants/             # App constants
+│   ├── contexts/              # React contexts
 │   ├── hooks/                 # Custom React hooks
 │   ├── utils/                 # Utility functions
+│   ├── assets/                # Static assets
+│   ├── .env                   # Environment variables
 │   └── package.json
 │
 ├── Machine learning model/     # Python ML Models
