@@ -67,7 +67,7 @@ A complete IoT greenhouse monitoring and control system with AI-powered automati
 
 4. Start the backend server:
    ```sh
-   npm start
+   npm run dev
    ```
 
 ### Frontend Setup
