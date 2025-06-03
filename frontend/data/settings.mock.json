@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "led",
+    "mode": "Thủ công",
+    "status": true,
+    "intensity": 50
+  },
+  {
+    "id": 2,
+    "name": "fan",
+    "mode": "Thủ công",
+    "status": false,
+    "intensity": 50
+  },
+  {
+    "id": 3,
+    "name": "pump",
+    "mode": "Thủ công",
+    "status": false,
+    "intensity": 100
+  }
+]
