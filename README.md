@@ -2,13 +2,7 @@
 
 ## Description
 
-A complete IoT greenhouse monitoring and control system with AI-powered automation.
-
-**Backend:** Node.js + Express.js + PostgreSQL + MQTT + WebSocket
-**Frontend:** React Native + Expo
-**IoT Integration:** Adafruit IO + MQTT
-**AI Features:** Automatic device control based on sensor predictions
-**Deployment:** Render, Vercel, Ngrok support
+A complete IoT greenhouse monitoring and control system with AI-powered automation, built with Node.js and React Native.
 
 ## Features
 
