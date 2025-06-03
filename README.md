@@ -130,14 +130,14 @@ cd DADN-SmartGreenhouseSystem
    POSTGRES_USER=<yours>
    POSTGRES_PASSWORD=<yours>
 
-   ~~# Postgres connection - For hosted database~~
-   ~~# POSTGRES_HOST=<yours>~~
-   ~~# POSTGRES_PORT=<yours>~~
-   ~~# POSTGRES_DB=<yours>~~
-   ~~# POSTGRES_USER=<yours>~~
-   ~~# POSTGRES_PASSWORD=<yours>~~
-   ~~# DB_SSLMODE=require~~
-   ~~# POSTGRES_EXTERNAL_URL=<yours>?ssl=true~~
+   # Postgres connection - For hosted database (comment out when running locally)
+   # POSTGRES_HOST=<yours>
+   # POSTGRES_PORT=<yours>
+   # POSTGRES_DB=<yours>
+   # POSTGRES_USER=<yours>
+   # POSTGRES_PASSWORD=<yours>
+   # DB_SSLMODE=require
+   # POSTGRES_EXTERNAL_URL=<yours>?ssl=tr
 
    # Secret key for encrypting password
    SECRET_KEY=<yours>
